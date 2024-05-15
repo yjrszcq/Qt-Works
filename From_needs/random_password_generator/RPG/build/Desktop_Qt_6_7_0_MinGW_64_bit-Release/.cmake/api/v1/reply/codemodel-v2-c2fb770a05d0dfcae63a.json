@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-7cbd52bc7433262cb2bb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "RPG",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "RPG::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RPG-Release-58e37e7b6bdd689a5cb9.json",
+					"name" : "RPG",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RPG_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RPG_autogen-Release-d1ffbee1b08dd527ee1f.json",
+					"name" : "RPG_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RPG_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RPG_autogen_timestamp_deps-Release-db6aab83bc392cdf4540.json",
+					"name" : "RPG_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Release",
+		"source" : "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
