@@ -76,7 +76,7 @@ void Widget::set_mark(int jud){
 }
 
 void Widget::generate_password(){
-    if(this->length <= 0){
+    if(this->length <= 0 || this->length > 10000000){
         le_password->setText("请输入正确的密码长度！");
     } else{
         srand(time(0));
