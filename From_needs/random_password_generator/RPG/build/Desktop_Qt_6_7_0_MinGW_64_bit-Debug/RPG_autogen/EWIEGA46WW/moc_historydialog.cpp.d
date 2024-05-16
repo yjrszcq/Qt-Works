@@ -1,5 +1,7 @@
 E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Debug/RPG_autogen/EWIEGA46WW/moc_historydialog.cpp: E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/historydialog.h \
   E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Debug/RPG_autogen/moc_predefs.h \
+  E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.h \
+  E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/QString \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20functional.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20memory.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20type_traits.h \

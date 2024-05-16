@@ -8,8 +8,11 @@ RPG_autogen/timestamp: \
 	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/historydialog.cpp \
 	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/historydialog.h \
 	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/main.cpp \
+	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.cpp \
+	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.h \
 	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/widget.cpp \
 	E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/widget.h \
+	E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/QString \
 	E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20functional.h \
 	E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20memory.h \
 	E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtCore/q20type_traits.h \

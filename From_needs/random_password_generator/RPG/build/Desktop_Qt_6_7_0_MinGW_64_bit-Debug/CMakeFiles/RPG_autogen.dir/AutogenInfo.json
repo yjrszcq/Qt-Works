@@ -272,6 +272,12 @@
 			null
 		],
 		[
+			"E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.h",
+			"MU",
+			"EWIEGA46WW/moc_passwordinfo.cpp",
+			null
+		],
+		[
 			"E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/widget.h",
 			"MU",
 			"EWIEGA46WW/moc_widget.cpp",
@@ -356,6 +362,11 @@
 		],
 		[
 			"E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/main.cpp",
+			"MU",
+			null
+		],
+		[
+			"E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.cpp",
 			"MU",
 			null
 		],

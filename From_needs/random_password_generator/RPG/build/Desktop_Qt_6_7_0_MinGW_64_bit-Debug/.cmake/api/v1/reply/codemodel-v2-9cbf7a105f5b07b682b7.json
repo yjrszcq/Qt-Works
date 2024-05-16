@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-7cbd52bc7433262cb2bb.json",
+					"jsonFile" : "directory-.-Debug-bce13c3913714104a1b9.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "RPG::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-RPG-Debug-4d40ee67d98f0ebb215e.json",
+					"jsonFile" : "target-RPG-Debug-2ac26364301f01a60bd5.json",
 					"name" : "RPG",
 					"projectIndex" : 0
 				},

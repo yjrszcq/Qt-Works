@@ -26,7 +26,7 @@ Widget::Widget(QWidget *parent)
     le_password = new QLineEdit();
 
     pb_confirm = new QPushButton("生成密码");
-    pb_history = new QPushButton("保存记录");
+    pb_history = new QPushButton("保存密码");
 
     QFormLayout *form = new QFormLayout();
     form->addRow("密码长度", le_length);
@@ -91,6 +91,5 @@ void Widget::generate_password(){
 }
 
 void Widget::generate_history(){
-    std::vector<HistoryDialog::Info> infos;
-    HistoryDialog::show(le_password->text(), infos);
+    HistoryDialog::show(le_password->text());
 }

@@ -41,7 +41,8 @@ constexpr auto qt_meta_stringdata_CLASSWidgetENDCLASS = QtMocHelpers::stringData
     "",
     "set_mark",
     "jud",
-    "generate_password"
+    "generate_password",
+    "generate_history"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -54,7 +55,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWidgetENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -62,13 +63,15 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWidgetENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   32,    2, 0x0a,    1 /* Public */,
-       3,    1,   33,    2, 0x0a,    2 /* Public */,
-       5,    0,   36,    2, 0x0a,    4 /* Public */,
+       1,    0,   38,    2, 0x0a,    1 /* Public */,
+       3,    1,   39,    2, 0x0a,    2 /* Public */,
+       5,    0,   42,    2, 0x0a,    4 /* Public */,
+       6,    0,   43,    2, 0x0a,    5 /* Public */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    4,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -89,6 +92,8 @@ Q_CONSTINIT const QMetaObject Widget::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         // method 'generate_password'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'generate_history'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -103,6 +108,7 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->set_length(); break;
         case 1: _t->set_mark((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         case 2: _t->generate_password(); break;
+        case 3: _t->generate_history(); break;
         default: ;
         }
     }
@@ -127,13 +133,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
