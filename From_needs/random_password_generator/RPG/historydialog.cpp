@@ -179,19 +179,28 @@ void HistoryDialog::load_data(){
 }
 
 void HistoryDialog::save_data(int jud){
-    ofstream ofs("data/password_infos.csv");
-    for(auto info : infos){
-        ofs << transform(info.get_website().toStdString()) << ",";
-        ofs << transform(info.get_username().toStdString()) << ",";
-        ofs << transform(info.get_password().toStdString()) << endl;
+    if(access("data/password_infos.csv", 0) == 0 && infos.empty()){
+        remove("data/password_infos.csv");
+        if(jud == 1){
+            QMessageBox::information(this, "成功", "保存成功", "确认");
+        } else if(jud == 0){
+            QMessageBox::information(this, "成功", "删除成功", "确认");
+        }
+        close();
+    } else{
+        ofstream ofs("data/password_infos.csv");
+        for(auto info : infos){
+            ofs << transform(info.get_website().toStdString()) << ",";
+            ofs << transform(info.get_username().toStdString()) << ",";
+            ofs << transform(info.get_password().toStdString()) << endl;
+        }
+        ofs.close();
+        if(jud == 1){
+            QMessageBox::information(this, "成功", "保存成功", "确认");
+        } else if(jud == 0){
+            QMessageBox::information(this, "成功", "删除成功", "确认");
+        }
     }
-    ofs.close();
-    if(jud == 1){
-        QMessageBox::information(this, "成功", "保存成功", "确认");
-    } else if(jud == 0){
-        QMessageBox::information(this, "成功", "删除成功", "确认");
-    }
-
 }
 
 string HistoryDialog::transform(string str){
