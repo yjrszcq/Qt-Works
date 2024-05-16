@@ -27,6 +27,7 @@ public slots:
     void save_data(int jud);
 private:
     std::string transform(std::string);
+    void save_message(int);
     QComboBox *cb_choice;
     QStackedWidget *sw_info;
     QLineEdit *le_website;

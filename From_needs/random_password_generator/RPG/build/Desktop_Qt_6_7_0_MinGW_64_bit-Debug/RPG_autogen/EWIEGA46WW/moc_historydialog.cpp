@@ -43,7 +43,8 @@ constexpr auto qt_meta_stringdata_CLASSHistoryDialogENDCLASS = QtMocHelpers::str
     "save_info",
     "delete_info",
     "load_data",
-    "save_data"
+    "save_data",
+    "jud"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -68,14 +69,14 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSHistoryDialogENDCLASS[] = {
        4,    0,   47,    2, 0x0a,    3 /* Public */,
        5,    0,   48,    2, 0x0a,    4 /* Public */,
        6,    0,   49,    2, 0x0a,    5 /* Public */,
-       7,    0,   50,    2, 0x0a,    6 /* Public */,
+       7,    1,   50,    2, 0x0a,    6 /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,    8,
 
        0        // eod
 };
@@ -99,7 +100,8 @@ Q_CONSTINIT const QMetaObject HistoryDialog::staticMetaObject = { {
         // method 'load_data'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'save_data'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>
     >,
     nullptr
 } };
@@ -114,7 +116,7 @@ void HistoryDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 1: _t->save_info(); break;
         case 2: _t->delete_info(); break;
         case 3: _t->load_data(); break;
-        case 4: _t->save_data(); break;
+        case 4: _t->save_data((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     }
