@@ -159,7 +159,6 @@ E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Q
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/QLineEdit \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/QMessageBox \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/QPushButton \
-  E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/QStackedWidget \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qabstractbutton.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qabstractitemdelegate.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qabstractslider.h \
@@ -174,7 +173,6 @@ E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Q
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qrubberband.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qsizepolicy.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qslider.h \
-  E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qstackedwidget.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qstyle.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qstyleoption.h \
   E:/Qt/Qt_Creater/6.7.0/mingw_64/include/QtWidgets/qtabbar.h \

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QComboBox>
-#include <QStackedWidget>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QMessageBox>
@@ -29,7 +28,6 @@ private:
     std::string transform(std::string);
     void save_message(int);
     QComboBox *cb_choice;
-    QStackedWidget *sw_info;
     QLineEdit *le_website;
     QLineEdit *le_username;
     QLineEdit *le_password;
