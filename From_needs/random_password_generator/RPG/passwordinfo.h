@@ -6,12 +6,15 @@ class PasswordInfo
 {
 public:
     PasswordInfo(QString, QString, QString);
-    void set_website(QString);
-    void set_usernmae(QString);
-    void set_password(QString);
-    QString get_website() const;
-    QString get_username() const;
-    QString get_password() const;
+    void setWebsite(QString);
+    void setUsernmae(QString);
+    void setPassword(QString);
+    QString getWebsite() const;
+    QString getUsername() const;
+    QString getPassword() const;
+    static std::vector<QString> inputTransform(QString line);
+    static QString outputTransform(std::vector<QString> datas);
+    static QString outputTransformSingle(QString data);
 private:
     QString website;
     QString username;

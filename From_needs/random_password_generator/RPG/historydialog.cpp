@@ -3,27 +3,27 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <fstream>
 #include <io.h>
-
-using namespace std;
 
 HistoryDialog::HistoryDialog(QString password) {
     this->setWindowTitle("密码管理");
     this->setWindowIcon(QIcon("SZCQ.png"));
-    load_data();
     this->password = password;
+
+    loadData();
+
     cb_choice = new QComboBox();
     cb_choice->addItem("添加密码");
-    int i = 0;
-    for(auto info : this->infos){
-        if(info.get_website() != ""){
-            cb_choice->addItem(info.get_website());
+    int i = 1;
+    for(auto info : infos){
+        if(info.getWebsite() != ""){
+            cb_choice->addItem(info.getWebsite());
         } else{
-            cb_choice->addItem(QString::fromStdString("null_" + to_string(i)));
+            cb_choice->addItem(QString::fromStdString("unknown_" + std::to_string(i)));
             i ++;
         }
-
     }
     le_website = new QLineEdit();
     le_username = new QLineEdit();
@@ -46,38 +46,38 @@ HistoryDialog::HistoryDialog(QString password) {
     vbox->addLayout(form);
     vbox->addLayout(hbox);
 
-    setLayout(vbox);
+    this->setLayout(vbox);
 
-    set_info(0);
+    setInfo(0);
     cb_choice->currentIndexChanged(0);
 
-    connect(cb_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(set_info(int)));
-    connect(pb_save, SIGNAL(clicked(bool)), this, SLOT(save_info()));
-    connect(pb_delete, SIGNAL(clicked(bool)), this, SLOT(delete_info()));
+    connect(cb_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(setInfo(int)));
+    connect(pb_save, SIGNAL(clicked(bool)), this, SLOT(saveInfo()));
+    connect(pb_delete, SIGNAL(clicked(bool)), this, SLOT(deleteInfo()));
 
 }
 
-void HistoryDialog::set_info(int index){
+void HistoryDialog::setInfo(int index){
     if(index == 0){
         le_website->setText("");
         le_username->setText("");
-        le_password->setText(this->password);
+        le_password->setText(password);
     } else{
-        le_website->setText(this->infos[index - 1].get_website());
-        le_username->setText(this->infos[index - 1].get_username());
-        le_password->setText(this->infos[index - 1].get_password());
+        le_website->setText(infos[index - 1].getWebsite());
+        le_username->setText(infos[index - 1].getUsername());
+        le_password->setText(infos[index - 1].getPassword());
     }
 }
 
-void HistoryDialog::save_info(){
+void HistoryDialog::saveInfo(){
     int index = cb_choice->currentIndex();
     if(index == 0){
         if(le_password->text() != ""){
             bool jud = true;
             for(auto info : infos){
-                if(info.get_website() == le_website->text()){
-                    if(info.get_username() == le_username->text()){
-                        if(info.get_password() == le_password->text()){
+                if(info.getWebsite() == le_website->text()){
+                    if(info.getUsername() == le_username->text()){
+                        if(info.getPassword() == le_password->text()){
                             jud = false;
                         }
                     }
@@ -86,7 +86,7 @@ void HistoryDialog::save_info(){
             if(jud == true){
                 PasswordInfo info(le_website->text(), le_username->text(), le_password->text());
                 this->infos.push_back(info);
-                save_data(1);
+                saveData(1);
                 close();
             } else{
                 QMessageBox::information(this, "错误", "数据重复", "确认");
@@ -96,10 +96,10 @@ void HistoryDialog::save_info(){
         }
     } else{
         if(le_password->text() != ""){
-            this->infos[index - 1].set_website(le_website->text());
-            this->infos[index - 1].set_usernmae(le_username->text());
-            this->infos[index - 1].set_password(le_password->text());
-            save_data(1);
+            this->infos[index - 1].setWebsite(le_website->text());
+            this->infos[index - 1].setUsernmae(le_username->text());
+            this->infos[index - 1].setPassword(le_password->text());
+            saveData(1);
             close();
         } else{
             QMessageBox::information(this, "错误", "密码不能为空", "确认");
@@ -107,68 +107,41 @@ void HistoryDialog::save_info(){
     }
 }
 
-void HistoryDialog::delete_info(){
+void HistoryDialog::deleteInfo(){
     int index = cb_choice->currentIndex();
     if(index == 0){
         QMessageBox::information(this, "错误", "请选择任意一项删除", "确认");
     } else{
-        this->infos.erase(this->infos.begin() + index - 1);
-        save_data(0);
+        infos.erase(infos.begin() + index - 1);
+        saveData(0);
         close();
     }
 }
 
-void HistoryDialog::load_data(){
+void HistoryDialog::loadData(){
     if(access("data", 0) != 0){
         mkdir("data");
         return;
     }
-    ifstream ifs("data/password_infos.csv");
+    std::ifstream ifs("data/password_infos.csv");
     if(!ifs){
         return;
     }
-    string line;
+    std::string line;
     while(getline(ifs, line)){
-        istringstream is(line);
-        vector<string> parts;
-        string temp;
-        while(getline(is, temp, ',')){
-            parts.push_back(temp);
-        }
-        for(int i = 0; i < parts.size(); i ++){
-            int num = 0;
-            for(int j = 0; j < parts[i].length(); j ++){
-                if(parts[i][j] == '"'){
-                    num ++;
-                }
-            }
-            if(num %2 == 1){
-                parts[i] += "," + parts[i + 1];
-                parts.erase(parts.begin() + i + 1);
-                i --;
-                continue;
-            } else{
-                parts[i].erase(parts[i].end() - 1);
-                parts[i].erase(parts[i].begin());
-                for(int j = 0; j < parts[i].length(); j ++){
-                    if(parts[i][j] == '"' && parts[i][j + 1] == '"'){
-                        parts[i].erase(parts[i].begin() + j);
-                    }
-                }
-            }
-        }
-        PasswordInfo info(QString::fromStdString(parts[0]), QString::fromStdString(parts[1]), QString::fromStdString(parts[2]));
+        std::vector<QString> datas = PasswordInfo::inputTransform(QString::fromStdString(line));
+        PasswordInfo info(datas[0], datas[1], datas[2]);
         infos.push_back(info);
     }
     ifs.close();
     sort(infos.begin(), infos.end(), [](const PasswordInfo& p1, const PasswordInfo& p2) {
-        if (p1.get_website() == p2.get_website()) {
-            return p1.get_username() < p2.get_username();
+        if (p1.getWebsite() == p2.getWebsite()) {
+            return p1.getUsername() < p2.getUsername();
         }
-        return p1.get_website() < p2.get_website();
+        return p1.getWebsite() < p2.getWebsite();
     });
     int i = 0;
-    while(infos[0].get_website() == ""){
+    while(infos[0].getWebsite() == ""){
         if(i == infos.size()){
             break;
         }
@@ -178,37 +151,26 @@ void HistoryDialog::load_data(){
     }
 }
 
-void HistoryDialog::save_data(int jud){
+void HistoryDialog::saveData(int jud){
     if(access("data/password_infos.csv", 0) == 0 && infos.empty()){
         remove("data/password_infos.csv");
-        save_message(jud);
+        saveMessage(jud);
         close();
     } else{
-        ofstream ofs("data/password_infos.csv");
+        std::ofstream ofs("data/password_infos.csv");
         for(auto info : infos){
-            ofs << transform(info.get_website().toStdString()) << ",";
-            ofs << transform(info.get_username().toStdString()) << ",";
-            ofs << transform(info.get_password().toStdString()) << endl;
+            std::vector<QString> datas = {info.getWebsite(), info.getUsername(), info.getPassword()};
+            ofs << PasswordInfo::outputTransform(datas).toStdString() << std::endl;
         }
         ofs.close();
-        save_message(jud);
+        saveMessage(jud);
     }
 }
 
-string HistoryDialog::transform(string str){
-    for(int i = 0; i < str.length(); i ++){
-        if(str[i] == '"'){
-            str.insert(i, 1, '"');
-            i ++;
-        }
-    }
-    return "\"" + str + "\"";
-}
-
-void HistoryDialog::save_message(int jud){
-    if(jud == 1){
-        QMessageBox::information(this, "成功", "保存成功", "确认");
-    } else if(jud == 0){
+void HistoryDialog::saveMessage(int jud){
+    if(jud == 0){
         QMessageBox::information(this, "成功", "删除成功", "确认");
+    } else if(jud == 1){
+        QMessageBox::information(this, "成功", "保存成功", "确认");
     }
 }

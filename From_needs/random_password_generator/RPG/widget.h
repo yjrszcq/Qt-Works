@@ -15,10 +15,10 @@ public:
     ~Widget();
 
 public slots:
-    void set_length();
-    void set_mark(int jud);
-    void generate_password();
-    void generate_history();
+    void setLength();
+    void setMark(int jud);
+    void generatePassword();
+    void generateHistory();
 
 private:
     int length;

@@ -37,13 +37,13 @@ namespace {
 struct qt_meta_stringdata_CLASSHistoryDialogENDCLASS_t {};
 constexpr auto qt_meta_stringdata_CLASSHistoryDialogENDCLASS = QtMocHelpers::stringData(
     "HistoryDialog",
-    "set_info",
+    "setInfo",
     "",
     "index",
-    "save_info",
-    "delete_info",
-    "load_data",
-    "save_data",
+    "saveInfo",
+    "deleteInfo",
+    "loadData",
+    "saveData",
     "jud"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -90,16 +90,16 @@ Q_CONSTINIT const QMetaObject HistoryDialog::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSHistoryDialogENDCLASS_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<HistoryDialog, std::true_type>,
-        // method 'set_info'
+        // method 'setInfo'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        // method 'save_info'
+        // method 'saveInfo'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'delete_info'
+        // method 'deleteInfo'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'load_data'
+        // method 'loadData'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'save_data'
+        // method 'saveData'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>
     >,
@@ -112,11 +112,11 @@ void HistoryDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         auto *_t = static_cast<HistoryDialog *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->set_info((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 1: _t->save_info(); break;
-        case 2: _t->delete_info(); break;
-        case 3: _t->load_data(); break;
-        case 4: _t->save_data((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 0: _t->setInfo((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 1: _t->saveInfo(); break;
+        case 2: _t->deleteInfo(); break;
+        case 3: _t->loadData(); break;
+        case 4: _t->saveData((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     }

@@ -19,14 +19,13 @@ public:
         history.exec();
     }
 public slots:
-    void set_info(int index);
-    void save_info();
-    void delete_info();
-    void load_data();
-    void save_data(int jud);
+    void setInfo(int index);
+    void saveInfo();
+    void deleteInfo();
+    void loadData();
+    void saveData(int jud);
 private:
-    std::string transform(std::string);
-    void save_message(int);
+    void saveMessage(int);
     QComboBox *cb_choice;
     QLineEdit *le_website;
     QLineEdit *le_username;

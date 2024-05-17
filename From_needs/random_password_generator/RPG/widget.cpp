@@ -13,8 +13,7 @@ Widget::Widget(QWidget *parent)
 {
     this->setWindowTitle("随机密码生成器");
     this->setWindowIcon(QIcon("SZCQ.png"));
-    this->setFixedWidth(280);
-    this->setFixedHeight(125);
+    this->resize(QSize(280, 125));
 
     le_length = new QLineEdit("16");
 
@@ -43,45 +42,45 @@ Widget::Widget(QWidget *parent)
 
     this->setLayout(vbox);
 
-    set_length();
-    set_mark(0);
+    setLength();
+    setMark(0);
 
-    connect(cb_mark, SIGNAL(currentIndexChanged(int)), this, SLOT(set_mark(int)));
-    connect(pb_confirm, SIGNAL(clicked(bool)), this, SLOT(set_length()));
-    connect(pb_confirm, SIGNAL(clicked(bool)), this, SLOT(generate_password()));
-    connect(pb_history, SIGNAL(clicked(bool)), this, SLOT(generate_history()));
+    connect(cb_mark, SIGNAL(currentIndexChanged(int)), this, SLOT(setMark(int)));
+    connect(pb_confirm, SIGNAL(clicked(bool)), this, SLOT(setLength()));
+    connect(pb_confirm, SIGNAL(clicked(bool)), this, SLOT(generatePassword()));
+    connect(pb_history, SIGNAL(clicked(bool)), this, SLOT(generateHistory()));
 }
 
 Widget::~Widget() {}
 
-void Widget::set_length(){
+void Widget::setLength(){
     string length_str = le_length->text().toStdString();
     if(length_str == ""){
-        this->length = 0;
+        length = 0;
     } else{
-        this->length = stoi(length_str);
+        length = stoi(length_str);
     }
 }
 
-void Widget::set_mark(int jud){
+void Widget::setMark(int jud){
     string library_base = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string library_common = "~!@#$%^&*()_+";
     string library_all = "`~!@#$%^&*()-=[]\\;',./_+{}|:\"<>?";
     switch(jud){
-    case 0: this->library = library_base; break;
-    case 1: this->library = library_base + library_common; break;
-    case 2: this->library = library_base + library_all; break;
+    case 0: library = library_base; break;
+    case 1: library = library_base + library_common; break;
+    case 2: library = library_base + library_all; break;
     default: break;
     }
 }
 
-void Widget::generate_password(){
-    if(this->length <= 0 || this->length > 10000000){
+void Widget::generatePassword(){
+    if(length <= 0 || length > 10000000){
         le_password->setText("请输入正确的密码长度！");
     } else{
         srand(time(0));
         string password;
-        for (int i = 0; i < this->length; i++) {
+        for (int i = 0; i < length; i++) {
             int key = rand() % library.length();
             password += library[key];
         }
@@ -90,6 +89,6 @@ void Widget::generate_password(){
     }
 }
 
-void Widget::generate_history(){
+void Widget::generateHistory(){
     HistoryDialog::show(le_password->text());
 }
