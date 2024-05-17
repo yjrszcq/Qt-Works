@@ -13,7 +13,7 @@ class HistoryDialog : public QDialog
 {
     Q_OBJECT
 public:
-    HistoryDialog(QString);
+    HistoryDialog(QString password);
     static void show(QString password){
         HistoryDialog history(password);
         history.exec();
@@ -25,7 +25,7 @@ public slots:
     void loadData();
     void saveData(int jud);
 private:
-    void saveMessage(int);
+    void saveMessage(int jud);
     QComboBox *cb_choice;
     QLineEdit *le_website;
     QLineEdit *le_username;

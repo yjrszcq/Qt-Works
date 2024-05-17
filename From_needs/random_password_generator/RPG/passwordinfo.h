@@ -5,10 +5,10 @@
 class PasswordInfo
 {
 public:
-    PasswordInfo(QString, QString, QString);
-    void setWebsite(QString);
-    void setUsernmae(QString);
-    void setPassword(QString);
+    PasswordInfo(QString website, QString username, QString password);
+    void setWebsite(QString website);
+    void setUsernmae(QString username);
+    void setPassword(QString password);
     QString getWebsite() const;
     QString getUsername() const;
     QString getPassword() const;
