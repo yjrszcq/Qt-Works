@@ -37,12 +37,12 @@ namespace {
 struct qt_meta_stringdata_CLASSWidgetENDCLASS_t {};
 constexpr auto qt_meta_stringdata_CLASSWidgetENDCLASS = QtMocHelpers::stringData(
     "Widget",
-    "set_length",
+    "setLength",
     "",
-    "set_mark",
+    "setMark",
     "jud",
-    "generate_password",
-    "generate_history"
+    "generatePassword",
+    "generateHistory"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -86,14 +86,14 @@ Q_CONSTINIT const QMetaObject Widget::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSWidgetENDCLASS_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<Widget, std::true_type>,
-        // method 'set_length'
+        // method 'setLength'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'set_mark'
+        // method 'setMark'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        // method 'generate_password'
+        // method 'generatePassword'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'generate_history'
+        // method 'generateHistory'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -105,10 +105,10 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         auto *_t = static_cast<Widget *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->set_length(); break;
-        case 1: _t->set_mark((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 2: _t->generate_password(); break;
-        case 3: _t->generate_history(); break;
+        case 0: _t->setLength(); break;
+        case 1: _t->setMark((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 2: _t->generatePassword(); break;
+        case 3: _t->generateHistory(); break;
         default: ;
         }
     }

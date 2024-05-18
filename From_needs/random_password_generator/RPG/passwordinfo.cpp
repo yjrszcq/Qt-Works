@@ -46,6 +46,9 @@ std::vector<QString> PasswordInfo::inputTransform(QString line){
             }
         }
         if(num %2 == 1){
+            if(i == parts.size() - 1){
+                return {};
+            }
             parts[i] += "," + parts[i + 1];
             parts.erase(parts.begin() + i + 1);
             i --;
