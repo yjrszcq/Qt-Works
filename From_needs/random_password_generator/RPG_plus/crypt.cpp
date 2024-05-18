@@ -12,7 +12,7 @@ Crypt::Crypt() {}
 // Base64 encoding and decoding functions
 std::string Crypt::base64_encode(const std::string& input) {
     // Implementation of base64 encoding
-    std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string base64_chars = "z+2O/kFgiStBfXoMlWPu3QpGh450679LJcHYm8UvCaxynIAsrE1eqjVwNdbTKZRD";
     std::string encoded;
     int i = 0;
     int j = 0;
@@ -58,7 +58,7 @@ std::string Crypt::base64_encode(const std::string& input) {
 
 std::string Crypt::base64_decode(const std::string& input) {
     // Implementation of base64 decoding
-    std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string base64_chars = "z+2O/kFgiStBfXoMlWPu3QpGh450679LJcHYm8UvCaxynIAsrE1eqjVwNdbTKZRD";
     std::string decoded;
     int i = 0;
     int j = 0;
@@ -103,7 +103,7 @@ std::string Crypt::base64_decode(const std::string& input) {
 // Base32 encoding and decoding functions
 std::string Crypt::base32_encode(const std::string& input) {
     // Implementation of base32 encoding
-    std::string base32_chars = "ABcdEFghIJklMNopQRstUvwXYz234567";
+    std::string base32_chars = "t6wh7EgAcQNdRsIpF4loXMJvBYzU235k";
     std::string encoded;
     int i = 0;
     int j = 0;
@@ -156,7 +156,7 @@ std::string Crypt::base32_encode(const std::string& input) {
 
 std::string Crypt::base32_decode(const std::string& input) {
     // Implementation of base32 decoding
-    std::string base32_chars = "ABcdEFghIJklMNopQRstUvwXYz234567";
+    std::string base32_chars = "t6wh7EgAcQNdRsIpF4loXMJvBYzU235k";
     std::string decoded;
     int i = 0;
     int j = 0;
