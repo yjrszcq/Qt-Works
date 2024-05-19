@@ -51,7 +51,6 @@ set(OLD_GLOB
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Release/RPG_autogen/mocs_compilation.cpp"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/historydialog.cpp"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/main.cpp"
-  "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/password.cpp"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.cpp"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/widget.cpp"
   )
@@ -75,7 +74,6 @@ set(OLD_GLOB
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Debug/RPG_autogen/moc_predefs.h"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/build/Desktop_Qt_6_7_0_MinGW_64_bit-Release/RPG_autogen/moc_predefs.h"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/historydialog.h"
-  "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/password.h"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/passwordinfo.h"
   "E:/Qt/My_Projects/Works/From_needs/random_password_generator/RPG/widget.h"
   )

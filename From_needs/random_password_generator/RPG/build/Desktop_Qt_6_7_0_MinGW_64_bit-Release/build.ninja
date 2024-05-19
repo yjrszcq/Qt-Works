@@ -200,7 +200,7 @@ build RPG_autogen/timestamp RPG_autogen/mocs_compilation.cpp | ${cmake_ninja_wor
 #############################################
 # Phony custom command for CMakeFiles\RPG_autogen_timestamp_deps
 
-build CMakeFiles/RPG_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/RPG_autogen_timestamp_deps: phony E$:/Qt/Qt_Creater/6.7.0/mingw_64/lib/libQt6Core.a E$:/Qt/Qt_Creater/6.7.0/mingw_64/./bin/uic.exe E$:/Qt/Qt_Creater/6.7.0/mingw_64/./bin/moc.exe E$:/Qt/Qt_Creater/6.7.0/mingw_64/lib/libQt6Widgets.a
+build CMakeFiles/RPG_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/RPG_autogen_timestamp_deps: phony E$:/Qt/Qt_Creater/6.7.0/mingw_64/lib/libQt6Core.a E$:/Qt/Qt_Creater/6.7.0/mingw_64/./bin/moc.exe E$:/Qt/Qt_Creater/6.7.0/mingw_64/./bin/uic.exe E$:/Qt/Qt_Creater/6.7.0/mingw_64/lib/libQt6Widgets.a
 
 
 #############################################
