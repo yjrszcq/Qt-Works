@@ -2,6 +2,8 @@
 #include <sstream>
 #include "crypt.h"
 
+using namespace Crypt;
+
 PasswordInfo::PasswordInfo(QString website, QString username, QString password) {
     this->website = website;
     this->username = username;
@@ -66,7 +68,7 @@ std::vector<QString> PasswordInfo::inputTransform(QString line){
     }
     if(parts.size() == 3){
         std::vector<QString> datas;
-        parts[2] = Crypt::decrypt_password(parts[2]);
+        parts[2] = decrypt_password(parts[2]);
         for(auto part : parts){
             datas.push_back(QString::fromStdString(part));
         }
@@ -87,7 +89,7 @@ QString PasswordInfo::outputTransform(std::vector<QString> datas){
 
 QString PasswordInfo::outputTransformSingle(QString data, bool jud){
     std::string str;
-    jud == true ? str = Crypt::encrypt_password(data.toStdString()) : str = data.toStdString();
+    jud == true ? str = encrypt_password(data.toStdString()) : str = data.toStdString();
     for(int i = 0; i < str.length(); i ++){
         if(str[i] == '"'){
             str.insert(i, 1, '"');
