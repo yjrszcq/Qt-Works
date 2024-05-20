@@ -104,6 +104,7 @@ namespace Crypt{
     std::string base32_encode(const std::string& input) {
         // Implementation of base32 encoding
         std::string base32_chars = "t6wh7EgAcQNdRsIpF4loXMJvBYzU235k";
+        //std::string base32_chars = "~!@#$%^&*() -`[]\\;',./_+{}|:\"<>?";
         std::string encoded;
         int i = 0;
         int j = 0;
@@ -157,6 +158,7 @@ namespace Crypt{
     std::string base32_decode(const std::string& input) {
         // Implementation of base32 decoding
         std::string base32_chars = "t6wh7EgAcQNdRsIpF4loXMJvBYzU235k";
+        //std::string base32_chars = "~!@#$%^&*() -`[]\\;',./_+{}|:\"<>?";
         std::string decoded;
         int i = 0;
         int j = 0;
@@ -210,9 +212,9 @@ namespace Crypt{
 
     // Function to decrypt password using base32 and base64
     std::string decrypt_password(const std::string& encrypted_password) {
-        std::string base32_decoded = base32_decode(encrypted_password);
-        std::string base64_decoded = base64_decode(base32_decoded);
-        return base64_decoded;
-    }
+    std::string base32_decoded = base32_decode(encrypted_password);
+    std::string base64_decoded = base64_decode(base32_decoded);
+    return base64_decoded;
+}
 
 }
