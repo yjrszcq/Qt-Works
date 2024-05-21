@@ -14,8 +14,9 @@ public:
     QString getPassword() const;
     static std::vector<QString> inputTransform(QString line);
     static QString outputTransform(std::vector<QString> datas);
-    static QString outputTransformSingle(QString data, bool jud);
+    static QString outputTransformSingle(QString data, bool jud, QString username);
 private:
+    static bool is_ascii(QString qstr);
     QString website;
     QString username;
     QString password;

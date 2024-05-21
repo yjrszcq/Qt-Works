@@ -34,6 +34,17 @@ QString PasswordInfo::getPassword() const{
     return password;
 }
 
+bool PasswordInfo::is_ascii(QString qstr){
+    std::string str = qstr.toStdString();
+    for(auto c : str){
+        if(!isascii(c)){
+            return false;
+        }
+    }
+    return true;
+}
+
+
 std::vector<QString> PasswordInfo::inputTransform(QString line){
     std::istringstream iss(line.toStdString());
     std::vector<std::string> parts;
@@ -68,7 +79,21 @@ std::vector<QString> PasswordInfo::inputTransform(QString line){
     }
     if(parts.size() == 3){
         std::vector<QString> datas;
-        parts[2] = decrypt_password(parts[2]);
+        if(parts[2][0] != '='){
+            if(parts[1] != "" && is_ascii(QString::fromStdString(parts[1]))){
+                parts[2] = decrypt_password_base32_xor(parts[2], parts[1]);
+            } else{
+                parts[2] = decrypt_password_base32_xor(parts[2], "username");
+            }
+        } else{
+            parts[2].erase(parts[2].begin());
+            if(parts[1] != "" && is_ascii(QString::fromStdString(parts[1]))){
+                parts[2] = decrypt_password_base32_xor(parts[2], parts[1]);
+            } else{
+                parts[2] = decrypt_password_base32_xor(parts[2], "username");
+            }
+        }
+        parts[2].erase(parts[2].begin() + parts[2].length() - 1);
         for(auto part : parts){
             datas.push_back(QString::fromStdString(part));
         }
@@ -76,20 +101,35 @@ std::vector<QString> PasswordInfo::inputTransform(QString line){
     } else{
         return {};
     }
-
 }
 
 QString PasswordInfo::outputTransform(std::vector<QString> datas){
     QString line;
-    line += outputTransformSingle(datas[0], false) + ",";
-    line += outputTransformSingle(datas[1], false) + ",";
-    line += outputTransformSingle(datas[2], true);
+    line += outputTransformSingle(datas[0], false, "") + ",";
+    line += outputTransformSingle(datas[1], false, "") + ",";
+    line += outputTransformSingle(datas[2], true, datas[1]);
     return line;
 }
 
-QString PasswordInfo::outputTransformSingle(QString data, bool jud){
+QString PasswordInfo::outputTransformSingle(QString data, bool jud, QString username){
     std::string str;
-    jud == true ? str = encrypt_password(data.toStdString()) : str = data.toStdString();
+    if(jud == true ){
+        if(is_ascii(data)){
+            if(username != "" && is_ascii(username)){
+                str = encrypt_password_base32_xor(data.toStdString() + "+", username.toStdString());
+            } else{
+                str = encrypt_password_base32_xor(data.toStdString() + "+", "username");
+            }
+        } else{
+            if(username != "" && is_ascii(username)){
+                str = "=" + encrypt_password_base32_xor(data.toStdString() + "+", username.toStdString());
+            } else{
+                str = "=" + encrypt_password_base32_xor(data.toStdString() + "+", "username");
+            }
+        }
+    } else{
+        str = data.toStdString();
+    }
     for(int i = 0; i < str.length(); i ++){
         if(str[i] == '"'){
             str.insert(i, 1, '"');
