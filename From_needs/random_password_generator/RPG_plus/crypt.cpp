@@ -378,7 +378,7 @@ std::string Crypt::encrypt_password_base64_base32(const std::string& password, c
 }
 
 std::string Crypt::encrypt_password_base64_base32_md5(const std::string& password, const std::string& username){
-    return encrypt_password_base64_base32(password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_base_key(username, B32L));
+    return encrypt_password_base64_base32(password, username_to_md5_to_str(username));
 }
 
 //mix_base64_base32_decrypt
@@ -393,7 +393,7 @@ std::string Crypt::decrypt_password_base64_base32(const std::string& encrypted_p
 }
 
 std::string Crypt::decrypt_password_base64_base32_md5(const std::string& encrypted_password, const std::string& username) {
-    return decrypt_password_base64_base32(encrypted_password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_base_key(username, B32L));
+    return decrypt_password_base64_base32(encrypted_password, username_to_md5_to_str(username));
 }
 
 //mix_base64_xor_encrypt
@@ -408,7 +408,7 @@ std::string Crypt::encrypt_password_base64_xor(const std::string& password, cons
 }
 
 std::string Crypt::encrypt_password_base64_xor_md5(const std::string& password, const std::string& username){
-    return encrypt_password_base64_xor(password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_xor_key(username));
+    return encrypt_password_base64_xor(password, username_to_md5_to_str(username));
 }
 
 //mix_base64_xor_decrypt
@@ -423,7 +423,7 @@ std::string Crypt::decrypt_password_base64_xor(const std::string& encrypted_pass
 }
 
 std::string Crypt::decrypt_password_base64_xor_md5(const std::string& encrypted_password, const std::string& username){
-    return decrypt_password_base64_xor(encrypted_password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_xor_key(username));
+    return decrypt_password_base64_xor(encrypted_password, username_to_md5_to_str(username));
 }
 
 //mix_base32_xor_encrypt
@@ -438,7 +438,7 @@ std::string Crypt::encrypt_password_base32_xor(const std::string& password, cons
 }
 
 std::string Crypt::encrypt_password_base32_xor_md5(const std::string& password, const std::string& username) {
-    return encrypt_password_base32_xor(password, username_to_md5_to_base_key(username, B32L), username_to_md5_to_xor_key(username));
+    return encrypt_password_base32_xor(password, username_to_md5_to_str(username));
 }
 
 //mix_base32_xor_decrypt
@@ -453,5 +453,5 @@ std::string Crypt::decrypt_password_base32_xor(const std::string& encrypted_pass
 }
 
 std::string Crypt::decrypt_password_base32_xor_md5(const std::string& encrypted_password, const std::string& username) {
-    return decrypt_password_base32_xor(encrypted_password, username_to_md5_to_base_key(username, B32L), username_to_md5_to_xor_key(username));
+    return decrypt_password_base32_xor(encrypted_password, username_to_md5_to_str(username));
 }
