@@ -312,8 +312,11 @@ std::string Crypt::username_to_md5_to_str(const std::string username) {
     DWORD dwHashDataLength = 0;
     CalculateHash((BYTE *)username.c_str(), username.length(), CALG_MD5, &pHashData, &dwHashDataLength);
     std::string key;
-    for(int i = 0; i < dwHashDataLength; i ++){
+    for(DWORD i = 0; i < dwHashDataLength; i ++){
         key += (char)(((int)pHashData[i]) % (91 - 65) + 65);
+    }
+    if(pHashData != NULL){
+        delete pHashData;
     }
     return key;
 }
