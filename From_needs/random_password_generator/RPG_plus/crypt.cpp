@@ -9,7 +9,7 @@
 
 
 //base64_base32
-std::string Crypt::username_to_base_key(const std::string& username, const DWORD key_length){
+std::string Crypt::username_to_base_key(const std::string& username, const DWORD key_length) {
     if(username.empty()){
         return "";
     }
@@ -306,6 +306,63 @@ std::string Crypt::xor_crypt(const std::string& password, const DWORD& key){
     return std::string(xor_password);
 }
 
+//md5
+std::string Crypt::username_to_md5_to_str(const std::string username) {
+    BYTE* pHashData = NULL;
+    DWORD dwHashDataLength = 0;
+    CalculateHash((BYTE *)username.c_str(), username.length(), CALG_MD5, &pHashData, &dwHashDataLength);
+    std::string key;
+    for(int i = 0; i < dwHashDataLength; i ++){
+        key += (char)(((int)pHashData[i]) % (91 - 65) + 65);
+    }
+    return key;
+}
+
+std::string Crypt::username_to_md5_to_base_key(const std::string username, const DWORD key_length) {
+    return username_to_base_key(username_to_md5_to_str(username), key_length);
+}
+
+DWORD Crypt::username_to_md5_to_xor_key(const std::string username) {
+    return username_to_xor_key(username_to_md5_to_str(username));
+}
+
+BOOL Crypt::CalculateHash(BYTE* pData, DWORD dwDataLength, ALG_ID algHashType, BYTE** ppHashData, DWORD* pdwHashDataLength) {
+    HCRYPTPROV hCryptProv = NULL;
+    HCRYPTHASH hCryptHash = NULL;
+    BYTE* pHashData = NULL;
+    DWORD dwHashDataLength = 0;
+    DWORD dwTemp = 0;
+    BOOL bRet = FALSE;
+    do
+    {
+        bRet = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
+        bRet = CryptCreateHash(hCryptProv, algHashType, NULL, NULL, &hCryptHash);
+        bRet = CryptHashData(hCryptHash, pData, dwDataLength, 0);
+        dwTemp = sizeof(dwHashDataLength);
+        bRet = CryptGetHashParam(hCryptHash, HP_HASHSIZE, (BYTE*)(&dwHashDataLength), &dwTemp, 0);
+        pHashData = new BYTE[dwHashDataLength];
+        RtlZeroMemory(pHashData, dwHashDataLength);
+        bRet = ::CryptGetHashParam(hCryptHash, HP_HASHVAL, pHashData, &dwHashDataLength, 0);
+        *ppHashData = pHashData;
+        *pdwHashDataLength = dwHashDataLength;
+    } while (FALSE);
+
+    if (FALSE == bRet)
+    {
+        if (pHashData)
+        {
+            delete[]pHashData;
+            pHashData = NULL;
+        }
+    }
+    if (hCryptHash || hCryptProv)
+    {
+        CryptDestroyHash(hCryptHash);
+        CryptReleaseContext(hCryptProv, 0);
+    }
+    return bRet;
+}
+
 //mix_base64_base32_encrypt
 std::string Crypt::encrypt_password_base64_base32(const std::string& password, const std::string& base64_key, const std::string& base32_key) {
     std::string base64_encoded = base64_encode(password, base64_key);
@@ -317,6 +374,9 @@ std::string Crypt::encrypt_password_base64_base32(const std::string& password, c
     return encrypt_password_base64_base32(password, username_to_base_key(username, B64L), username_to_base_key(username, B32L));
 }
 
+std::string Crypt::encrypt_password_base64_base32_md5(const std::string& password, const std::string& username){
+    return encrypt_password_base64_base32(password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_base_key(username, B32L));
+}
 
 //mix_base64_base32_decrypt
 std::string Crypt::decrypt_password_base64_base32(const std::string& encrypted_password, const std::string& base64_key, const std::string& base32_key) {
@@ -327,6 +387,10 @@ std::string Crypt::decrypt_password_base64_base32(const std::string& encrypted_p
 
 std::string Crypt::decrypt_password_base64_base32(const std::string& encrypted_password, const std::string& username) {
     return decrypt_password_base64_base32(encrypted_password, username_to_base_key(username, B64L), username_to_base_key(username, B32L));
+}
+
+std::string Crypt::decrypt_password_base64_base32_md5(const std::string& encrypted_password, const std::string& username) {
+    return decrypt_password_base64_base32(encrypted_password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_base_key(username, B32L));
 }
 
 //mix_base64_xor_encrypt
@@ -340,6 +404,10 @@ std::string Crypt::encrypt_password_base64_xor(const std::string& password, cons
     return encrypt_password_base64_xor(password, username_to_base_key(username, B64L), username_to_xor_key(username));
 }
 
+std::string Crypt::encrypt_password_base64_xor_md5(const std::string& password, const std::string& username){
+    return encrypt_password_base64_xor(password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_xor_key(username));
+}
+
 //mix_base64_xor_decrypt
 std::string Crypt::decrypt_password_base64_xor(const std::string& encrypted_password, const std::string& base64_key, const DWORD& xor_key) {
     std::string base64_decoded = base64_decode(encrypted_password, base64_key);
@@ -349,6 +417,10 @@ std::string Crypt::decrypt_password_base64_xor(const std::string& encrypted_pass
 
 std::string Crypt::decrypt_password_base64_xor(const std::string& encrypted_password, const std::string& username) {
     return decrypt_password_base64_xor(encrypted_password, username_to_base_key(username, B64L), username_to_xor_key(username));
+}
+
+std::string Crypt::decrypt_password_base64_xor_md5(const std::string& encrypted_password, const std::string& username){
+    return decrypt_password_base64_xor(encrypted_password, username_to_md5_to_base_key(username, B64L), username_to_md5_to_xor_key(username));
 }
 
 //mix_base32_xor_encrypt
@@ -362,6 +434,10 @@ std::string Crypt::encrypt_password_base32_xor(const std::string& password, cons
     return encrypt_password_base32_xor(password, username_to_base_key(username, B32L), username_to_xor_key(username));
 }
 
+std::string Crypt::encrypt_password_base32_xor_md5(const std::string& password, const std::string& username) {
+    return encrypt_password_base32_xor(password, username_to_md5_to_base_key(username, B32L), username_to_md5_to_xor_key(username));
+}
+
 //mix_base32_xor_decrypt
 std::string Crypt::decrypt_password_base32_xor(const std::string& encrypted_password, const std::string& base32_key, const DWORD& xor_key) {
     std::string base32_decoded = base32_decode(encrypted_password, base32_key);
@@ -371,4 +447,8 @@ std::string Crypt::decrypt_password_base32_xor(const std::string& encrypted_pass
 
 std::string Crypt::decrypt_password_base32_xor(const std::string& encrypted_password, const std::string& username) {
     return decrypt_password_base32_xor(encrypted_password, username_to_base_key(username, B32L), username_to_xor_key(username));
+}
+
+std::string Crypt::decrypt_password_base32_xor_md5(const std::string& encrypted_password, const std::string& username) {
+    return decrypt_password_base32_xor(encrypted_password, username_to_md5_to_base_key(username, B32L), username_to_md5_to_xor_key(username));
 }
