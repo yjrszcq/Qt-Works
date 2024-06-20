@@ -147,10 +147,7 @@ void HistoryDialog::loadData(){
         return;
     }
     sort(infos.begin(), infos.end(), [](const PasswordInfo& p1, const PasswordInfo& p2) {
-        if (p1.getWebsite() == p2.getWebsite()) {
-            return p1.getUsername() < p2.getUsername();
-        }
-        return p1.getWebsite() < p2.getWebsite();
+        return p1 < p2;
     });
     int i = 0;
     while(infos[0].getWebsite() == ""){

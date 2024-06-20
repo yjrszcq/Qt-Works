@@ -10,6 +10,13 @@ PasswordInfo::PasswordInfo(QString website, QString username, QString password) 
     this->password = password;
 }
 
+int operator<(PasswordInfo p1, PasswordInfo p2){
+    if (p1.getWebsite() == p2.getWebsite()) {
+        return p1.getUsername() < p2.getUsername();
+    }
+    return p1.getWebsite() < p2.getWebsite();
+}
+
 void PasswordInfo::setWebsite(QString website){
     this->website = website;
 }

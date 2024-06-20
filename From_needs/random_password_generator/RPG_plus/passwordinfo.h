@@ -6,6 +6,7 @@ class PasswordInfo
 {
 public:
     PasswordInfo(QString website, QString username, QString password);
+    friend int operator<(PasswordInfo infos1, PasswordInfo infos2);
     void setWebsite(QString website);
     void setUsernmae(QString username);
     void setPassword(QString password);
