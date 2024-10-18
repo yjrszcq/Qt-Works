@@ -2,6 +2,7 @@
 #include "setdbdialog.h"
 #include <QMessageBox>
 #include <QCoreApplication>
+#include <QApplication>
 #include <QTimer>
 #include <QEventLoop>
 

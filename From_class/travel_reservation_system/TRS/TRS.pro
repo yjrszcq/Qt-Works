@@ -34,8 +34,6 @@ TRANSLATIONS += \
 CONFIG += lrelease
 CONFIG += embed_translations
 
-INCLUDEPATH += "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Include/"
-
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

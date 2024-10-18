@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 
 LoginDialog::LoginDialog(Servor *servor) {
+    this->setWindowTitle("登录");
     this->servor = servor;
 
     l_option = new QLabel("身份");

@@ -5,6 +5,8 @@
 #include <QVBoxLayout>
 
 SetDbDialog::SetDbDialog(QString host, int port, QString user, QString password, QString database) {
+    this->setWindowTitle("设置数据库连接");
+
     *l = new QLabel[5];
     l[0] = new QLabel("host");
     l[1] = new QLabel("port");
