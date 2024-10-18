@@ -5,6 +5,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,5 +36,8 @@ private:
 private:
     QUrl file_url;
     bool text_changed_flag;
+
+private:
+    bool open_file();
 };
 #endif // MAINWINDOW_H
