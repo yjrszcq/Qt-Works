@@ -42,5 +42,8 @@ public slots:
 private slots:
     void on_tv_display_clicked(const QModelIndex &index);
     void on_cb_option_currentIndexChanged(int index);
+    void on_pb_log_in_clicked();
+    void on_pb_log_out_clicked();
+    void on_pb_sign_up_clicked();
 };
 #endif // MAINWINDOW_H

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "logindialog.h"
+#include "signupdialog.h"
 
 #include <QMessageBox>
 #include <QListView>
@@ -100,6 +101,7 @@ void MainWindow::setUserAvailable(int userPermission){
         ui->le_detail_3->setReadOnly(false);
         ui->le_detail_4->setReadOnly(false);
         ui->le_detail_5->setReadOnly(false);
+        break;
     }
     }
 }
@@ -183,18 +185,6 @@ bool MainWindow::loadData(int flag){
     QList<QHash<QString,QString>> data = servor->getData(flag);
     qDebug("get data succeed");
     opentable(data, flag);
-    // switch(flag){
-    // case 0:case 1:case 2:{
-    //     opentable(data, flag);
-    // }
-    // case 3: case 4:{
-    //     if(servor->getCurrentUser()->getPermission() == User::ROOT){
-    //         opentable(data, flag);
-    //     }
-    // }
-    // default: break;
-    // }
-
 }
 
 void MainWindow::on_tv_display_clicked(const QModelIndex &index)
@@ -309,5 +299,36 @@ void MainWindow::on_cb_option_currentIndexChanged(int index)
 
     loadData(index);
 
+}
+
+
+void MainWindow::on_pb_log_in_clicked()
+{
+    LoginDialog::show(servor);
+    if(servor->getCurrentUser() != NULL && servor->getCurrentUser()->getName() != ""){
+        User::Permission permission = servor->getCurrentUser()->getPermission();
+        setUserAvailable(permission);
+        ui->l_user_display->setText(servor->getCurrentUser()->getName());
+    } else{
+        ui->l_user_display->setText("未登录");
+    }
+
+}
+
+
+void MainWindow::on_pb_log_out_clicked()
+{
+    QMessageBox::StandardButton result = QMessageBox::warning(this, "提示", "是否退出登录？", QMessageBox::Yes | QMessageBox::No);
+    if(result == QMessageBox::Yes){
+        servor->logout();
+        setUserAvailable(0);
+        ui->l_user_display->setText(servor->getCurrentUser()->getName());
+    }
+}
+
+
+void MainWindow::on_pb_sign_up_clicked()
+{
+    SignupDialog::show(servor);
 }
 

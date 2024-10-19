@@ -16,6 +16,7 @@ SOURCES += \
     mysqldb.cpp \
     servor.cpp \
     setdbdialog.cpp \
+    signupdialog.cpp \
     user.cpp
 
 HEADERS += \
@@ -24,6 +25,7 @@ HEADERS += \
     mysqldb.h \
     servor.h \
     setdbdialog.h \
+    signupdialog.h \
     user.h
 
 FORMS += \

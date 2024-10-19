@@ -74,10 +74,12 @@ bool Servor::login(QString name, QString id, int flag){
                 return true;
             } else{
                 QMessageBox::critical(NULL, "critical", "ID错误", QMessageBox::Yes);
+                currentUser = new User(User::VISITOR);
                 return false;
             }
         } else{
             QMessageBox::critical(NULL, "critical", "用户名错误", QMessageBox::Yes);
+            currentUser = new User(User::VISITOR);
             return false;
         }
     } else if(flag == User::ROOT){
@@ -86,12 +88,26 @@ bool Servor::login(QString name, QString id, int flag){
             return true;
         } else{
             QMessageBox::critical(NULL, "critical", "ID错误", QMessageBox::Yes);
+            currentUser = new User(User::VISITOR);
             return false;
         }
     } else{
         QMessageBox::critical(NULL, "critical", "出错啦：Login flag is wrong", QMessageBox::Yes);
+        currentUser = new User(User::VISITOR);
         return false;
     }
+}
+
+void Servor::logout(){
+    delete currentUser;
+    currentUser = new User(User::VISITOR);
+}
+
+void Servor::signup(QString name, QString id){
+    QHash<QString, QString> user;
+    user.insert("custName", name);
+    user.insert("custID", id);
+    db->addData("customers", user);
 }
 
 QList<QHash<QString,QString>> Servor::getData(int flag){

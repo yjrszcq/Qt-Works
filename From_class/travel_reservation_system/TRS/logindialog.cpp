@@ -61,7 +61,7 @@ void LoginDialog::pbLogin(){
     if(rb_user->isChecked() == User::USER){
         jud = servor->login(le_name->text(), le_id->text(), User::USER);
     } else{
-        jud = servor->login(le_name->text(), le_id->text(), User::ROOT);
+        jud = servor->login("root", le_id->text(), User::ROOT);
     }
     if(jud){
         this->close();

@@ -1,7 +1,7 @@
 #include "user.h"
 
 User::User(){
-    name = "";
+    name = "未登录";
     id = "";
     this->permission = VISITOR;
 }
@@ -9,6 +9,9 @@ User::User(Permission permission){ // 构造函数
     name = "";
     id = "";
     this->permission = permission;
+    if(permission == User::VISITOR){
+        name = "未登录";
+    }
 }
 
 User::User(QString name, QString id, Permission permission){
