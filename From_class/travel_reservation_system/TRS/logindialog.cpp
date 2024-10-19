@@ -1,13 +1,14 @@
 #include "logindialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
 
 LoginDialog::LoginDialog(Servor *servor) {
     this->setWindowTitle("登录");
     this->servor = servor;
 
     l_option = new QLabel("身份");
-    l_name = new QLabel("姓名");
+    l_name = new QLabel("用户名");
     l_id = new QLabel("ID");
 
     le_name = new QLineEdit(this);
@@ -20,23 +21,20 @@ LoginDialog::LoginDialog(Servor *servor) {
 
     rb_user->setChecked(true);
 
-    QHBoxLayout *hb_name = new QHBoxLayout();
-    hb_name->addWidget(l_name);
-    hb_name->addWidget(le_name);
+    QGridLayout *grid = new QGridLayout();
+    grid->addWidget(l_name, 0, 0);
+    grid->addWidget(le_name, 0, 1);
+    grid->addWidget(l_id, 1, 0);
+    grid->addWidget(le_id, 1, 1);
 
-    QHBoxLayout *hb_id = new QHBoxLayout();
-    hb_id->addWidget(l_id);
-    hb_id->addWidget(le_id);
-
-    QHBoxLayout *hb_option = new QHBoxLayout();
-    hb_option->addWidget(l_option);
-    hb_option->addWidget(rb_user);
-    hb_option->addWidget(rb_root);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    hbox->addWidget(l_option);
+    hbox->addWidget(rb_user);
+    hbox->addWidget(rb_root);
 
     QVBoxLayout *vbox = new QVBoxLayout();
-    vbox->addLayout(hb_name);
-    vbox->addLayout(hb_id);
-    vbox->addLayout(hb_option);
+    vbox->addLayout(grid);
+    vbox->addLayout(hbox);
     vbox->addWidget(pb_login);
 
     this->setLayout(vbox);

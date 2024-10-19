@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QTimer>
+#include <QRegularExpression>
 
 Servor::Servor(QString host, int port, QString name, QString password, QString database) {
     if(!startServor(host, port, name, password, database)){
@@ -66,7 +67,7 @@ bool Servor::login(QString name, QString id, int flag){
     }
     if(flag == User::USER){
         QHash<QString, QString> user;
-        QString sqlWhere = "where custName = " + name;
+        QString sqlWhere = "where custName = '" + name + "'";
         bool jud = db->getData("customers", user, sqlWhere);
         if(jud){
             if(name == user["custName"] && id == user["custID"]){
@@ -104,10 +105,18 @@ void Servor::logout(){
 }
 
 void Servor::signup(QString name, QString id){
-    QHash<QString, QString> user;
-    user.insert("custName", name);
-    user.insert("custID", id);
-    db->addData("customers", user);
+    if(name != "" || id != ""){
+        QHash<QString, QString> user;
+        user.insert("custName", name);
+        user.insert("custID", id);
+        if(db->addData("customers", user)){
+            QMessageBox::information(NULL, "成功", "注册成功", QMessageBox::Yes);
+        } else{
+            QMessageBox::information(NULL, "失败", "注册失败", QMessageBox::Yes);
+        }
+    } else{
+        QMessageBox::critical(NULL, "错误", "用户名和ID不能为空", QMessageBox::Yes);
+    }
 }
 
 QList<QHash<QString,QString>> Servor::getData(int flag){

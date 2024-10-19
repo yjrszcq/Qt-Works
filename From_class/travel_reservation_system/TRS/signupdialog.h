@@ -3,6 +3,9 @@
 
 #include <servor.h>
 #include <QDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QLineEdit>
 
 class SignupDialog : public QDialog
 {
@@ -16,6 +19,12 @@ public:
 
 private:
     Servor *servor;
+    QLabel *l_name, *l_id;
+    QLineEdit *le_name, *le_id;
+    QPushButton *pb_signup;
+
+public slots:
+    void pbSignup();
 };
 
 #endif // SIGNUPDIALOG_H
