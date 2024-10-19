@@ -6,28 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>351</height>
+    <width>606</width>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
-      <widget class="QWidget" name="page">
+      <widget class="QWidget" name="page_main_1">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QSplitter" name="splitter_2">
+         <widget class="QSplitter" name="splitter_main">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="layoutWidget">
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <layout class="QHBoxLayout" name="hlayout_menu">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <layout class="QHBoxLayout" name="hlayout_menu_left">
               <item>
                <widget class="QPushButton" name="pb_my_reservation">
                 <property name="text">
@@ -65,7 +65,7 @@
              </spacer>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <layout class="QHBoxLayout" name="hlayout_menu_right">
               <item>
                <widget class="QPushButton" name="pb_log_out">
                 <property name="text">
@@ -91,14 +91,14 @@
             </item>
            </layout>
           </widget>
-          <widget class="QSplitter" name="splitter">
+          <widget class="QSplitter" name="splitter_central">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
            <widget class="QWidget" name="layoutWidget">
-            <layout class="QVBoxLayout" name="verticalLayout">
+            <layout class="QVBoxLayout" name="vlayout_table">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
+              <layout class="QHBoxLayout" name="hlayout_option_and_search">
                <item>
                 <widget class="QComboBox" name="cb_option">
                  <item>
@@ -114,6 +114,16 @@
                  <item>
                   <property name="text">
                    <string>客车</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>客户</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>预订</string>
                   </property>
                  </item>
                 </widget>
@@ -141,14 +151,14 @@
               </layout>
              </item>
              <item>
-              <widget class="QTableView" name="tableView"/>
+              <widget class="QTableView" name="tv_display"/>
              </item>
             </layout>
            </widget>
            <widget class="QWidget" name="layoutWidget">
-            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <layout class="QVBoxLayout" name="vlayout_detail">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <layout class="QHBoxLayout" name="hlayout_detail_label">
                <item>
                 <spacer name="hspacer_detail_left">
                  <property name="orientation">
@@ -189,163 +199,67 @@
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <widget class="QWidget" name="page_3">
-                <layout class="QVBoxLayout" name="verticalLayout_5">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="l_flight_num">
-                     <property name="text">
-                      <string>航班号</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="le_flight_num"/>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="l_flight_price">
-                     <property name="text">
-                      <string>价格</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="le_flight_price"/>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="l_flight_num_seats">
-                     <property name="text">
-                      <string>座位总数</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="le_flight_num_seats"/>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="label_flight_num_avail">
-                     <property name="text">
-                      <string>剩余座位</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="l_flight_from_city">
-                     <property name="text">
-                      <string>出发地</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="l_flight_ariv_city">
-                     <property name="text">
-                      <string>到达地</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLineEdit" name="le_flight_num_avail"/>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QLineEdit" name="le_flight_from_city"/>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QLineEdit" name="le_flight_ariv_city"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-               <widget class="QWidget" name="page_4">
-                <layout class="QVBoxLayout" name="verticalLayout_6">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_2">
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="l_hotel_num_avail">
-                     <property name="text">
-                      <string>剩余房间</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="l_hotel_num_rooms">
-                     <property name="text">
-                      <string>房间总数</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="le_hotel_location"/>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="le_hotel_num_rooms"/>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="l_hotel_location">
-                     <property name="text">
-                      <string>所在地</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="l_hotel_price">
-                     <property name="text">
-                      <string>价格</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="le_hotel_price"/>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLineEdit" name="le_hotel_num_avail"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-               <widget class="QWidget" name="page_5">
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="l_bus_num_bus">
+               <widget class="QWidget" name="page">
+                <layout class="QGridLayout" name="gridLayout_4">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_detail_0">
                    <property name="text">
-                    <string>客车总数</string>
+                    <string>detail_0</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="l_bus_price">
-                   <property name="text">
-                    <string>价格</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="le_bus_num_avail"/>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QLineEdit" name="le_bus_location"/>
+                  <widget class="QLineEdit" name="le_detail_0"/>
                  </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="le_bus_num_bus"/>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="l_bus_location">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_detail_1">
                    <property name="text">
-                    <string>所在地</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="l_bus_num_avail">
-                   <property name="text">
-                    <string>剩余可选</string>
+                    <string>detail_1</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QLineEdit" name="le_bus_price"/>
+                  <widget class="QLineEdit" name="le_detail_1"/>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="l_detail_2">
+                   <property name="text">
+                    <string>detail_2</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_detail_2"/>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="l_detail_3">
+                   <property name="text">
+                    <string>detail_3</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="le_detail_3"/>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="l_detail_4">
+                   <property name="text">
+                    <string>detail_4</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="le_detail_4"/>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="l_detail_5">
+                   <property name="text">
+                    <string>detail_5</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="le_detail_5"/>
                  </item>
                 </layout>
                </widget>
@@ -365,7 +279,45 @@
               </spacer>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <layout class="QHBoxLayout" name="hlayout_set_item">
+               <item>
+                <spacer name="hspacer_set_item">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_insert">
+                 <property name="text">
+                  <string>添加</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_update">
+                 <property name="text">
+                  <string>修改</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_delete">
+                 <property name="text">
+                  <string>删除</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hlayout_reservation">
                <item>
                 <spacer name="hspacer_reservation">
                  <property name="orientation">
@@ -395,7 +347,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_2"/>
+      <widget class="QWidget" name="page_main_2"/>
      </widget>
     </item>
    </layout>
@@ -405,7 +357,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>596</width>
+     <width>606</width>
      <height>17</height>
     </rect>
    </property>

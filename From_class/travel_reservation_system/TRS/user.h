@@ -9,12 +9,12 @@ public:
     User();
     User(Permission permission); // 构造函数
     User(QString name, QString id, Permission permission);
-    void set_name(QString name); // 设置用户名
-    void set_id(QString id); // 设置密码
-    void set_permission(Permission permission = USER); // 设置权限
-    QString get_name(); // 获取用户名
-    QString get_id(); // 获取密码
-    Permission get_permission(); // 获取权限
+    void setName(QString name); // 设置用户名
+    void setId(QString id); // 设置密码
+    void setPermission(Permission permission = USER); // 设置权限
+    QString getName(); // 获取用户名
+    QString getId(); // 获取密码
+    Permission getPermission(); // 获取权限
 private:
     QString name; // 用户名
     QString id; // 密码

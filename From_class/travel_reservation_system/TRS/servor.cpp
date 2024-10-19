@@ -93,3 +93,43 @@ bool Servor::login(QString name, QString id, int flag){
         return false;
     }
 }
+
+QList<QHash<QString,QString>> Servor::getData(int flag){
+    switch(flag){
+    case 0:{
+        QList<QHash<QString,QString>> data;
+        db->getData("flights", data, "");
+        return data;
+    }
+    case 1:{
+        QList<QHash<QString,QString>> data;
+        db->getData("hotels", data, "");
+        return data;
+    }
+    case 2:{
+        QList<QHash<QString,QString>> data;
+        db->getData("bus", data, "");
+        return data;
+    }
+    case 3: {
+        QList<QHash<QString,QString>> data;
+        db->getData("customers", data, "");
+        return data;
+    }
+    case 4:{
+        QList<QHash<QString,QString>> data;
+        db->getData("reservations", data, "");
+        return data;
+    }
+    default: {
+        QList<QHash<QString,QString>> data;
+        QMessageBox::critical(NULL, "错误", "未知数据请求", QMessageBox::Yes);
+        return data;
+    }
+    }
+
+}
+
+User* Servor::getCurrentUser(){
+    return currentUser;
+}

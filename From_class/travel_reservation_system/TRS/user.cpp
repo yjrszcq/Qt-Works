@@ -17,26 +17,26 @@ User::User(QString name, QString id, Permission permission){
     this->permission = permission;
 }
 
-void User::set_name(QString name){ // 设置用户名
+void User::setName(QString name){ // 设置用户名
     this->name = name;
 }
 
-void User::set_id(QString id){ // 设置密码
+void User::setId(QString id){ // 设置密码
     this->id = id;
 }
 
-void User::set_permission(Permission permission){ // 设置权限
+void User::setPermission(Permission permission){ // 设置权限
     this->permission = permission;
 }
 
-QString User::get_name(){ // 获取用户名
+QString User::getName(){ // 获取用户名
     return name;
 }
 
-QString User::get_id(){ // 获取密码
+QString User::getId(){ // 获取密码
     return id;
 }
 
-User::Permission User::get_permission(){ // 获取权限
+User::Permission User::getPermission(){ // 获取权限
     return permission;
 }

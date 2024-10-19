@@ -7,6 +7,7 @@
 #include <QObject>
 #include <bits/stdc++.h>
 #include <QString>
+#include <QList>
 using namespace std;
 
 class Servor : public QObject
@@ -17,7 +18,8 @@ public:
     Servor(QString host = "localhost", int port = 3306, QString name = "root", QString password = "1234", QString database = "travel_reservation");
     bool connectToDatabase(QString host, int port, QString name, QString password, QString database);
     bool login(QString name, QString id, int flag);
-
+    QList<QHash<QString,QString>> getData(int flag);
+    User* getCurrentUser();
 private:
     MysqlDb *db;
     User *currentUser;
