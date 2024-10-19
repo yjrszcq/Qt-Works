@@ -18,7 +18,7 @@ private:
     QPushButton *pb_yes, *pb_no;
 
 signals:
-    void dataSent(QString host, int port, QString user, QString password, QString database, bool flag);
+    void dbSetSent(QString host, int port, QString user, QString password, QString database, bool flag);
 
 public slots:
     void pbYes();

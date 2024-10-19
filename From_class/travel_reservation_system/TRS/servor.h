@@ -22,9 +22,13 @@ private:
     MysqlDb *db;
     User *currentUser;
     void delay(int milliseconds);
+    bool startServor(QString host, int port, QString name, QString password, QString database);
 
 public slots:
-    void dataReceive(QString host, int port, QString name, QString password, QString database, bool flag);
+    void dbSetReceive(QString host, int port, QString name, QString password, QString database, bool flag);
+
+signals:
+    void exitSent(int flag);
 };
 
 #endif // SERVOR_H

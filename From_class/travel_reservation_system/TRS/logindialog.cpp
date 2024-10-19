@@ -17,7 +17,6 @@ LoginDialog::LoginDialog(Servor *servor) {
     rb_root = new QRadioButton("管理员");
 
     pb_login = new QPushButton("登录");
-    //pb_signin = new QPushButton("注册");
 
     rb_user->setChecked(true);
 
@@ -58,22 +57,17 @@ void LoginDialog::nameShow(){
 }
 
 void LoginDialog::pbLogin(){
+    bool jud = false;
     if(rb_user->isChecked() == User::USER){
-        bool jud = servor->login(le_name->text(), le_id->text(), User::USER);
-        if(jud){
-            this->close();
-        } else{
-            le_name->setText("");
-            le_id->setText("");
-        }
+        jud = servor->login(le_name->text(), le_id->text(), User::USER);
     } else{
-        bool jud = servor->login(le_name->text(), le_id->text(), User::ROOT);
-        if(jud){
-            this->close();
-        } else{
-            le_name->setText("");
-            le_id->setText("");
-        }
+        jud = servor->login(le_name->text(), le_id->text(), User::ROOT);
+    }
+    if(jud){
+        this->close();
+    } else{
+        le_name->setText("");
+        le_id->setText("");
     }
 }
 

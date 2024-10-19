@@ -20,7 +20,7 @@ public:
         ld.exec();
     }
 private:
-    QPushButton * pb_login, *pb_signin;
+    QPushButton * pb_login;
     QLabel *l_option, *l_name, *l_id;
     QLineEdit *le_name, *le_id;
     QRadioButton *rb_user, *rb_root;

@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     if(!connectToServor()){
         QMessageBox::critical(this , "错误", "Servor连接失败", QMessageBox::Yes);
-        QApplication::exit(0);
+        QCoreApplication::exit(2);
     }
 
 }
@@ -23,9 +23,14 @@ MainWindow::~MainWindow()
     delete servor;
 }
 
+void MainWindow::exitReceive(int flag){
+    QCoreApplication::exit(flag);
+}
+
 bool MainWindow::connectToServor(){
     servor = NULL;
     servor = new Servor();
+    connect(servor, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
     if(servor != NULL){
         return true;
     } else{

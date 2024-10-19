@@ -2,11 +2,15 @@
 #include "setdbdialog.h"
 #include <QMessageBox>
 #include <QCoreApplication>
-#include <QApplication>
 #include <QTimer>
-#include <QEventLoop>
 
 Servor::Servor(QString host, int port, QString name, QString password, QString database) {
+    if(!startServor(host, port, name, password, database)){
+        QTimer::singleShot(0, this, [this](){ emit exitSent(1); });
+    }
+}
+
+bool Servor::startServor(QString host, int port, QString name, QString password, QString database){
     connectToDatabase(host, port, name, password, database);
     if(db == NULL){
         QMessageBox *msg = new QMessageBox(QMessageBox::Critical, "错误", "数据库连接出错，是否重新连接数据库？", QMessageBox::Yes | QMessageBox::No, NULL);
@@ -15,26 +19,25 @@ Servor::Servor(QString host, int port, QString name, QString password, QString d
             switch(msg->exec()){
             case QMessageBox::Yes: {
                 sdd->exec();
-                connect(sdd, SIGNAL(dataSent(QString, int, QString, QString, QString, bool)), this, SLOT(dataReceive(QString, int, QString, QString, QString, bool)));
+                connect(sdd, SIGNAL(dbSetSent(QString, int, QString, QString, QString, bool)), this, SLOT(dbSetReceive(QString, int, QString, QString, QString, bool)));
                 sdd->exec();
-                connect(sdd, SIGNAL(dataSent(QString, int, QString, QString, QString, bool)), this, SLOT(dataReceive(QString, int, QString, QString, QString, bool)));
+                connect(sdd, SIGNAL(dbSetSent(QString, int, QString, QString, QString, bool)), this, SLOT(dbSetReceive(QString, int, QString, QString, QString, bool)));
                 break;
             }
-            case QMessageBox::No: QCoreApplication::exit(0); break;
-            default : QCoreApplication::exit(0); break;
+            case QMessageBox::No: {delete msg; delete sdd; ; return false;}
+            default: {delete msg; delete sdd; emit ; return false;}
             }
         }
         delete msg;
         delete sdd;
     }
-    currentUser = NULL;
+    currentUser = new User(User::VISITOR);
+    return true;
 }
 
-void Servor::dataReceive(QString host, int port, QString name, QString password, QString database, bool flag){
+void Servor::dbSetReceive(QString host, int port, QString name, QString password, QString database, bool flag){
     if(flag){
         connectToDatabase(host, port, name, password, database);
-    } else{
-        QCoreApplication::exit(0);
     }
 }
 

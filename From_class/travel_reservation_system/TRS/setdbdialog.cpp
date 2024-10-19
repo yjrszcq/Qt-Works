@@ -46,11 +46,11 @@ SetDbDialog::SetDbDialog(QString host, int port, QString user, QString password,
 }
 
 void SetDbDialog::pbYes(){
-    emit dataSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), true);
+    emit dbSetSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), true);
     this->close();
 }
 
 void SetDbDialog::pbNo(){
-    emit dataSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), false);
+    emit dbSetSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), false);
     this->close();
 }

@@ -31,5 +31,8 @@ public:
 
 private:
     bool connectToServor();
+
+public slots:
+    void exitReceive(int flag);
 };
 #endif // MAINWINDOW_H
