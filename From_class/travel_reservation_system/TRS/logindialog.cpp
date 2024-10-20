@@ -21,6 +21,8 @@ LoginDialog::LoginDialog(Server *server) {
 
     rb_user->setChecked(true);
 
+    le_id->setEchoMode(QLineEdit::Password);
+
     QGridLayout *grid = new QGridLayout();
     grid->addWidget(l_name, 0, 0);
     grid->addWidget(le_name, 0, 1);
