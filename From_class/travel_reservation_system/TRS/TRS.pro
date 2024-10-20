@@ -10,19 +10,27 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    bus.cpp \
+    flight.cpp \
+    hotel.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
     mysqldb.cpp \
+    reservation.cpp \
     server.cpp \
     setdbdialog.cpp \
     signupdialog.cpp \
     user.cpp
 
 HEADERS += \
+    bus.h \
+    flight.h \
+    hotel.h \
     logindialog.h \
     mainwindow.h \
     mysqldb.h \
+    reservation.h \
     server.h \
     setdbdialog.h \
     signupdialog.h \
