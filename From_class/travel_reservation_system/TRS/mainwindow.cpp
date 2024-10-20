@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    if(!connectToServor()){
-        QMessageBox::critical(this , "错误", "Servor连接失败", QMessageBox::Yes);
+    if(!connectToServer()){
+        QMessageBox::critical(this , "错误", "Server连接失败", QMessageBox::Yes);
         QCoreApplication::exit(2);
     }
     ui->tv_display->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -25,17 +25,30 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete servor;
+    delete server;
 }
 
 void MainWindow::exitReceive(int flag){
     QCoreApplication::exit(flag);
 }
 
-bool MainWindow::connectToServor(){
-    servor = new Servor();
-    connect(servor, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
-    if(servor != NULL){
+void MainWindow::userReceive(User* currentUser){
+    User::Permission permission = currentUser->getPermission();
+    setUserAvailable(permission);
+    ui->cb_option->setCurrentIndex(0);
+    if(currentUser->getName() != ""){
+        ui->l_user_display->setText(currentUser->getName());
+    } else{
+        ui->l_user_display->setText("未登录");
+    }
+
+}
+
+bool MainWindow::connectToServer(){
+    server = new Server();
+    connect(server, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
+    connect(server, SIGNAL(userSent(User*)), this, SLOT(userReceive(User*)));
+    if(server != NULL){
         return true;
     } else{
         return false;
@@ -182,7 +195,7 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
 }
 
 bool MainWindow::loadData(int flag){
-    QList<QHash<QString,QString>> data = servor->getData(flag);
+    QList<QHash<QString,QString>> data = server->getData(flag);
     qDebug("get data succeed");
     opentable(data, flag);
 }
@@ -304,15 +317,7 @@ void MainWindow::on_cb_option_currentIndexChanged(int index)
 
 void MainWindow::on_pb_log_in_clicked()
 {
-    LoginDialog::show(servor);
-    if(servor->getCurrentUser() != NULL && servor->getCurrentUser()->getName() != ""){
-        User::Permission permission = servor->getCurrentUser()->getPermission();
-        setUserAvailable(permission);
-        ui->l_user_display->setText(servor->getCurrentUser()->getName());
-    } else{
-        ui->l_user_display->setText("未登录");
-    }
-
+    LoginDialog::show(server);
 }
 
 
@@ -320,15 +325,13 @@ void MainWindow::on_pb_log_out_clicked()
 {
     QMessageBox::StandardButton result = QMessageBox::warning(this, "提示", "是否退出登录？", QMessageBox::Yes | QMessageBox::No);
     if(result == QMessageBox::Yes){
-        servor->logout();
-        setUserAvailable(0);
-        ui->l_user_display->setText(servor->getCurrentUser()->getName());
+        server->logout();
     }
 }
 
 
 void MainWindow::on_pb_sign_up_clicked()
 {
-    SignupDialog::show(servor);
+    SignupDialog::show(server);
 }
 

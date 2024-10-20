@@ -3,9 +3,9 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 
-SignupDialog::SignupDialog(Servor *servor) {
+SignupDialog::SignupDialog(Server *server) {
     this->setWindowTitle("注册");
-    this->servor = servor;
+    this->server = server;
 
     l_name = new QLabel("用户名");
     l_id = new QLabel("ID");
@@ -31,6 +31,6 @@ SignupDialog::SignupDialog(Servor *servor) {
 }
 
 void SignupDialog::pbSignup(){
-    servor->signup(le_name->text(), le_id->text());
+    server->signup(User(le_name->text(), le_id->text(), User::USER));
     this->close();
 }

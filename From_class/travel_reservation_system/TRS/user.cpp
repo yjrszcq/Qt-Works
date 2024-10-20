@@ -11,6 +11,9 @@ User::User(Permission permission){ // 构造函数
     this->permission = permission;
     if(permission == User::VISITOR){
         name = "未登录";
+    } else if(permission == User::ROOT){
+        name = "root";
+        id = "1234";
     }
 }
 

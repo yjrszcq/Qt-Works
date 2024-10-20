@@ -1,7 +1,7 @@
 #ifndef SIGNUPDIALOG_H
 #define SIGNUPDIALOG_H
 
-#include <servor.h>
+#include <server.h>
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
@@ -11,14 +11,14 @@ class SignupDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SignupDialog(Servor *servor);
-    static void show(Servor *servor){
-        SignupDialog sd(servor);
+    SignupDialog(Server *server);
+    static void show(Server *server){
+        SignupDialog sd(server);
         sd.exec();
     }
 
 private:
-    Servor *servor;
+    Server *server;
     QLabel *l_name, *l_id;
     QLineEdit *le_name, *le_id;
     QPushButton *pb_signup;

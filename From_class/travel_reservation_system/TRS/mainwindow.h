@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "mysqldb.h"
-#include "servor.h"
+#include "server.h"
 
 #include <QMainWindow>
 #include <QDebug>
@@ -28,17 +28,20 @@ private:
 
 public:
     MysqlDb* db = NULL;
-    Servor *servor = NULL;
+    Server *server = NULL;
 
 private:
     QStandardItemModel *model = NULL;
-    bool connectToServor();
+    bool connectToServer();
     void initializeModel(int flag);
     void opentable(QList<QHash<QString,QString>> data, int flag);
     bool loadData(int flag);
     void setUserAvailable(int flag);
+
 public slots:
     void exitReceive(int flag);
+    void userReceive(User* currentUser);
+
 private slots:
     void on_tv_display_clicked(const QModelIndex &index);
     void on_cb_option_currentIndexChanged(int index);

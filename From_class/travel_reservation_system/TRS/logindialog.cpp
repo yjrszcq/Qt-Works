@@ -3,9 +3,9 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 
-LoginDialog::LoginDialog(Servor *servor) {
+LoginDialog::LoginDialog(Server *server) {
     this->setWindowTitle("登录");
-    this->servor = servor;
+    this->server = server;
 
     l_option = new QLabel("身份");
     l_name = new QLabel("用户名");
@@ -57,9 +57,9 @@ void LoginDialog::nameShow(){
 void LoginDialog::pbLogin(){
     bool jud = false;
     if(rb_user->isChecked() == User::USER){
-        jud = servor->login(le_name->text(), le_id->text(), User::USER);
+        jud = server->login(User(le_name->text(), le_id->text(), User::USER));
     } else{
-        jud = servor->login("root", le_id->text(), User::ROOT);
+        jud = server->login(User(User::ROOT));
     }
     if(jud){
         this->close();

@@ -1,7 +1,7 @@
 #ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 
-#include "servor.h"
+#include "server.h"
 
 #include <QDialog>
 #include <QPushButton>
@@ -14,9 +14,9 @@ class LoginDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LoginDialog(Servor *servor);
-    static void show(Servor *servor){
-        LoginDialog ld(servor);
+    LoginDialog(Server *server);
+    static void show(Server *server){
+        LoginDialog ld(server);
         ld.exec();
     }
 private:
@@ -31,7 +31,7 @@ public slots:
     void nameShow();
 
 private:
-    Servor *servor;
+    Server *server;
 };
 
 #endif // LOGINDIALOG_H

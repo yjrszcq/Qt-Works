@@ -14,7 +14,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     mysqldb.cpp \
-    servor.cpp \
+    server.cpp \
     setdbdialog.cpp \
     signupdialog.cpp \
     user.cpp
@@ -23,7 +23,7 @@ HEADERS += \
     logindialog.h \
     mainwindow.h \
     mysqldb.h \
-    servor.h \
+    server.h \
     setdbdialog.h \
     signupdialog.h \
     user.h
