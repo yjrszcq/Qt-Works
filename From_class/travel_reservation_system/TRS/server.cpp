@@ -6,8 +6,10 @@
 #include <QRegularExpression>
 
 Server::Server(QString host, int port, QString name, QString password, QString database) {
-    if(!startServer(host, port, name, password, database)){
-        QTimer::singleShot(0, this, [this](){ emit exitSent(1); });
+    status = Server::UNAVAILABLE;
+    if(startServer(host, port, name, password, database)){
+        status = Server::AVAILABLE;
+        // QTimer::singleShot(0, this, [this](){ emit exitSent(1); });
     }
 }
 
@@ -23,8 +25,8 @@ bool Server::startServer(QString host, int port, QString name, QString password,
                 sdd->exec();
                 break;
             }
-            case QMessageBox::No: {delete msg; delete sdd; ; return false;}
-            default: {delete msg; delete sdd; emit ; return false;}
+            case QMessageBox::No: {delete msg; delete sdd; return false;}
+            default: {delete msg; delete sdd; return false;}
             }
         }
         delete msg;
@@ -162,4 +164,8 @@ QList<QHash<QString,QString>> Server::getData(int flag){
 
 User* Server::getCurrentUser(){
     return currentUser;
+}
+
+Server::Status Server::getStatus(){
+    return status;
 }

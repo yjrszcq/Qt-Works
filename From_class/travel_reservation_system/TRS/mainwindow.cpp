@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     if(!connectToServer()){
-        QMessageBox::critical(this , "错误", "Server连接失败", QMessageBox::Yes);
+        QMessageBox::critical(this , "错误", "Server连接失败，程序关闭", QMessageBox::Yes);
         QCoreApplication::exit(2);
     }
     ui->tv_display->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -45,10 +45,10 @@ void MainWindow::userReceive(User* currentUser){
 }
 
 bool MainWindow::connectToServer(){
+    //connect(server, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
     server = new Server();
-    connect(server, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
     connect(server, SIGNAL(userSent(User*)), this, SLOT(userReceive(User*)));
-    if(server != NULL){
+    if(server != NULL && server->getStatus() == Server::AVAILABLE){
         return true;
     } else{
         return false;
@@ -129,7 +129,7 @@ void MainWindow::initializeModel(int flag){
     case 1: model->setHorizontalHeaderLabels({"所在地", "价格", "房间总数", "剩余房间"}); break;
     case 2: model->setHorizontalHeaderLabels({"所在地", "价格", "客车总数", "剩余可选"}); break;
     case 3: model->setHorizontalHeaderLabels({"客户", "ID"}); break;
-    case 4: model->setHorizontalHeaderLabels({"客户", "预订类型", "预订ID"}); break;
+    case 4: model->setHorizontalHeaderLabels({"客户", "预订类型", "预订内容", "预订可用性", "预订ID"}); break;
     }
 }
 
@@ -185,6 +185,8 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
             QList<QStandardItem*> row;
             row.append(new QStandardItem(data[i]["custName"]));
             row.append(new QStandardItem(data[i]["resvType"]));
+            row.append(new QStandardItem(data[i]["resvContent"]));
+            row.append(new QStandardItem(data[i]["resvAvail"]));
             row.append(new QStandardItem(data[i]["resvKey"]));
             model->appendRow(row);
         }
@@ -295,16 +297,16 @@ void MainWindow::on_cb_option_currentIndexChanged(int index)
     case 4:{
         ui->l_detail_0->setText("客户"); ui->l_detail_0->show();
         ui->l_detail_1->setText("预订类型"); ui->l_detail_1->show();
-        ui->l_detail_2->setText("预订ID"); ui->l_detail_2->show();
-        ui->l_detail_3->hide();
-        ui->l_detail_4->hide();
+        ui->l_detail_2->setText("预订内容"); ui->l_detail_2->show();
+        ui->l_detail_3->setText("预订可用性"); ui->l_detail_3->show();
+        ui->l_detail_4->setText("预订ID"); ui->l_detail_4->show();
         ui->l_detail_5->hide();
 
         ui->le_detail_0->clear(); ui->le_detail_0->show();
         ui->le_detail_1->clear(); ui->le_detail_1->show();
         ui->le_detail_2->clear(); ui->le_detail_2->show();
-        ui->le_detail_3->clear(); ui->le_detail_3->hide();
-        ui->le_detail_4->clear(); ui->le_detail_4->hide();
+        ui->le_detail_3->clear(); ui->le_detail_3->show();
+        ui->le_detail_4->clear(); ui->le_detail_4->show();
         ui->le_detail_5->clear(); ui->le_detail_5->hide();
         break;
     }
