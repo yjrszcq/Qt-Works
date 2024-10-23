@@ -9,10 +9,10 @@ LoginDialog::LoginDialog(Server *server) {
 
     l_option = new QLabel("身份");
     l_name = new QLabel("用户名");
-    l_id = new QLabel("ID");
+    l_password = new QLabel("密码");
 
     le_name = new QLineEdit(this);
-    le_id = new QLineEdit(this);
+    le_password = new QLineEdit(this);
 
     rb_user = new QRadioButton("用户");
     rb_root = new QRadioButton("管理员");
@@ -21,13 +21,13 @@ LoginDialog::LoginDialog(Server *server) {
 
     rb_user->setChecked(true);
 
-    le_id->setEchoMode(QLineEdit::Password);
+    le_password->setEchoMode(QLineEdit::Password);
 
     QGridLayout *grid = new QGridLayout();
     grid->addWidget(l_name, 0, 0);
     grid->addWidget(le_name, 0, 1);
-    grid->addWidget(l_id, 1, 0);
-    grid->addWidget(le_id, 1, 1);
+    grid->addWidget(l_password, 1, 0);
+    grid->addWidget(le_password, 1, 1);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->addWidget(l_option);
@@ -59,15 +59,15 @@ void LoginDialog::nameShow(){
 void LoginDialog::pbLogin(){
     bool jud = false;
     if(rb_user->isChecked() == User::USER){
-        jud = server->login(User(le_name->text(), le_id->text(), User::USER));
+        jud = server->login(User(le_name->text(), "", le_password->text(), User::USER));
     } else{
-        jud = server->login(User(User::ROOT));
+        jud = server->login(User("root", "root", le_password->text(), User::ROOT));
     }
     if(jud){
         this->close();
     } else{
         le_name->setText("");
-        le_id->setText("");
+        le_password->setText("");
     }
 }
 

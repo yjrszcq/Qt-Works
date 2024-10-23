@@ -21,8 +21,8 @@ public:
     }
 private:
     QPushButton * pb_login;
-    QLabel *l_option, *l_name, *l_id;
-    QLineEdit *le_name, *le_id;
+    QLabel *l_option, *l_name, *l_password;
+    QLineEdit *le_name, *le_password;
     QRadioButton *rb_user, *rb_root;
 
 public slots:

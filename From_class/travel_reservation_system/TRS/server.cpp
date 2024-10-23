@@ -70,12 +70,12 @@ bool Server::login(User tempUser){
         QString sqlWhere = "where custName = '" + tempUser.getName() + "'";
         bool jud = db->getData("customers", user, sqlWhere);
         if(jud){
-            if(tempUser.getName() == user["custName"] && tempUser.getId() == user["custID"]){
-                currentUser = new User(tempUser.getName(), tempUser.getId(), User::USER);
+            if(tempUser.getName() == user["custName"] && tempUser.getPassword() == user["custPW"]){
+                currentUser = new User(user["custName"], user["custID"], user["custPW"], User::USER);
                 emit userSent(currentUser);
                 return true;
             } else{
-                QMessageBox::critical(NULL, "critical", "ID错误", QMessageBox::Yes);
+                QMessageBox::critical(NULL, "critical", "密码错误", QMessageBox::Yes);
                 currentUser = new User(User::VISITOR);
                 emit userSent(currentUser);
                 return false;
@@ -87,12 +87,12 @@ bool Server::login(User tempUser){
             return false;
         }
     } else if(tempUser.getPermission() == User::ROOT){
-        if(tempUser.getId() == "1234"){
+        if(tempUser.getPassword() == "1234"){
             currentUser = new User(User::ROOT);
             emit userSent(currentUser);
             return true;
         } else{
-            QMessageBox::critical(NULL, "critical", "ID错误", QMessageBox::Yes);
+            QMessageBox::critical(NULL, "critical", "密码错误", QMessageBox::Yes);
             currentUser = new User(User::VISITOR);
             emit userSent(currentUser);
             return false;
@@ -106,23 +106,138 @@ bool Server::login(User tempUser){
 }
 
 void Server::logout(){
-    delete currentUser;
-    currentUser = new User(User::VISITOR);
-    emit userSent(currentUser);
+    QMessageBox::StandardButton result = QMessageBox::warning(NULL, "提示", "是否退出登录？", QMessageBox::Yes | QMessageBox::No);
+    if(result == QMessageBox::Yes){
+        delete currentUser;
+        currentUser = new User(User::VISITOR);
+        emit userSent(currentUser);
+    }
 }
 
 void Server::signup(User tempUser){
-    if(tempUser.getName() != "" || tempUser.getId() != ""){
+    if(tempUser.getName() != "" && tempUser.getId() != "" && tempUser.getPassword() != ""){
         QHash<QString, QString> user;
         user.insert("custName", tempUser.getName());
         user.insert("custID", tempUser.getId());
+        user.insert("custPW", tempUser.getPassword());
         if(db->addData("customers", user)){
             QMessageBox::information(NULL, "成功", "注册成功", QMessageBox::Yes);
         } else{
             QMessageBox::information(NULL, "失败", "注册失败", QMessageBox::Yes);
         }
     } else{
-        QMessageBox::critical(NULL, "错误", "用户名和ID不能为空", QMessageBox::Yes);
+        QMessageBox::critical(NULL, "错误", "用户名和ID和密码不能为空", QMessageBox::Yes);
+    }
+}
+
+bool Server::reserve(Reservation tempResv){
+    if(tempResv.getUserName() != "" && tempResv.getResvType() >= 0 && tempResv.getResvType() <= 2 && tempResv.getResvContent() != ""){
+        QHash<QString, QString> resv;
+        resv.insert("custName", tempResv.getUserName());
+        resv.insert("resvType", QString::number(tempResv.getResvType()));
+        resv.insert("resvContent", tempResv.getResvContent());
+        resv.insert("resvAvail", QString::number(tempResv.getResvAvail()));
+        resv.insert("resvKey", tempResv.getResvKey());
+        if(!db->addData("reservations", resv)){
+            QMessageBox::information(NULL, "失败", "预订失败-1", QMessageBox::Yes);
+            return false;
+        }
+        QString sql_where_delete = "where resvKey = '" + resv["resvKey"] + "'";
+        // 飞机，宾馆，客车的剩余数 -1
+        switch(tempResv.getResvType()){
+        case Reservation::FLIGHT: {
+            QHash<QString, QString> flight;
+            // 查询航班信息
+            QString sql_where = "where flightNum = '" + tempResv.getResvContent() + "'";
+            bool jud_get_data = db->getData("flights", flight, sql_where);
+            if(!jud_get_data){
+                QMessageBox::critical(NULL, "critical", "该航班不存在, 预订失败-2", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 剩余座位 -1
+            bool ok;
+            int avail = flight["numAvail"].toInt(&ok, 10) - 1;
+            if(avail < 0){
+                QMessageBox::critical(NULL, "critical", "该航班已满座, 预订失败-3", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 更新航班信息
+            flight.insert("numAvail", QString::number(avail));
+            bool jud_update_data = db->updateData("flights", flight, sql_where);
+            if(!jud_update_data){
+                QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            break;
+        }
+        case Reservation::HOTEL:{
+            QHash<QString, QString> hotel;
+            // 查询宾馆信息
+            QString sql_where = "where location = '" + tempResv.getResvContent() + "'";
+            bool jud_get_data = db->getData("hotels", hotel, sql_where);
+            if(!jud_get_data){
+                QMessageBox::critical(NULL, "critical", "该宾馆不存在, 预订失败-2", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 剩余房间 -1
+            bool ok;
+            int avail = hotel["numAvail"].toInt(&ok, 10) - 1;
+            if(avail < 0){
+                QMessageBox::critical(NULL, "critical", "该宾馆已住满, 预订失败-3", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 更新宾馆信息
+            hotel.insert("numAvail", QString::number(avail));
+            bool jud_update_data = db->updateData("hotels", hotel, sql_where);
+            if(!jud_update_data){
+                QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            break;
+        }
+        case Reservation::BUS:{
+            QHash<QString, QString> bus;
+            // 查询客车信息
+            QString sql_where = "where location = '" + tempResv.getResvContent() + "'";
+            bool jud_get_data = db->getData("bus", bus, sql_where);
+            if(!jud_get_data){
+                QMessageBox::critical(NULL, "critical", "该客车不存在, 预订失败-2", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 剩余座位 -1
+            bool ok;
+            int avail = bus["numAvail"].toInt(&ok, 10) - 1;
+            if(avail < 0){
+                QMessageBox::critical(NULL, "critical", "该客车已满座, 预订失败-3", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            // 更新客车信息
+            bus.insert("numAvail", QString::number(avail));
+            bool jud_update_data = db->updateData("bus", bus, sql_where);
+            if(!jud_update_data){
+                QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
+                db->delData("reservations", sql_where_delete);
+                return false;
+            }
+            break;
+        }
+        }
+        QMessageBox::information(NULL, "成功", "预订成功", QMessageBox::Yes);
+
+        // 刷新table_view
+        emit refreshSent(tempResv.getResvType());
+        return true;
+    } else{
+        QMessageBox::information(NULL, "失败", "有错误或空属性值", QMessageBox::Yes);
+        return false;
     }
 }
 

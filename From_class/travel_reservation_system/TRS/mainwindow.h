@@ -35,12 +35,13 @@ private:
     bool connectToServer();
     void initializeModel(int flag);
     void opentable(QList<QHash<QString,QString>> data, int flag);
-    bool loadData(int flag);
+    void loadData(int flag);
     void setUserAvailable(int flag);
 
 public slots:
     void exitReceive(int flag);
     void userReceive(User* currentUser);
+    void refreshReceive(int flag);
 
 private slots:
     void on_tv_display_clicked(const QModelIndex &index);
@@ -48,5 +49,6 @@ private slots:
     void on_pb_log_in_clicked();
     void on_pb_log_out_clicked();
     void on_pb_sign_up_clicked();
+    void on_pb_reservation_clicked();
 };
 #endif // MAINWINDOW_H

@@ -6,6 +6,7 @@
 
 #include <QMessageBox>
 #include <QListView>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
         QCoreApplication::exit(2);
     }
     ui->tv_display->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tv_display->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tv_display->setAlternatingRowColors(true);
     ui->cb_option->setCurrentIndex(1);
     ui->cb_option->setCurrentIndex(0);
@@ -44,10 +46,21 @@ void MainWindow::userReceive(User* currentUser){
 
 }
 
+void MainWindow::refreshReceive(int flag){
+    loadData(flag);
+    ui->le_detail_0->clear();
+    ui->le_detail_1->clear();
+    ui->le_detail_2->clear();
+    ui->le_detail_3->clear();
+    ui->le_detail_4->clear();
+    ui->le_detail_5->clear();
+}
+
 bool MainWindow::connectToServer(){
     //connect(server, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
     server = new Server();
     connect(server, SIGNAL(userSent(User*)), this, SLOT(userReceive(User*)));
+    connect(server, SIGNAL(refreshSent(int)), this, SLOT(refreshReceive(int)));
     if(server != NULL && server->getStatus() == Server::AVAILABLE){
         return true;
     } else{
@@ -128,67 +141,79 @@ void MainWindow::initializeModel(int flag){
     case 0: model->setHorizontalHeaderLabels({"航班号", "价格", "座位总数", "剩余座位", "出发地", "到达地"}); break;
     case 1: model->setHorizontalHeaderLabels({"所在地", "价格", "房间总数", "剩余房间"}); break;
     case 2: model->setHorizontalHeaderLabels({"所在地", "价格", "客车总数", "剩余可选"}); break;
-    case 3: model->setHorizontalHeaderLabels({"客户", "ID"}); break;
+    case 3: model->setHorizontalHeaderLabels({"客户", "ID", "密码"}); break;
     case 4: model->setHorizontalHeaderLabels({"客户", "预订类型", "预订内容", "预订可用性", "预订ID"}); break;
     }
 }
 
 void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
+    User::Permission permission = server->getCurrentUser()->getPermission();
     initializeModel(flag);
     switch(flag){
     case 0:{
         for (int i = 0; i < data.size(); ++i) {
-            QList<QStandardItem*> row;
-            row.append(new QStandardItem(data[i]["flightNum"]));
-            row.append(new QStandardItem(data[i]["price"]));
-            row.append(new QStandardItem(data[i]["numSeats"]));
-            row.append(new QStandardItem(data[i]["numAvail"]));
-            row.append(new QStandardItem(data[i]["FromCity"]));
-            row.append(new QStandardItem(data[i]["ArivCity"]));
-            model->appendRow(row);
+            if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
+                QList<QStandardItem*> row;
+                row.append(new QStandardItem(data[i]["flightNum"]));
+                row.append(new QStandardItem(data[i]["price"]));
+                row.append(new QStandardItem(data[i]["numSeats"]));
+                row.append(new QStandardItem(data[i]["numAvail"]));
+                row.append(new QStandardItem(data[i]["FromCity"]));
+                row.append(new QStandardItem(data[i]["ArivCity"]));
+                model->appendRow(row);
+            }
         }
         break;
     }
     case 1:{
         for (int i = 0; i < data.size(); ++i) {
-            QList<QStandardItem*> row;
-            row.append(new QStandardItem(data[i]["location"]));
-            row.append(new QStandardItem(data[i]["price"]));
-            row.append(new QStandardItem(data[i]["numRooms"]));
-            row.append(new QStandardItem(data[i]["numAvail"]));
-            model->appendRow(row);
+            if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
+                QList<QStandardItem*> row;
+                row.append(new QStandardItem(data[i]["location"]));
+                row.append(new QStandardItem(data[i]["price"]));
+                row.append(new QStandardItem(data[i]["numRooms"]));
+                row.append(new QStandardItem(data[i]["numAvail"]));
+                model->appendRow(row);
+            }
         }
         break;
     }
     case 2:{
         for (int i = 0; i < data.size(); ++i) {
-            QList<QStandardItem*> row;
-            row.append(new QStandardItem(data[i]["location"]));
-            row.append(new QStandardItem(data[i]["price"]));
-            row.append(new QStandardItem(data[i]["numBus"]));
-            row.append(new QStandardItem(data[i]["numAvail"]));
-            model->appendRow(row);
+            if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
+                QList<QStandardItem*> row;
+                row.append(new QStandardItem(data[i]["location"]));
+                row.append(new QStandardItem(data[i]["price"]));
+                row.append(new QStandardItem(data[i]["numBus"]));
+                row.append(new QStandardItem(data[i]["numAvail"]));
+                model->appendRow(row);
+            }
         }
         break;
     }
     case 3:{
         for (int i = 0; i < data.size(); ++i) {
-            QList<QStandardItem*> row;
-            row.append(new QStandardItem(data[i]["custName"]));
-            row.append(new QStandardItem(data[i]["custID"]));
-            model->appendRow(row);
+            if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
+                QList<QStandardItem*> row;
+                row.append(new QStandardItem(data[i]["custName"]));
+                row.append(new QStandardItem(data[i]["custID"]));
+                row.append(new QStandardItem(data[i]["custPW"]));
+                model->appendRow(row);
+            }
         }
         break;
     }
     case 4:{
         for (int i = 0; i < data.size(); ++i) {
-            QList<QStandardItem*> row;
-            row.append(new QStandardItem(data[i]["custName"]));
-            row.append(new QStandardItem(data[i]["resvType"]));
-            row.append(new QStandardItem(data[i]["resvContent"]));
-            row.append(new QStandardItem(data[i]["resvAvail"]));
-            row.append(new QStandardItem(data[i]["resvKey"]));
-            model->appendRow(row);
+            if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
+                QList<QStandardItem*> row;
+                row.append(new QStandardItem(data[i]["custName"]));
+                row.append(new QStandardItem(data[i]["resvType"]));
+                row.append(new QStandardItem(data[i]["resvContent"]));
+                row.append(new QStandardItem(data[i]["resvAvail"]));
+                row.append(new QStandardItem(data[i]["resvKey"]));
+                model->appendRow(row);
+            }
         }
         break;
     }
@@ -196,7 +221,7 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
     ui->tv_display->setModel(model);
 }
 
-bool MainWindow::loadData(int flag){
+void MainWindow::loadData(int flag){
     QList<QHash<QString,QString>> data = server->getData(flag);
     qDebug("get data succeed");
     opentable(data, flag);
@@ -212,19 +237,15 @@ void MainWindow::on_tv_display_clicked(const QModelIndex &index)
         QModelIndex cellIndex = index.model()->index(row, col);
         rowData.append(index.model()->data(cellIndex).toString());
     }
-    ui->le_detail_0->setText(rowData[0]);
-    ui->le_detail_1->setText(rowData[1]);
-    if(columnCount >= 3){
-        ui->le_detail_2->setText(rowData[2]);
-        if(columnCount >= 4){
-            ui->le_detail_3->setText(rowData[3]);
-            if(columnCount > 4){
-                ui->le_detail_4->setText(rowData[4]);
-                ui->le_detail_5->setText(rowData[5]);
-            }
-        }
-    }
 
+    switch(columnCount){
+    case 6: ui->le_detail_5->setText(rowData[5]);
+    case 5: ui->le_detail_4->setText(rowData[4]);
+    case 4: ui->le_detail_3->setText(rowData[3]);
+    case 3: ui->le_detail_2->setText(rowData[2]);
+    case 2: ui->le_detail_1->setText(rowData[1]);
+    case 1: ui->le_detail_0->setText(rowData[0]);
+    }
 }
 
 void MainWindow::on_cb_option_currentIndexChanged(int index)
@@ -281,14 +302,14 @@ void MainWindow::on_cb_option_currentIndexChanged(int index)
     case 3:{
         ui->l_detail_0->setText("客户"); ui->l_detail_0->show();
         ui->l_detail_1->setText("ID"); ui->l_detail_1->show();
-        ui->l_detail_2->hide();
+        ui->l_detail_2->setText("密码"); ui->l_detail_2->show();
         ui->l_detail_3->hide();
         ui->l_detail_4->hide();
         ui->l_detail_5->hide();
 
         ui->le_detail_0->clear(); ui->le_detail_0->show();
         ui->le_detail_1->clear(); ui->le_detail_1->show();
-        ui->le_detail_2->clear(); ui->le_detail_2->hide();
+        ui->le_detail_2->clear(); ui->le_detail_2->show();
         ui->le_detail_3->clear(); ui->le_detail_3->hide();
         ui->le_detail_4->clear(); ui->le_detail_4->hide();
         ui->le_detail_5->clear(); ui->le_detail_5->hide();
@@ -325,15 +346,18 @@ void MainWindow::on_pb_log_in_clicked()
 
 void MainWindow::on_pb_log_out_clicked()
 {
-    QMessageBox::StandardButton result = QMessageBox::warning(this, "提示", "是否退出登录？", QMessageBox::Yes | QMessageBox::No);
-    if(result == QMessageBox::Yes){
-        server->logout();
-    }
+    server->logout();
 }
 
 
 void MainWindow::on_pb_sign_up_clicked()
 {
     SignupDialog::show(server);
+}
+
+
+void MainWindow::on_pb_reservation_clicked()
+{
+    server->reserve(Reservation(server->getCurrentUser()->getName(), ui->cb_option->currentIndex(), ui->le_detail_0->text()));
 }
 

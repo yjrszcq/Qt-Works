@@ -3,12 +3,15 @@
 
 #include "mysqldb.h"
 #include "user.h"
+#include "flight.h"
+#include "hotel.h"
+#include "bus.h"
+#include "reservation.h"
 
 #include <QObject>
 #include <bits/stdc++.h>
 #include <QString>
 #include <QList>
-using namespace std;
 
 class Server : public QObject
 {
@@ -21,6 +24,7 @@ public:
     bool login(User user);
     void logout();
     void signup(User user);
+    bool reserve(Reservation reservation);
     QList<QHash<QString,QString>> getData(int flag);
     User* getCurrentUser();
     Status getStatus();
@@ -38,6 +42,7 @@ public slots:
 signals:
     void exitSent(int flag);
     void userSent(User* currentUser);
+    void refreshSent(int flag);
 };
 
 #endif // SERVER_H

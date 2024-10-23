@@ -19,8 +19,8 @@ public:
 
 private:
     Server *server;
-    QLabel *l_name, *l_id;
-    QLineEdit *le_name, *le_id;
+    QLabel *l_name, *l_id, *l_password;
+    QLineEdit *le_name, *le_id, *le_password;
     QPushButton *pb_signup;
 
 public slots:
