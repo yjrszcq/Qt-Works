@@ -233,7 +233,11 @@ bool Server::reserve(Reservation tempResv){
         QMessageBox::information(NULL, "成功", "预订成功", QMessageBox::Yes);
 
         // 刷新table_view
-        emit refreshSent(tempResv.getResvType());
+        if(currentUser->getPermission() == User::USER){
+            emit refreshSent(tempResv.getResvType());
+        } else{
+            emit refreshSent(4);
+        }
         return true;
     } else{
         QMessageBox::information(NULL, "失败", "有错误或空属性值", QMessageBox::Yes);
@@ -252,7 +256,7 @@ void Server::addItem(Flight tempFlight){
         flight.insert("ArivCity", tempFlight.getArivCity());
         if(db->addData("flights", flight)){
             QMessageBox::information(NULL, "成功", "添加成功", QMessageBox::Yes);
-            emit refreshSent(3);
+            emit refreshSent(0);
         } else{
             QMessageBox::information(NULL, "失败", "添加失败-可能是航班号重复", QMessageBox::Yes);
         }
@@ -270,7 +274,7 @@ void Server::addItem(Hotel tempHotel){
         hotel.insert("numAvail", QString::number(tempHotel.getNumAvail()));
         if(db->addData("hotels", hotel)){
             QMessageBox::information(NULL, "成功", "添加成功", QMessageBox::Yes);
-            emit refreshSent(3);
+            emit refreshSent(1);
         } else{
             QMessageBox::information(NULL, "失败", "添加失败-可能是所在地重复", QMessageBox::Yes);
         }
@@ -288,7 +292,7 @@ void Server::addItem(Bus tempBus){
         bus.insert("numAvail", QString::number(tempBus.getNumAvail()));
         if(db->addData("bus", bus)){
             QMessageBox::information(NULL, "成功", "添加成功", QMessageBox::Yes);
-            emit refreshSent(3);
+            emit refreshSent(2);
         } else{
             QMessageBox::information(NULL, "失败", "添加失败-可能是所在地重复", QMessageBox::Yes);
         }

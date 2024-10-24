@@ -43,6 +43,7 @@ private:
     void setUserVisibility(User::Permission permission);
     void setUserAvailable(User::Permission permission);
     void dataMapper(QList<QString> rowData);
+    void rootFunctionVisibility(bool flag);
 
 public slots:
     void exitReceive(int flag);

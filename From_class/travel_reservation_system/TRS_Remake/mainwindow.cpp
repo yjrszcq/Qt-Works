@@ -53,6 +53,7 @@ void MainWindow::userReceive(User* currentUser){
 void MainWindow::refreshReceive(int flag){
     loadData(flag);
     initializeDataMap(flag);
+    rootFunctionVisibility(false);
 }
 
 bool MainWindow::connectToServer(){
@@ -133,6 +134,18 @@ void MainWindow::setUserAvailable(User::Permission permission){
         ui->sb_bus_1->setReadOnly(false);
         break;
     }
+    }
+}
+
+void MainWindow::rootFunctionVisibility(bool flag){
+    if(server->getCurrentUser()->getPermission() == User::ROOT){
+        if(flag == false){
+            ui->pb_update->hide();
+            ui->pb_delete->hide();
+        } else{
+            ui->pb_update->show();
+            ui->pb_delete->show();
+        }
     }
 }
 
@@ -224,7 +237,7 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
     case 1:{
         bool ok;
         for (int i = 0; i < data.size(); ++i) {
-            hotel_difference.insert(data[i]["location"], (data[i]["numSeats"].toInt(&ok, 10) - data[i]["numAvail"].toInt(&ok, 10)));
+            hotel_difference.insert(data[i]["location"], (data[i]["numRooms"].toInt(&ok, 10) - data[i]["numAvail"].toInt(&ok, 10)));
             if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
                 QList<QStandardItem*> row;
                 row.append(new QStandardItem(data[i]["location"]));
@@ -239,7 +252,7 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
     case 2:{
         bool ok;
         for (int i = 0; i < data.size(); ++i) {
-            bus_difference.insert(data[i]["location"], (data[i]["numSeats"].toInt(&ok, 10) - data[i]["numAvail"].toInt(&ok, 10)));
+            bus_difference.insert(data[i]["location"], (data[i]["numBus"].toInt(&ok, 10) - data[i]["numAvail"].toInt(&ok, 10)));
             if(permission == User::ROOT || (permission != User::ROOT && data[i]["numAvail"] != "0")){
                 QList<QStandardItem*> row;
                 row.append(new QStandardItem(data[i]["location"]));
@@ -315,9 +328,9 @@ void MainWindow::dataMapper(QList<QString> rowData){
         bool ok;
         ui->le_resv_0->setText(rowData[0]);
         switch(rowData[1].toInt(&ok, 10)){
-        case 0: ui->le_resv_1->setText("FLIGHT"); break;
-        case 1: ui->le_resv_1->setText("HOTEL"); break;
-        case 2: ui->le_resv_1->setText("BUS"); break;
+        case 0: ui->le_resv_1->setText("航班"); break;
+        case 1: ui->le_resv_1->setText("宾馆"); break;
+        case 2: ui->le_resv_1->setText("客车"); break;
         }
         ui->le_resv_2->setText(rowData[2]);
         ui->le_resv_3->setText(rowData[3]);
@@ -329,6 +342,7 @@ void MainWindow::dataMapper(QList<QString> rowData){
 
 void MainWindow::on_tv_display_clicked(const QModelIndex &index)
 {
+    rootFunctionVisibility(true);
     QList<QString> rowData;
     int row = index.row();
     int columnCount = index.model()->columnCount();
@@ -343,8 +357,9 @@ void MainWindow::on_tv_display_clicked(const QModelIndex &index)
 void MainWindow::on_cb_option_currentIndexChanged(int index)
 {
     ui->sw_detail->setCurrentIndex(index);
-    initializeDataMap(index);
     loadData(index);
+    initializeDataMap(index);
+    rootFunctionVisibility(false);
 }
 
 
