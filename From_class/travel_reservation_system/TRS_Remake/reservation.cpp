@@ -4,6 +4,14 @@
 #include <QCryptographicHash>
 #include <QRandomGenerator>
 
+Reservation::Reservation(QString resv_key, bool resv_avail){
+    this->user_name = "";
+    this->resv_type = 0;
+    this->resv_content = "";
+    this->resv_avail = resv_avail;
+    this->resv_key = resv_key;
+}
+
 Reservation::Reservation(QString user_name, int resv_type, QString resv_content){
     this->user_name = user_name;
     this->resv_type = resv_type;

@@ -6,7 +6,8 @@
 class Reservation{
 public:
     enum Type{FLIGHT, HOTEL, BUS};
-    enum Status{UNAVAILABLE, AVAILABLE};
+    enum State{UNAVAILABLE, AVAILABLE};
+    Reservation(QString resv_key, bool resv_avail);
     Reservation(QString user_name, int resv_type, QString resv_content);
     void setUserName(QString user_name);
     void setResvType(int resv_type);

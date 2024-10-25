@@ -29,18 +29,18 @@ AddDialog::~AddDialog()
 void AddDialog::on_pb_add_clicked()
 {
     switch(flag){
-    case 0:server->addItem(Flight(ui->le_flight_0->text(), ui->sb_flight_0->value(),
-                               ui->sb_flight_1->value(), ui->sb_flight_1->value(),
-                               ui->le_flight_1->text(), ui->le_flight_2->text())); break;
-    case 1:server->addItem(Hotel(ui->le_hotel_0->text(), ui->sb_hotel_0->value(),
-                              ui->sb_hotel_1->value(), ui->sb_hotel_1->value())); break;
-    case 2:server->addItem(Bus(ui->le_bus_0->text(), ui->sb_bus_0->value(),
-                            ui->sb_bus_1->value(), ui->sb_bus_1->value())); break;
-    case 3:server->addItem(User(ui->le_user_0->text(), ui->le_user_1->text(),
-                             ui->le_user_2->text(), User::USER)); break;
-    case 4:server->addItem(Reservation(ui->cb_resv_0->currentText(),
-                                    ui->cb_resv_1->currentIndex(),
-                                    ui->cb_resv_2->currentText())); break;
+    case 0:server->insertItem(Flight(ui->le_flight_0->text(), ui->sb_flight_0->value(),
+                                  ui->sb_flight_1->value(), ui->sb_flight_1->value(),
+                                  ui->le_flight_1->text(), ui->le_flight_2->text())); break;
+    case 1:server->insertItem(Hotel(ui->le_hotel_0->text(), ui->sb_hotel_0->value(),
+                                 ui->sb_hotel_1->value(), ui->sb_hotel_1->value())); break;
+    case 2:server->insertItem(Bus(ui->le_bus_0->text(), ui->sb_bus_0->value(),
+                               ui->sb_bus_1->value(), ui->sb_bus_1->value())); break;
+    case 3:server->insertItem(User(ui->le_user_0->text(), ui->le_user_1->text(),
+                                ui->le_user_2->text(), User::USER)); break;
+    case 4:server->insertItem(Reservation(ui->cb_resv_0->currentText(),
+                                       ui->cb_resv_1->currentIndex(),
+                                       ui->cb_resv_2->currentText())); break;
     }
     this->close();
 }

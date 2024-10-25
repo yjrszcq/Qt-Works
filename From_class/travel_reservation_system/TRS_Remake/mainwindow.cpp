@@ -433,3 +433,36 @@ void MainWindow::on_pb_insert_clicked()
     AddDialog::show(server, ui->cb_option->currentIndex());
 }
 
+
+void MainWindow::on_pb_update_clicked()
+{
+    switch(ui->cb_option->currentIndex()){
+    case 0: server->updateItem(Flight(ui->le_flight_0->text(), ui->sb_flight_0->value(),
+                                  ui->sb_flight_1->value(), ui->sb_flight_2->value(),
+                                  ui->le_flight_1->text(), ui->le_flight_2->text())); break;
+    case 1: server->updateItem(Hotel(ui->le_hotel_0->text(), ui->sb_hotel_0->value(),
+                                  ui->sb_hotel_1->value(), ui->sb_hotel_2->value())); break;
+    case 2: server->updateItem(Bus(ui->le_bus_0->text(), ui->sb_bus_0->value(),
+                               ui->sb_bus_1->value(), ui->sb_bus_2->value())); break;
+    case 3: server->updateItem(User(ui->le_user_0->text(), ui->le_user_1->text(),
+                                ui->le_user_2->text(), User::USER)); break;
+    case 4: server->updateItem(Reservation(ui->le_resv_3->text(), ui->cb_resv_0->currentIndex())); break;
+    }
+}
+
+
+void MainWindow::on_pb_delete_clicked()
+{
+    QString content = "";
+    int index = ui->cb_option->currentIndex();
+    bool avail = Reservation::AVAILABLE;
+    switch(index){
+    case 0: content = ui->le_flight_0->text(); break;
+    case 1: content = ui->le_hotel_0->text(); break;
+    case 2: content = ui->le_bus_0->text(); break;
+    case 3: content = ui->le_user_0->text(); break;
+    case 4: content = ui->le_resv_3->text(); avail = ui->cb_resv_0->currentIndex(); break;
+    }
+    server->deleteItem(index, content, avail);
+}
+

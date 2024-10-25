@@ -61,5 +61,7 @@ private slots:
     void on_sb_hotel_1_valueChanged(int arg1);
     void on_sb_bus_1_valueChanged(int arg1);
     void on_pb_insert_clicked();
+    void on_pb_update_clicked();
+    void on_pb_delete_clicked();
 };
 #endif // MAINWINDOW_H
