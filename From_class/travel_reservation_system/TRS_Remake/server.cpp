@@ -9,7 +9,6 @@ Server::Server(QString host, int port, QString name, QString password, QString d
     status = Server::UNAVAILABLE;
     if(startServer(host, port, name, password, database)){
         status = Server::AVAILABLE;
-        // QTimer::singleShot(0, this, [this](){ emit exitSent(1); });
     }
 }
 
@@ -198,9 +197,6 @@ bool Server::reserve(Reservation tempResv){
             // 更新宾馆信息
             hotel.insert("numAvail", QString::number(avail));
             db->updateData("hotels", hotel, sql_where);
-            qDebug() << hotel["numAvail"];
-            qDebug() << sql_where;
-            qDebug() << db->getNumRowsAffected();
             if(db->getNumRowsAffected() == 0){
                 QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
                 db->delData("reservations", sql_where_delete);
@@ -247,7 +243,7 @@ bool Server::reserve(Reservation tempResv){
         }
         return true;
     } else{
-        QMessageBox::information(NULL, "失败", "有错误或空属性值", QMessageBox::Yes);
+        QMessageBox::information(NULL, "失败", "有错误 或 空属性值", QMessageBox::Yes);
         return false;
     }
 }
@@ -347,7 +343,7 @@ void Server::updateItem(Flight tempFlight){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(0);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是航班不存在或其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 航班不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -366,7 +362,7 @@ void Server::updateItem(Hotel tempHotel){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(1);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是所在地不存在或其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 所在地不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -385,7 +381,7 @@ void Server::updateItem(Bus tempBus){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(2);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是所在地不存在或其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 所在地不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -403,7 +399,7 @@ void Server::updateItem(User tempUser){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(3);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是用户名不存在或其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 用户名不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -472,7 +468,7 @@ void Server::updateItem(Reservation tempResv){
                         QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
                         emit refreshSent(4);
                     } else{
-                        QMessageBox::information(NULL, "失败", "修改失败-可能是预订不存在或其他格式错误", QMessageBox::Yes);
+                        QMessageBox::information(NULL, "失败", "修改失败-可能是 预订不存在 或 其他格式错误", QMessageBox::Yes);
                     }
                 } else{
                     if(jud_ud){
@@ -482,7 +478,7 @@ void Server::updateItem(Reservation tempResv){
                             item.insert("numAvail", QString::number(item["numAvail"].toInt(&ok, 10) - 1));
                         }
                         db->updateData(table, item, sql_where);
-                        QMessageBox::information(NULL, "失败", "删除失败-可能是主键值不存在", QMessageBox::Yes);
+                        QMessageBox::information(NULL, "失败", "修改失败-可能是主键值不存在", QMessageBox::Yes);
                     }
                 }
             }
@@ -497,7 +493,7 @@ void Server::updateItem(Reservation tempResv){
                     QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
                     emit refreshSent(4);
                 } else{
-                    QMessageBox::information(NULL, "失败", "修改失败-可能是预订不存在或其他格式错误", QMessageBox::Yes);
+                    QMessageBox::information(NULL, "失败", "修改失败-可能是 未更改内容 或 预订不存在 或 其他格式错误", QMessageBox::Yes);
                 }
             } else{
                 QMessageBox::information(NULL, "失败", "修改失败-其他错误", QMessageBox::Yes);
@@ -741,7 +737,7 @@ void Server::deleteItem(int flag, QString content){
         }
         switch(jud){
         case 0: QMessageBox::information(NULL, "成功", "删除成功", QMessageBox::Yes); emit refreshSent(flag); break;
-        case 1: QMessageBox::information(NULL, "失败", "删除失败-可能是主键值不存在或内容已被删除", QMessageBox::Yes); break;
+        case 1: QMessageBox::information(NULL, "失败", "删除失败-可能是 主键值不存在 或 内容已被删除", QMessageBox::Yes); break;
         case 2: QMessageBox::information(NULL, "失败", "删除失败-可能是相关的表更改失败", QMessageBox::Yes); break;
         case 3: QMessageBox::information(NULL, "失败", "删除失败-其他错误", QMessageBox::Yes); break;
         }
@@ -784,6 +780,28 @@ QList<QHash<QString,QString>> Server::getData(int flag){
     }
     }
 
+}
+
+QList<QHash<QString,QString>> Server::getData(User user){
+    QList<QHash<QString,QString>> data;
+    QString sql_where = "where custName = '" + user.getName() + "'";
+    db->getData("reservations", data, sql_where);
+    return data;
+}
+
+QHash<QString,QString> Server::getData(int flag, QString key){
+    QString table;
+    QString sql_where;
+    switch(flag){
+    case 0: table = "flights"; sql_where = "where flightNum = '" + key + "'"; break;
+    case 1: table = "hotels"; sql_where = "where location = '" + key + "'"; break;
+    case 2: table = "bus"; sql_where = "where location = '" + key + "'"; break;
+    case 3: table = "customers"; sql_where = "where custName = '" + key + "'"; break;
+    case 4: table = "reservations"; sql_where = "where resvKey = '" + key + "'"; break;
+    }
+    QHash<QString,QString> data;
+    db->getData(table, data, sql_where);
+    return data;
 }
 
 User* Server::getCurrentUser(){

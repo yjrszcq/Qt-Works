@@ -18,6 +18,7 @@ SOURCES += \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    myresvdialog.cpp \
     mysqldb.cpp \
     reservation.cpp \
     server.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     hotel.h \
     logindialog.h \
     mainwindow.h \
+    myresvdialog.h \
     mysqldb.h \
     reservation.h \
     server.h \
