@@ -273,7 +273,7 @@
                  <item row="3" column="1">
                   <widget class="QSpinBox" name="sb_flight_2">
                    <property name="readOnly">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                    <property name="maximum">
                     <number>1000</number>
@@ -336,7 +336,7 @@
                  <item row="3" column="1">
                   <widget class="QSpinBox" name="sb_hotel_2">
                    <property name="readOnly">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                    <property name="maximum">
                     <number>100000</number>
@@ -399,7 +399,7 @@
                  <item row="3" column="1">
                   <widget class="QSpinBox" name="sb_bus_2">
                    <property name="readOnly">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                    <property name="maximum">
                     <number>100000</number>
@@ -448,66 +448,10 @@
                </widget>
                <widget class="QWidget" name="page_detail_4_reservation">
                 <layout class="QGridLayout" name="gridLayout_5">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="l_resv_0">
-                   <property name="text">
-                    <string>用户名</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="le_resv_0">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="l_resv_1">
-                   <property name="text">
-                    <string>预订类型</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="le_resv_1">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="l_resv_2">
                    <property name="text">
                     <string>预订内容</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="le_resv_2">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="l_resv_3">
-                   <property name="text">
-                    <string>预订ID</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="le_resv_3">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="l_resv_4">
-                   <property name="text">
-                    <string>预订状态</string>
                    </property>
                   </widget>
                  </item>
@@ -524,6 +468,72 @@
                     </property>
                    </item>
                   </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_resv_1">
+                   <property name="text">
+                    <string>预订类型</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="l_resv_4">
+                   <property name="text">
+                    <string>预订状态</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="le_resv_3">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_resv_2">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_resv_0">
+                   <property name="text">
+                    <string>用户名</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="l_resv_3">
+                   <property name="text">
+                    <string>预订ID</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_resv_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="le_resv_1">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="l_resv_5">
+                   <property name="text">
+                    <string>预订备注</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="le_resv_4"/>
                  </item>
                 </layout>
                </widget>

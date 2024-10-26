@@ -111,27 +111,33 @@ void MainWindow::setUserAvailable(User::Permission permission){
     case User::VISITOR: case User::USER:{
         ui->sb_flight_0->setReadOnly(true);
         ui->sb_flight_1->setReadOnly(true);
+        ui->sb_flight_2->setReadOnly(true);
         ui->le_flight_1->setReadOnly(true);
         ui->le_flight_2->setReadOnly(true);
 
         ui->sb_hotel_0->setReadOnly(true);
         ui->sb_hotel_1->setReadOnly(true);
+        ui->sb_hotel_2->setReadOnly(true);
 
         ui->sb_bus_0->setReadOnly(true);
         ui->sb_bus_1->setReadOnly(true);
+        ui->sb_bus_2->setReadOnly(true);
         break;
     }
     case User::ROOT:{
         ui->sb_flight_0->setReadOnly(false);
         ui->sb_flight_1->setReadOnly(false);
+        ui->sb_flight_2->setReadOnly(false);
         ui->le_flight_1->setReadOnly(false);
         ui->le_flight_2->setReadOnly(false);
 
         ui->sb_hotel_0->setReadOnly(false);
         ui->sb_hotel_1->setReadOnly(false);
+        ui->sb_hotel_2->setReadOnly(false);
 
         ui->sb_bus_0->setReadOnly(false);
         ui->sb_bus_1->setReadOnly(false);
+        ui->sb_bus_2->setReadOnly(false);
         break;
     }
     }
@@ -159,7 +165,7 @@ void MainWindow::initializeModel(int flag){
     case 1: model->setHorizontalHeaderLabels({"宾馆地址", "价格", "房间总数", "剩余房间"}); break;
     case 2: model->setHorizontalHeaderLabels({"车站地址", "价格", "座位总数", "剩余座位"}); break;
     case 3: model->setHorizontalHeaderLabels({"客户", "ID", "密码"}); break;
-    case 4: model->setHorizontalHeaderLabels({"客户", "预订类型", "预订内容", "预订ID", "预订状态"}); break;
+    case 4: model->setHorizontalHeaderLabels({"客户", "预订类型", "预订内容", "预订ID", "预订状态", "预订备注"}); break;
     }
 }
 
@@ -200,6 +206,7 @@ void MainWindow::initializeDataMap(int flag){
         ui->le_resv_2->clear();
         ui->le_resv_3->clear();
         ui->cb_resv_0->setCurrentIndex(0);
+        ui->le_resv_4->clear();
         break;
     }
     }
@@ -266,23 +273,29 @@ void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
     }
     case 3:{
         for (int i = 0; i < data.size(); ++i) {
-                QList<QStandardItem*> row;
-                row.append(new QStandardItem(data[i]["custName"]));
-                row.append(new QStandardItem(data[i]["custID"]));
-                row.append(new QStandardItem(data[i]["custPW"]));
-                model->appendRow(row);
+            QList<QStandardItem*> row;
+            row.append(new QStandardItem(data[i]["custName"]));
+            row.append(new QStandardItem(data[i]["custID"]));
+            row.append(new QStandardItem(data[i]["custPW"]));
+            model->appendRow(row);
         }
         break;
     }
     case 4:{
         for (int i = 0; i < data.size(); ++i) {
-                QList<QStandardItem*> row;
-                row.append(new QStandardItem(data[i]["custName"]));
-                row.append(new QStandardItem(data[i]["resvType"]));
-                row.append(new QStandardItem(data[i]["resvContent"]));
-                row.append(new QStandardItem(data[i]["resvKey"]));
-                row.append(new QStandardItem(data[i]["resvAvail"]));
-                model->appendRow(row);
+            QList<QStandardItem*> row;
+            bool ok;
+            row.append(new QStandardItem(data[i]["custName"]));
+            switch(data[i]["resvType"].toInt(&ok, 10)){
+            case Reservation::FLIGHT: row.append(new QStandardItem("航班")); break;
+            case Reservation::HOTEL: row.append(new QStandardItem("宾馆")); break;
+            case Reservation::BUS: row.append(new QStandardItem("客车")); break;
+            }
+            row.append(new QStandardItem(data[i]["resvContent"]));
+            row.append(new QStandardItem(data[i]["resvKey"]));
+            row.append(new QStandardItem(data[i]["resvAvail"]));
+            row.append(new QStandardItem(data[i]["resvNote"]));
+            model->appendRow(row);
         }
         break;
     }
@@ -327,14 +340,11 @@ void MainWindow::dataMapper(QList<QString> rowData){
     case 4:{
         bool ok;
         ui->le_resv_0->setText(rowData[0]);
-        switch(rowData[1].toInt(&ok, 10)){
-        case 0: ui->le_resv_1->setText("航班"); break;
-        case 1: ui->le_resv_1->setText("宾馆"); break;
-        case 2: ui->le_resv_1->setText("客车"); break;
-        }
+        ui->le_resv_1->setText(rowData[1]);
         ui->le_resv_2->setText(rowData[2]);
         ui->le_resv_3->setText(rowData[3]);
         ui->cb_resv_0->setCurrentIndex(rowData[4].toInt(&ok, 10));
+        ui->le_resv_4->setText(rowData[5]);
         break;
     }
     }
@@ -428,6 +438,24 @@ void MainWindow::on_sb_bus_1_valueChanged(int arg1)
 }
 
 
+void MainWindow::on_sb_flight_2_valueChanged(int arg1)
+{
+    ui->sb_flight_1->setValue(arg1 + flight_difference[ui->le_flight_0->text()]);
+}
+
+
+void MainWindow::on_sb_hotel_2_valueChanged(int arg1)
+{
+    ui->sb_hotel_1->setValue(arg1 + hotel_difference[ui->le_hotel_0->text()]);
+}
+
+
+void MainWindow::on_sb_bus_2_valueChanged(int arg1)
+{
+    ui->sb_bus_1->setValue(arg1 + bus_difference[ui->le_bus_0->text()]);
+}
+
+
 void MainWindow::on_pb_insert_clicked()
 {
     AddDialog::show(server, ui->cb_option->currentIndex());
@@ -446,7 +474,22 @@ void MainWindow::on_pb_update_clicked()
                                ui->sb_bus_1->value(), ui->sb_bus_2->value())); break;
     case 3: server->updateItem(User(ui->le_user_0->text(), ui->le_user_1->text(),
                                 ui->le_user_2->text(), User::USER)); break;
-    case 4: server->updateItem(Reservation(ui->le_resv_3->text(), ui->cb_resv_0->currentIndex())); break;
+    case 4: {
+        int type;
+        if(ui->le_resv_1->text() == "航班"){
+            type = 0;
+        } else if(ui->le_resv_1->text() == "宾馆"){
+            type = 1;
+        } else if(ui->le_resv_1->text() == "客车"){
+            type = 2;
+        } else{
+            QMessageBox::critical(this, "错误", "修改失败-未知类型");
+            return;
+        }
+        server->updateItem(Reservation(ui->le_resv_0->text(), type,
+                                       ui->le_resv_2->text(), ui->le_resv_3->text(),
+                                       ui->cb_resv_0->currentIndex(), ui->le_resv_4->text())); break;
+    }
     }
 }
 
@@ -455,14 +498,12 @@ void MainWindow::on_pb_delete_clicked()
 {
     QString content = "";
     int index = ui->cb_option->currentIndex();
-    bool avail = Reservation::AVAILABLE;
     switch(index){
     case 0: content = ui->le_flight_0->text(); break;
     case 1: content = ui->le_hotel_0->text(); break;
     case 2: content = ui->le_bus_0->text(); break;
     case 3: content = ui->le_user_0->text(); break;
-    case 4: content = ui->le_resv_3->text(); avail = ui->cb_resv_0->currentIndex(); break;
+    case 4: content = ui->le_resv_3->text(); break;
     }
-    server->deleteItem(index, content, avail);
+    server->deleteItem(index, content);
 }
-

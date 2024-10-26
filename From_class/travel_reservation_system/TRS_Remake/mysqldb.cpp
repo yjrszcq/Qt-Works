@@ -77,6 +77,11 @@ void MysqlDb::errorSql(QString sql) {
     qCritical("%s", qPrintable(errorSqlText));
 }
 
+//影响行数
+long int MysqlDb::getNumRowsAffected(){
+    return numRowsAffected;
+}
+
 //获取错误的数据库语句
 QString MysqlDb::getErrorSql() {
     if(connectionName.isEmpty()) {
@@ -122,6 +127,12 @@ bool MysqlDb::queryExec( QString queryStr) {
         errorSql(queryStr);
         return false;
     }
+    long int nra = query.numRowsAffected();
+    if(nra >= 0){
+        numRowsAffected = nra;
+    } else{
+        numRowsAffected = 0;
+    }
     return true;
 }
 
@@ -137,6 +148,12 @@ bool MysqlDb::queryExec( QString queryStr, QList<QHash<QString, QString>> &data)
     if(!query.exec(queryStr)) {
         errorSql(queryStr);
         return false;
+    }
+    long int nra = query.numRowsAffected();
+    if(nra >= 0){
+        numRowsAffected = nra;
+    } else{
+        numRowsAffected = 0;
     }
     QSqlRecord rec = query.record();
     while(query.next()) {

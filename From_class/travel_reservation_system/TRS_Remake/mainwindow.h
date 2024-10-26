@@ -60,6 +60,9 @@ private slots:
     void on_sb_flight_1_valueChanged(int arg1);
     void on_sb_hotel_1_valueChanged(int arg1);
     void on_sb_bus_1_valueChanged(int arg1);
+    void on_sb_flight_2_valueChanged(int arg1);
+    void on_sb_hotel_2_valueChanged(int arg1);
+    void on_sb_bus_2_valueChanged(int arg1);
     void on_pb_insert_clicked();
     void on_pb_update_clicked();
     void on_pb_delete_clicked();

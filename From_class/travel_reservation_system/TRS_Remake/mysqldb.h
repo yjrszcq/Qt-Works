@@ -33,6 +33,7 @@ public:
 
     bool transaction();
     bool commit();
+    long int getNumRowsAffected();
     QString getErrorSql();//获取错误的数据库语句
 
     void setMhost(const QString &mhost);
@@ -50,6 +51,7 @@ private:
     int mport_ = 3306;
     QString muser_="";
     QString mpwd_="";
+    long int numRowsAffected=0;
 
 private:
     void errorSql(QString sql);//错误打印

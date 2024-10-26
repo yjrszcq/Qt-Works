@@ -35,7 +35,7 @@ public:
     void updateItem(Bus bus);
     void updateItem(User user);
     void updateItem(Reservation reservation);
-    void deleteItem(int flag, QString content, bool avail = Reservation::AVAILABLE);
+    void deleteItem(int flag, QString content);
     QList<QHash<QString,QString>> getData(int flag);
     User* getCurrentUser();
     Status getStatus();
