@@ -59,7 +59,6 @@ private:
     void refreshResvVisibilityMyResv(Qt::CheckState state);
 
 public slots:
-    void exitReceive(int flag);
     void userReceive(User* currentUser);
     void refreshReceive(int flag);
 

@@ -46,7 +46,6 @@ public:
 private:
     MysqlDb *db = NULL;
     User *currentUser = NULL;
-    void delay(int milliseconds);
     bool startServer(QString host, int port, QString name, QString password, QString database);
     Status status;
 
@@ -54,7 +53,6 @@ public slots:
     void dbSetReceive(QString host, int port, QString name, QString password, QString database, bool flag);
 
 signals:
-    void exitSent(int flag);
     void userSent(User* currentUser);
     void refreshSent(int flag);
 };

@@ -46,10 +46,6 @@ MainWindow::~MainWindow()
     delete[] resv;
 }
 
-void MainWindow::exitReceive(int flag){
-    QCoreApplication::exit(flag);
-}
-
 void MainWindow::userReceive(User* currentUser){
     User::Permission permission = currentUser->getPermission();
     setUserVisibility(permission);
@@ -72,7 +68,6 @@ bool MainWindow::connectToServer(){
     server = new Server();
     connect(server, SIGNAL(userSent(User*)), this, SLOT(userReceive(User*)));
     connect(server, SIGNAL(refreshSent(int)), this, SLOT(refreshReceive(int)));
-    connect(server, SIGNAL(exitSent(int)), this, SLOT(exitReceive(int)));
     if(server != NULL && server->getStatus() == Server::AVAILABLE){
         return true;
     } else{
