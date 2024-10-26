@@ -82,7 +82,7 @@ bool Server::login(User tempUser){
                 return false;
             }
         } else{
-            QMessageBox::critical(NULL, "critical", "用户名错误", QMessageBox::Yes);
+            QMessageBox::critical(NULL, "critical", "用户名不存在", QMessageBox::Yes);
             currentUser = new User(User::VISITOR);
             emit userSent(currentUser);
             return false;
@@ -513,9 +513,10 @@ void Server::deleteItem(int flag, QString content){
             QHash<QString, QString> flight;
             db->getData("flights", flight, sql_where);
             if(flight.size() != 0 && flight["numSeats"] != flight["numAvail"]){
-                QMessageBox *msg = new QMessageBox(QMessageBox::Warning, "警告",
-                                                   "删除会将相关预订变为不可用预订，是否继续？",
-                                                   QMessageBox::Yes | QMessageBox::No, NULL);
+                QMessageBox *msg = new QMessageBox(
+                    QMessageBox::Warning, "警告",
+                    "删除会将相关预订变为不可用预订，是否继续？",
+                    QMessageBox::Yes | QMessageBox::No, NULL);
                 if(msg->exec()){// 询问是否删除（若删除则相关预订不可用）
                     QHash<QString, QString> update;
                     QString sql_where_resv = "where resvType = " + QString::number(flag) + " and resvContent = '" + content + "'";
@@ -556,10 +557,10 @@ void Server::deleteItem(int flag, QString content){
             QHash<QString, QString> hotel;
             db->getData("hotels", hotel, sql_where);
             if(hotel.size() != 0 && hotel["numRooms"] != hotel["numAvail"]){
-                QMessageBox *msg = new QMessageBox(QMessageBox::Warning, "警告",
-                                                   "删除会将相关预订变为不可用预订，是否继续？",
-                                                   QMessageBox::Yes | QMessageBox::No, NULL);
-
+                QMessageBox *msg = new QMessageBox(
+                    QMessageBox::Warning, "警告",
+                    "删除会将相关预订变为不可用预订，是否继续？",
+                    QMessageBox::Yes | QMessageBox::No, NULL);
                 if(msg->exec()){
                     QString sql_where_resv = "where resvType = " + QString::number(flag) + " and resvContent = '" + content + "'";
                     QHash<QString, QString> update;
@@ -599,9 +600,10 @@ void Server::deleteItem(int flag, QString content){
             QHash<QString, QString> bus;
             db->getData("bus", bus, sql_where);
             if(bus.size() != 0 && bus["numBus"] != bus["numAvail"]){
-                QMessageBox *msg = new QMessageBox(QMessageBox::Warning, "警告",
-                                                   "删除会将相关预订变为不可用预订，是否继续？",
-                                                   QMessageBox::Yes | QMessageBox::No, NULL);
+                QMessageBox *msg = new QMessageBox(
+                    QMessageBox::Warning, "警告",
+                    "删除会将相关预订变为不可用预订，是否继续？",
+                    QMessageBox::Yes | QMessageBox::No, NULL);
                 if(msg->exec()){
                     QString sql_where_resv = "where resvType = " + QString::number(flag) + " and resvContent = '" + content + "'";
                     QHash<QString, QString> update;
@@ -647,9 +649,10 @@ void Server::deleteItem(int flag, QString content){
                 }
             }
             if(jud_ra){
-                QMessageBox *msg = new QMessageBox(QMessageBox::Warning, "警告",
-                                                   "删除会将相关预订变为不可用预订，是否继续？",
-                                                   QMessageBox::Yes | QMessageBox::No, NULL);
+                QMessageBox *msg = new QMessageBox(
+                    QMessageBox::Warning, "警告",
+                    "删除会将相关预订变为不可用预订，是否继续？",
+                    QMessageBox::Yes | QMessageBox::No, NULL);
                 if(msg->exec()){
                     QHash<QString, QString> update;
                     update.insert("resvAvail", "0");
@@ -686,9 +689,10 @@ void Server::deleteItem(int flag, QString content){
             QString sql_where_resv = "where resvKey = '" + content + "'";
             db->getData("reservations", resv, sql_where_resv);
             if(resv.size() != 0 && resv["resvAvail"] == QString::number(Reservation::AVAILABLE)){
-                QMessageBox *msg = new QMessageBox(QMessageBox::Warning, "警告",
-                                                   "删除可用预订会将预订占用的内容归还，是否继续？",
-                                                   QMessageBox::Yes | QMessageBox::No, NULL);
+                QMessageBox *msg = new QMessageBox(
+                    QMessageBox::Warning, "警告",
+                    "删除可用预订会将预订占用的内容归还，是否继续？",
+                    QMessageBox::Yes | QMessageBox::No, NULL);
                 if(msg->exec() == QMessageBox::Yes){
                     // 归还预订内容
                     QString table;
@@ -786,6 +790,68 @@ QList<QHash<QString,QString>> Server::getData(User user){
     QList<QHash<QString,QString>> data;
     QString sql_where = "where custName = '" + user.getName() + "'";
     db->getData("reservations", data, sql_where);
+    return data;
+}
+
+QList<QHash<QString,QString>> Server::getData(int table_flag, int attribute_flag, QString search_content){
+    QString table;
+    QString attribute;
+    QString resv_type;
+    QString sql_where;
+    switch(table_flag){
+    case 0: {
+        table = "flights";
+        switch(attribute_flag){
+        case 0: attribute = "flightNum"; break;
+        case 1: attribute = "FromCity"; break;
+        case 2: attribute = "ArivCity"; break;
+        }
+        sql_where = "where " + attribute + " LIKE '%" + search_content + "%'";
+        break;
+    }
+    case 1: {
+        table = "hotels";
+        switch(attribute_flag){
+        case 0: attribute = "location"; break;
+        }
+        sql_where = "where " + attribute + " LIKE '%" + search_content + "%'";
+        break;
+    }
+    case 2: {
+        table = "bus";
+        switch(attribute_flag){
+        case 0: attribute = "location"; break;
+        }
+        sql_where = "where " + attribute + " LIKE '%" + search_content + "%'";
+        break;
+    }
+    case 3: {
+        table = "customers";
+        switch(attribute_flag){
+        case 0: attribute = "custName"; break;
+        }
+        sql_where = "where " + attribute + " LIKE '%" + search_content + "%'";
+        break;
+    }
+    case 4: {
+        table = "reservations";
+        switch(attribute_flag){
+        case 0: attribute = "resvKey"; break;
+        case 1: attribute = "custName"; break;
+        case 2: attribute = "resvContent"; resv_type = "0"; break;
+        case 3: attribute = "resvContent"; resv_type = "1"; break;
+        case 4: attribute = "resvContent"; resv_type = "2"; break;
+        }
+        if(attribute_flag < 2){
+            sql_where = "where " + attribute + " LIKE '%" + search_content + "%'";
+        } else{
+            sql_where = "where resvType = " + resv_type + " and " + attribute + " LIKE '%" + search_content + "%'";
+        }
+        break;
+    }
+    }
+    QList<QHash<QString,QString>> data;
+    db->getData(table, data, sql_where);
     return data;
 }
 

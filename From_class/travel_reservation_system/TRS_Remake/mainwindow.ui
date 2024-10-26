@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
-    <height>352</height>
+    <width>656</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="sw_main">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_main_0_main">
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -138,16 +138,47 @@
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
-                   <width>118</width>
-                   <height>20</height>
+                   <width>187</width>
+                   <height>17</height>
                   </size>
                  </property>
                 </spacer>
                </item>
                <item>
+                <widget class="QPushButton" name="pb_hide_search">
+                 <property name="text">
+                  <string>隐藏查询栏</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QPushButton" name="pb_search">
                  <property name="text">
                   <string>查询</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hlayout_search">
+               <item>
+                <widget class="QComboBox" name="cb_search"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="l_search">
+                 <property name="text">
+                  <string>查询内容：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="le_search"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_search_ok">
+                 <property name="text">
+                  <string>确认</string>
                  </property>
                 </widget>
                </item>
@@ -200,7 +231,7 @@
              <item>
               <widget class="QStackedWidget" name="sw_detail">
                <property name="currentIndex">
-                <number>4</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_detail_0_flight">
                 <layout class="QGridLayout" name="gridLayout_4">
@@ -785,7 +816,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>654</width>
+     <width>656</width>
      <height>17</height>
     </rect>
    </property>

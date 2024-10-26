@@ -38,6 +38,7 @@ public:
     void deleteItem(int flag, QString content);
     QList<QHash<QString,QString>> getData(int flag);
     QList<QHash<QString,QString>> getData(User user);
+    QList<QHash<QString,QString>> getData(int flag,  int attribute_flag, QString search_content);
     QHash<QString,QString> getData(int flag, QString key);
     User* getCurrentUser();
     Status getStatus();

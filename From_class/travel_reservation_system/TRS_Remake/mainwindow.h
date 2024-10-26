@@ -33,14 +33,19 @@ private:
     QHash<QString, int> hotel_difference;
     QHash<QString, int> bus_difference;
     bool connectToServer();
+    void refreshMainPage(int flag);
+    void refreshMainPage(QList<QHash<QString,QString>> data, int flag);
     void setUserVisibility(User::Permission permission);
     void setUserAvailable(User::Permission permission);
     void rootFunctionVisibility(bool flag);
     void initializeModel(int flag);
     void initializeDataMap(int flag);
     void loadData(int flag);
+    void loadData(QList<QHash<QString,QString>> data, int flag);
     void opentable(QList<QHash<QString,QString>> data, int flag);
     void dataMapper(QList<QString> rowData);
+    void showSearchBar(bool flag);
+    void refreshSearchComboBox(int flag);
 
     // my_resv
     QList<QHash<QString,QString>> data;
@@ -75,7 +80,11 @@ private slots:
     void on_pb_update_clicked();
     void on_pb_delete_clicked();
     void on_pb_search_clicked();
+    void on_pb_hide_search_clicked();
+    void on_pb_search_ok_clicked();
     void on_pb_my_reservation_clicked();
+
+    // my_resv
     void on_pb_back_main_clicked();
     void on_cb_display_unavail_my_resv_stateChanged(int arg1);
     void on_tv_display_my_resv_clicked(const QModelIndex &index);
@@ -84,5 +93,6 @@ private slots:
     void on_pb_alter_ok_clicked();
     void on_pb_cancel_my_resv_clicked();
     void on_pb_delete_my_resv_clicked();
+    void on_pb_my_resv_track_clicked();
 };
 #endif // MAINWINDOW_H

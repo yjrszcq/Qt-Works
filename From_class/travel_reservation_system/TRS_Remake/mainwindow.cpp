@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle("旅行预订系统");
     if(!connectToServer()){
         QMessageBox::critical(this , "错误", "Server连接失败，程序关闭", QMessageBox::Yes);
         QCoreApplication::exit(2);
@@ -31,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->cb_option->setCurrentIndex(0);
     setUserVisibility(User::VISITOR);
     setUserAvailable(User::VISITOR);
+
+    showSearchBar(false);
+
 }
 
 MainWindow::~MainWindow()
@@ -61,9 +65,7 @@ void MainWindow::userReceive(User* currentUser){
 }
 
 void MainWindow::refreshReceive(int flag){
-    loadData(flag);
-    initializeDataMap(flag);
-    rootFunctionVisibility(false);
+    refreshMainPage(flag);
 }
 
 bool MainWindow::connectToServer(){
@@ -76,6 +78,19 @@ bool MainWindow::connectToServer(){
     } else{
         return false;
     }
+}
+
+void MainWindow::refreshMainPage(int flag){
+    loadData(flag);
+    initializeDataMap(flag);
+    rootFunctionVisibility(false);
+    refreshSearchComboBox(flag);
+}
+
+void MainWindow::refreshMainPage(QList<QHash<QString,QString>> data, int flag){
+    loadData(data, flag);
+    initializeDataMap(flag);
+    rootFunctionVisibility(false);
 }
 
 void MainWindow::setUserVisibility(User::Permission permission){
@@ -227,6 +242,10 @@ void MainWindow::loadData(int flag){
     opentable(data, flag);
 }
 
+void MainWindow::loadData(QList<QHash<QString,QString>> data, int flag){
+    opentable(data, flag);
+}
+
 void MainWindow::opentable(QList<QHash<QString,QString>> data, int flag){
     User::Permission permission = server->getCurrentUser()->getPermission();
     initializeModel(flag);
@@ -360,6 +379,57 @@ void MainWindow::dataMapper(QList<QString> rowData){
     }
 }
 
+void MainWindow::showSearchBar(bool flag){
+    if(flag){
+        ui->pb_search->hide();
+        ui->l_search->show();
+        ui->le_search->show();
+        ui->cb_search->show();
+        ui->pb_hide_search->show();
+        ui->pb_search_ok->show();
+    } else{
+        ui->pb_search->show();
+        ui->l_search->hide();
+        ui->le_search->hide();
+        ui->cb_search->hide();
+        ui->pb_hide_search->hide();
+        ui->pb_search_ok->hide();
+    }
+}
+
+void MainWindow::refreshSearchComboBox(int flag){
+    ui->cb_search->clear();
+    switch(flag){
+    case 0:{
+        ui->cb_search->addItem("航班号");
+        ui->cb_search->addItem("出发地");
+        ui->cb_search->addItem("到达地");
+        break;
+    }
+    case 1:{
+        ui->cb_search->addItem("宾馆地址");
+        break;
+    }
+    case 2:{
+        ui->cb_search->addItem("车站地址");
+        break;
+    }
+    case 3:{
+        ui->cb_search->addItem("用户名");
+        break;
+    }
+    case 4:{
+        ui->cb_search->addItem("预订ID");
+        ui->cb_search->addItem("用户名");
+        ui->cb_search->addItem("航班号");
+        ui->cb_search->addItem("宾馆地址");
+        ui->cb_search->addItem("车站地址");
+        break;
+    }
+    }
+}
+
+
 void MainWindow::on_tv_display_clicked(const QModelIndex &index)
 {
     rootFunctionVisibility(true);
@@ -377,9 +447,7 @@ void MainWindow::on_tv_display_clicked(const QModelIndex &index)
 void MainWindow::on_cb_option_currentIndexChanged(int index)
 {
     ui->sw_detail->setCurrentIndex(index);
-    loadData(index);
-    initializeDataMap(index);
-    rootFunctionVisibility(false);
+    refreshMainPage(index);
 }
 
 
@@ -475,15 +543,28 @@ void MainWindow::on_pb_insert_clicked()
 void MainWindow::on_pb_update_clicked()
 {
     switch(ui->cb_option->currentIndex()){
-    case 0: server->updateItem(Flight(ui->le_flight_0->text(), ui->sb_flight_0->value(),
-                                  ui->sb_flight_1->value(), ui->sb_flight_2->value(),
-                                  ui->le_flight_1->text(), ui->le_flight_2->text())); break;
-    case 1: server->updateItem(Hotel(ui->le_hotel_0->text(), ui->sb_hotel_0->value(),
-                                  ui->sb_hotel_1->value(), ui->sb_hotel_2->value())); break;
-    case 2: server->updateItem(Bus(ui->le_bus_0->text(), ui->sb_bus_0->value(),
-                               ui->sb_bus_1->value(), ui->sb_bus_2->value())); break;
-    case 3: server->updateItem(User(ui->le_user_0->text(), ui->le_user_1->text(),
-                                ui->le_user_2->text(), User::USER)); break;
+    case 0: server->updateItem(Flight(
+            ui->le_flight_0->text(),
+            ui->sb_flight_0->value(),
+            ui->sb_flight_1->value(),
+            ui->sb_flight_2->value(),
+            ui->le_flight_1->text(),
+            ui->le_flight_2->text())); break;
+    case 1: server->updateItem(Hotel(
+            ui->le_hotel_0->text(),
+            ui->sb_hotel_0->value(),
+            ui->sb_hotel_1->value(),
+            ui->sb_hotel_2->value())); break;
+    case 2: server->updateItem(Bus(
+            ui->le_bus_0->text(),
+            ui->sb_bus_0->value(),
+            ui->sb_bus_1->value(),
+            ui->sb_bus_2->value())); break;
+    case 3: server->updateItem(User(
+            ui->le_user_0->text(),
+            ui->le_user_1->text(),
+            ui->le_user_2->text(),
+            User::USER)); break;
     case 4: {
         int type;
         if(ui->le_resv_1->text() == "航班"){
@@ -518,9 +599,30 @@ void MainWindow::on_pb_delete_clicked()
     server->deleteItem(index, content);
 }
 
+
 void MainWindow::on_pb_search_clicked()
 {
+    ui->le_search->clear();
+    ui->cb_search->setCurrentIndex(0);
+    showSearchBar(true);
+}
 
+
+void MainWindow::on_pb_hide_search_clicked()
+{
+    showSearchBar(false);
+    ui->le_search->clear();
+    refreshMainPage(ui->cb_option->currentIndex());
+}
+
+
+void MainWindow::on_pb_search_ok_clicked()
+{
+    QList<QHash<QString,QString>> data = server->getData(
+        ui->cb_option->currentIndex(),
+        ui->cb_search->currentIndex(),
+        ui->le_search->text());
+    refreshMainPage(data, ui->cb_option->currentIndex());
 }
 
 
@@ -617,12 +719,14 @@ void MainWindow::refreshResvVisibilityMyResv(Qt::CheckState state){
     }
 }
 
+
 void MainWindow::on_pb_back_main_clicked()
 {
     ui->sw_main->setCurrentIndex(0);
     loadData(currentPage);
     initializeDataMap(currentPage);
 }
+
 
 void MainWindow::on_cb_display_unavail_my_resv_stateChanged(int arg1)
 {
@@ -674,13 +778,22 @@ void MainWindow::on_pb_my_resv_content_clicked()
     }
     bool ok;
     switch(resv->getResvType()){
-    case 0: MyResvDialog::show(Flight(data["flightNum"], data["price"].toInt(&ok, 10),
-                                         data["numSeats"].toInt(&ok, 10), data["numAvail"].toInt(&ok, 10),
-                                         data["FromCity"], data["ArivCity"])); break;
-    case 1: MyResvDialog::show(Hotel(data["location"], data["price"].toInt(&ok, 10),
-                                        data["numRooms"].toInt(&ok, 10), data["numAvail"].toInt(&ok, 10))); break;
-    case 2: MyResvDialog::show(Bus(data["location"], data["price"].toInt(&ok, 10),
-                                      data["numBus"].toInt(&ok, 10), data["numAvail"].toInt(&ok, 10))); break;
+    case 0: MyResvDialog::show(Flight(
+            data["flightNum"],
+            data["price"].toInt(&ok, 10),
+            data["numSeats"].toInt(&ok, 10),
+            data["numAvail"].toInt(&ok, 10),
+            data["FromCity"], data["ArivCity"])); break;
+    case 1: MyResvDialog::show(Hotel(
+            data["location"],
+            data["price"].toInt(&ok, 10),
+            data["numRooms"].toInt(&ok, 10),
+            data["numAvail"].toInt(&ok, 10))); break;
+    case 2: MyResvDialog::show(Bus(
+            data["location"],
+            data["price"].toInt(&ok, 10),
+            data["numBus"].toInt(&ok, 10),
+            data["numAvail"].toInt(&ok, 10))); break;
     }
 }
 
@@ -723,3 +836,8 @@ void MainWindow::on_pb_delete_my_resv_clicked()
     refreshResvVisibilityMyResv(ui->cb_display_unavail_my_resv->checkState());
 }
 
+
+void MainWindow::on_pb_my_resv_track_clicked()
+{
+
+}
