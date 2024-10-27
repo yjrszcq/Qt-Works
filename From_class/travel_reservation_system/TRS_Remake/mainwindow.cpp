@@ -5,6 +5,7 @@
 #include "signupdialog.h"
 #include "adddialog.h"
 #include "myresvdialog.h"
+#include "traveltrackdialog.h"
 
 #include <QMessageBox>
 #include <QListView>
@@ -78,14 +79,14 @@ bool MainWindow::connectToServer(){
 void MainWindow::refreshMainPage(int flag){
     loadData(flag);
     initializeDataMap(flag);
-    rootFunctionVisibility(false);
+    functionVisibility(false);
     refreshSearchComboBox(flag);
 }
 
 void MainWindow::refreshMainPage(QList<QHash<QString,QString>> data, int flag){
     loadData(data, flag);
     initializeDataMap(flag);
-    rootFunctionVisibility(false);
+    functionVisibility(false);
 }
 
 void MainWindow::setUserVisibility(User::Permission permission){
@@ -117,7 +118,6 @@ void MainWindow::setUserVisibility(User::Permission permission){
         view->setRowHidden(4, false);
         ui->sw_function->setCurrentIndex(2);
         ui->pb_my_reservation->hide();
-        ui->pb_reservation->hide();
         ui->pb_log_in->hide();
         ui->pb_sign_up->hide();
         ui->pb_log_out->show();
@@ -163,15 +163,27 @@ void MainWindow::setUserAvailable(User::Permission permission){
     }
 }
 
-void MainWindow::rootFunctionVisibility(bool flag){
-    if(server->getCurrentUser()->getPermission() == User::ROOT){
-        if(flag == false){
-            ui->pb_update->hide();
-            ui->pb_delete->hide();
+void MainWindow::functionVisibility(bool flag){
+    switch(server->getCurrentUser()->getPermission()){
+    case User::VISITOR: break;
+    case User::USER:{
+        if(flag){
+            ui->pb_reservation->show();
         } else{
+            ui->pb_reservation->hide();
+        }
+        break;
+    }
+    case User::ROOT:{
+        if(flag){
             ui->pb_update->show();
             ui->pb_delete->show();
+        } else{
+            ui->pb_update->hide();
+            ui->pb_delete->hide();
         }
+        break;
+    }
     }
 }
 
@@ -427,7 +439,7 @@ void MainWindow::refreshSearchComboBox(int flag){
 
 void MainWindow::on_tv_display_clicked(const QModelIndex &index)
 {
-    rootFunctionVisibility(true);
+    functionVisibility(true);
     QList<QString> rowData;
     int row = index.row();
     int columnCount = index.model()->columnCount();
@@ -834,5 +846,5 @@ void MainWindow::on_pb_delete_my_resv_clicked()
 
 void MainWindow::on_pb_my_resv_track_clicked()
 {
-
+    TravelTrackDialog::show(data, server);
 }

@@ -589,7 +589,7 @@
              <item>
               <widget class="QStackedWidget" name="sw_function">
                <property name="currentIndex">
-                <number>2</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_function_0_visit">
                 <layout class="QHBoxLayout" name="horizontalLayout_3">

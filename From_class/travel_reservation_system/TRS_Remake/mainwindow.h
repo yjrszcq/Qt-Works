@@ -37,7 +37,7 @@ private:
     void refreshMainPage(QList<QHash<QString,QString>> data, int flag);
     void setUserVisibility(User::Permission permission);
     void setUserAvailable(User::Permission permission);
-    void rootFunctionVisibility(bool flag);
+    void functionVisibility(bool flag);
     void initializeModel(int flag);
     void initializeDataMap(int flag);
     void loadData(int flag);

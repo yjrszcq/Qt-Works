@@ -24,6 +24,7 @@ SOURCES += \
     server.cpp \
     setdbdialog.cpp \
     signupdialog.cpp \
+    traveltrackdialog.cpp \
     user.cpp
 
 HEADERS += \
@@ -39,6 +40,7 @@ HEADERS += \
     server.h \
     setdbdialog.h \
     signupdialog.h \
+    traveltrackdialog.h \
     user.h
 
 FORMS += \
