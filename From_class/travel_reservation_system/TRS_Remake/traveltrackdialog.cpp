@@ -94,14 +94,19 @@ QList<QString> TravelTrackDialog::travelTrackAnalyze() {
         temp.append(mf["ArivCity"]);
         line.append(temp);
     }
-    bool jud[line.size()];
+    bool jud[line.size()], jud_ring[line.size()];
     for(int i = 0; i < line.size(); i ++){
         jud[i] = true;
+        jud_ring[i] = false;
     }
     for(int i = 0; i < line.size(); i ++){
         bool jud_again = false;
         for(int j = 0; j < line.size(); j ++){
-            if(line[i].last() == line[j][0] && i != j){ // 两个list头尾相同, 将后面的list整个接到前面的list (i = j则成环)
+            if(line[i].last() == line[j][0] && !jud_ring[j]){ // 两个list头尾相同, 将后面的list整个接到前面的list
+                if(i == j){ // i = j则成环
+                    jud_ring[i] = true;
+                    break;
+                }
                 for(int k = 1; k < line[j].size(); k ++){
                     line[i].append(line[j][k]);
                 }
