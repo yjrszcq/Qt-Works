@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "mysqldb.h"
 #include "server.h"
 
 #include <QMainWindow>
