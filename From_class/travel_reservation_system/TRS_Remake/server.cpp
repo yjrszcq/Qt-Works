@@ -15,8 +15,10 @@ Server::Server(QString host, int port, QString name, QString password, QString d
 bool Server::startServer(QString host, int port, QString name, QString password, QString database){
     connectToDatabase(host, port, name, password, database);
     if(db == NULL){
-        QMessageBox *msg = new QMessageBox(QMessageBox::Critical, "错误", "数据库连接出错，是否重新连接数据库？",
-                                           QMessageBox::Yes | QMessageBox::No, NULL);
+        QMessageBox *msg = new QMessageBox(
+            QMessageBox::Critical,
+            "错误", "数据库连接出错，是否重新连接数据库？",
+            QMessageBox::Yes | QMessageBox::No, NULL);
         SetDbDialog *sdd = new SetDbDialog(host, port, name, password, database);
         connect(sdd, SIGNAL(dbSetSent(QString, int, QString, QString, QString, bool)),
                 this, SLOT(dbSetReceive(QString, int, QString, QString, QString, bool)));
