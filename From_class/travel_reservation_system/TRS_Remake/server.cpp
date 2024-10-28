@@ -140,6 +140,7 @@ bool Server::reserve(Reservation tempResv){
         resv.insert("resvContent", tempResv.getResvContent());
         resv.insert("resvAvail", QString::number(tempResv.getResvAvail()));
         resv.insert("resvKey", tempResv.getResvKey());
+        resv.insert("resvNote", tempResv.getResvNote());
         db->addData("reservations", resv);
         if(db->getNumRowsAffected() == 0){
             QMessageBox::information(NULL, "失败", "预订失败-1", QMessageBox::Yes);
@@ -343,7 +344,7 @@ void Server::updateItem(Flight tempFlight){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(0);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是 航班不存在 或 其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 未更改内容 或 航班不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -362,7 +363,7 @@ void Server::updateItem(Hotel tempHotel){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(1);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是 所在地不存在 或 其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 未更改内容 或 所在地不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -381,7 +382,7 @@ void Server::updateItem(Bus tempBus){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(2);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是 所在地不存在 或 其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 未更改内容 或 所在地不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
@@ -399,7 +400,7 @@ void Server::updateItem(User tempUser){
             QMessageBox::information(NULL, "成功", "修改成功", QMessageBox::Yes);
             emit refreshSent(3);
         } else{
-            QMessageBox::information(NULL, "失败", "修改失败-可能是 用户名不存在 或 其他格式错误", QMessageBox::Yes);
+            QMessageBox::information(NULL, "失败", "修改失败-可能是 未更改内容 或 用户名不存在 或 其他格式错误", QMessageBox::Yes);
         }
     } else{
         QMessageBox::information(NULL, "失败", "修改失败-属性不能有空值", QMessageBox::Yes);
