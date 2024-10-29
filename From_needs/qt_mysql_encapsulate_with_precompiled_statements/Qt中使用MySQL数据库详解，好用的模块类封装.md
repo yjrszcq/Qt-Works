@@ -920,7 +920,7 @@ void MainWindow::on_pb_test_clicked()
 
 - 若要获取`db->addData()`，`db->addData()`，`db->updateData()`，`db->delData()`的影响到的行数，请使用`db->getNumRowsAffected()`。
 
-- PS版(SQL预编译版)同上
+- PS版(SQL预编译版)同上。
 
 ## 附qsqlmysql库的构建
 
