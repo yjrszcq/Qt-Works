@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>349</height>
+    <width>656</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QStackedWidget" name="stackedWidget">
-      <widget class="QWidget" name="page_main_1">
+     <widget class="QStackedWidget" name="sw_main">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="page_main_0_main">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QSplitter" name="splitter_main">
@@ -135,16 +138,47 @@
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
-                   <width>118</width>
-                   <height>20</height>
+                   <width>187</width>
+                   <height>17</height>
                   </size>
                  </property>
                 </spacer>
                </item>
                <item>
+                <widget class="QPushButton" name="pb_hide_search">
+                 <property name="text">
+                  <string>隐藏查询栏</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QPushButton" name="pb_search">
                  <property name="text">
                   <string>查询</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hlayout_search">
+               <item>
+                <widget class="QComboBox" name="cb_search"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="l_search">
+                 <property name="text">
+                  <string>查询内容：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="le_search"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_search_ok">
+                 <property name="text">
+                  <string>确认</string>
                  </property>
                 </widget>
                </item>
@@ -199,67 +233,341 @@
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <widget class="QWidget" name="page">
+               <widget class="QWidget" name="page_detail_0_flight">
                 <layout class="QGridLayout" name="gridLayout_4">
                  <item row="0" column="0">
-                  <widget class="QLabel" name="l_detail_0">
+                  <widget class="QLabel" name="l_flight_0">
                    <property name="text">
-                    <string>detail_0</string>
+                    <string>航班号</string>
                    </property>
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QLineEdit" name="le_detail_0"/>
+                  <widget class="QLineEdit" name="le_flight_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QLabel" name="l_detail_1">
+                  <widget class="QLabel" name="l_flight_1">
                    <property name="text">
-                    <string>detail_1</string>
+                    <string>价格</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="le_detail_1"/>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QLabel" name="l_detail_2">
+                  <widget class="QLabel" name="l_flight_2">
                    <property name="text">
-                    <string>detail_2</string>
+                    <string>座位总数</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="le_detail_2"/>
                  </item>
                  <item row="3" column="0">
-                  <widget class="QLabel" name="l_detail_3">
+                  <widget class="QLabel" name="l_flight_3">
                    <property name="text">
-                    <string>detail_3</string>
+                    <string>剩余座位</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="le_detail_3"/>
-                 </item>
                  <item row="4" column="0">
-                  <widget class="QLabel" name="l_detail_4">
+                  <widget class="QLabel" name="l_flight_4">
                    <property name="text">
-                    <string>detail_4</string>
+                    <string>出发地</string>
                    </property>
                   </widget>
                  </item>
                  <item row="4" column="1">
-                  <widget class="QLineEdit" name="le_detail_4"/>
+                  <widget class="QLineEdit" name="le_flight_1"/>
                  </item>
                  <item row="5" column="0">
-                  <widget class="QLabel" name="l_detail_5">
+                  <widget class="QLabel" name="l_flight_5">
                    <property name="text">
-                    <string>detail_5</string>
+                    <string>到达地</string>
                    </property>
                   </widget>
                  </item>
                  <item row="5" column="1">
-                  <widget class="QLineEdit" name="le_detail_5"/>
+                  <widget class="QLineEdit" name="le_flight_2"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="sb_flight_0">
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QSpinBox" name="sb_flight_1">
+                   <property name="maximum">
+                    <number>1000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QSpinBox" name="sb_flight_2">
+                   <property name="readOnly">
+                    <bool>false</bool>
+                   </property>
+                   <property name="maximum">
+                    <number>1000</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_detail_1_hotel">
+                <layout class="QGridLayout" name="gridLayout">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_hotel_0">
+                   <property name="text">
+                    <string>宾馆地址</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_hotel_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_hotel_1">
+                   <property name="text">
+                    <string>价格</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="sb_hotel_0">
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="l_hotel_2">
+                   <property name="text">
+                    <string>房间总数</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QSpinBox" name="sb_hotel_1">
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="l_hotel_3">
+                   <property name="text">
+                    <string>剩余房间</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QSpinBox" name="sb_hotel_2">
+                   <property name="readOnly">
+                    <bool>false</bool>
+                   </property>
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_detail_2_bus">
+                <layout class="QGridLayout" name="gridLayout_2">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_bus_0">
+                   <property name="text">
+                    <string>车站地址</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_bus_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_bus_1">
+                   <property name="text">
+                    <string>价格</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="sb_bus_0">
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="l_bus_2">
+                   <property name="text">
+                    <string>座位总数</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QSpinBox" name="sb_bus_1">
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="l_bus_3">
+                   <property name="text">
+                    <string>剩余座位</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QSpinBox" name="sb_bus_2">
+                   <property name="readOnly">
+                    <bool>false</bool>
+                   </property>
+                   <property name="maximum">
+                    <number>100000</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_detail_3_user">
+                <layout class="QGridLayout" name="gridLayout_3">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_user_0">
+                   <property name="text">
+                    <string>用户名</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_user_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_user_1">
+                   <property name="text">
+                    <string>ID</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="le_user_1"/>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="l_user_2">
+                   <property name="text">
+                    <string>密码</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_user_2"/>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_detail_4_reservation">
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="l_resv_2">
+                   <property name="text">
+                    <string>预订内容</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="cb_resv_0">
+                   <item>
+                    <property name="text">
+                     <string>不可用</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>可用</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="l_resv_1">
+                   <property name="text">
+                    <string>预订类型</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="l_resv_4">
+                   <property name="text">
+                    <string>预订状态</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="le_resv_3">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_resv_2">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="l_resv_0">
+                   <property name="text">
+                    <string>用户名</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="l_resv_3">
+                   <property name="text">
+                    <string>预订ID</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_resv_0">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="le_resv_1">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="l_resv_5">
+                   <property name="text">
+                    <string>预订备注</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="le_resv_4"/>
                  </item>
                 </layout>
                </widget>
@@ -279,66 +587,97 @@
               </spacer>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="hlayout_set_item">
-               <item>
-                <spacer name="hspacer_set_item">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_insert">
-                 <property name="text">
-                  <string>添加</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_update">
-                 <property name="text">
-                  <string>修改</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_delete">
-                 <property name="text">
-                  <string>删除</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="hlayout_reservation">
-               <item>
-                <spacer name="hspacer_reservation">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>168</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_reservation">
-                 <property name="text">
-                  <string>预订</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QStackedWidget" name="sw_function">
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
+               <widget class="QWidget" name="page_function_0_visit">
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <spacer name="hspacer_visit">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="l_visit">
+                   <property name="text">
+                    <string>请先登录</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_function_1_reservation">
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <spacer name="hspacer_reservation">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>202</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_reservation">
+                   <property name="text">
+                    <string>预订</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="page_function_2_edit">
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <spacer name="hspacer_set_item">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>34</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_insert">
+                   <property name="text">
+                    <string>添加</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_update">
+                   <property name="text">
+                    <string>修改</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_delete">
+                   <property name="text">
+                    <string>删除</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -347,7 +686,127 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_main_2"/>
+      <widget class="QWidget" name="page_main_1_my_resv">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="hlayout_my_resv">
+          <item>
+           <widget class="QPushButton" name="pb_back_main">
+            <property name="text">
+             <string>返回</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="l_user_my_resv">
+            <property name="text">
+             <string>用户：</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="l_user_display_my_resv">
+            <property name="text">
+             <string>未登录</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hspacer_my_resv_up">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_my_resv_track">
+            <property name="text">
+             <string>查看旅行路线</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableView" name="tv_display_my_resv"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="hlayout_my_resv_function">
+          <item>
+           <widget class="QCheckBox" name="cb_display_unavail_my_resv">
+            <property name="text">
+             <string>显示不可用预订</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hspacer_my_resv_down">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="l_alter_note">
+            <property name="text">
+             <string>修改备注：</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="le_alter_note"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_alter_ok">
+            <property name="text">
+             <string>确定</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_alter_my_resv_note">
+            <property name="text">
+             <string>修改备注</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_my_resv_content">
+            <property name="text">
+             <string>查看内容</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_cancel_my_resv">
+            <property name="text">
+             <string>取消预订</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_delete_my_resv">
+            <property name="text">
+             <string>删除预订</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -357,7 +816,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>594</width>
+     <width>656</width>
      <height>17</height>
     </rect>
    </property>

@@ -11,33 +11,40 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    adddialog.cpp \
     bus.cpp \
     flight.cpp \
     hotel.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    myresvdialog.cpp \
     mysqldb.cpp \
     reservation.cpp \
     server.cpp \
     setdbdialog.cpp \
     signupdialog.cpp \
+    traveltrackdialog.cpp \
     user.cpp
 
 HEADERS += \
+    adddialog.h \
     bus.h \
     flight.h \
     hotel.h \
     logindialog.h \
     mainwindow.h \
+    myresvdialog.h \
     mysqldb.h \
     reservation.h \
     server.h \
     setdbdialog.h \
     signupdialog.h \
+    traveltrackdialog.h \
     user.h
 
 FORMS += \
+    adddialog.ui \
     mainwindow.ui
 
 TRANSLATIONS += \
@@ -45,7 +52,14 @@ TRANSLATIONS += \
 CONFIG += lrelease
 CONFIG += embed_translations
 
+RC_ICONS = TRS.ico
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    .gitignore \
+    TRS.ico \
+    TRS.pro.user

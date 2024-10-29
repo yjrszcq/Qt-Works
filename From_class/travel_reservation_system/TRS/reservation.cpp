@@ -10,6 +10,16 @@ Reservation::Reservation(QString user_name, int resv_type, QString resv_content)
     this->resv_content = resv_content; // 各个表的主键内容
     this->resv_avail = Reservation::AVAILABLE;
     resvKeyGenerate();
+    this->resv_note = "";
+}
+
+Reservation::Reservation(QString user_name, int resv_type, QString resv_content, QString resv_key, bool resv_avail, QString resv_note){
+    this->user_name = user_name;
+    this->resv_type = resv_type;
+    this->resv_content = resv_content;
+    this->resv_avail = resv_avail;
+    this->resv_key = resv_key;
+    this->resv_note = resv_note;
 }
 
 void Reservation::resvKeyGenerate(){
@@ -55,6 +65,10 @@ void Reservation::setResvKey(QString resv_key){
     this->resv_key = resv_key;
 }
 
+void Reservation::setResvNote(QString resv_note){
+    this->resv_note = resv_note;
+}
+
 QString Reservation::getUserName(){
     return this->user_name;
 }
@@ -73,4 +87,8 @@ bool Reservation::getResvAvail(){
 
 QString Reservation::getResvKey(){
     return this->resv_key;
+}
+
+QString Reservation::getResvNote(){
+    return this->resv_note;
 }
