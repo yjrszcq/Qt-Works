@@ -19,21 +19,37 @@ public:
     MysqlDb();
     ~MysqlDb();
 public:
+    typedef struct SqlWhere{
+        QString str;
+        QList<QString> values;
+        SqlWhere() = default;
+    }SqlWhere;
+
     bool connectSql(const QString &dbName);//打开连接
     bool connectSql(const QString &host, int port, const QString &dbName, const QString &userName, const QString &password);//打开连接
     bool disConnectSql();//关闭连接
-    bool sqlWhereToStr(QList<QHash<QString, QString>> sqlWhere, QList<QString> &values, QString &queryStr);
-    void queryBindValue(QSqlQuery &query, QList<QString> values);
+
+    //无sql预编译
     bool queryExec(QString sqlStr);//执行sql语句，不获取结果
     bool queryExec(QString sqlStr,QList<QHash<QString,QString>> &data);//执行sql语句，并获取结果
-    bool queryExec(QSqlQuery &query, QString queryStr);
-    bool queryExec(QSqlQuery &query, QString queryStr, QList<QHash<QString, QString>> &data);
-    bool getData(QString tableName,QHash<QString,QString> &data,QList<QHash<QString, QString>> sqlWhere = QList<QHash<QString, QString>>()); //获取数据
-    bool getData(QString table,QList<QHash<QString,QString>> &data,QList<QHash<QString, QString>> sqlWhere = QList<QHash<QString, QString>>()); //获取数据
-    bool getData(QString tableName,QHash<QString,QString> columndata,QList<QHash<QString,QString>> &data, QList<QHash<QString, QString>> sqlWhere = QList<QHash<QString, QString>>()); //获取数据
+    bool getData(QString tableName,QHash<QString,QString> &data,QString sqlWhere=""); //获取数据
+    bool getData(QString table,QList<QHash<QString,QString>> &data,QString sqlWhere=""); //获取数据
+    bool getData(QString tableName,QHash<QString,QString> columndata,QList<QHash<QString,QString>> &data,QString sqlWhere=""); //获取数据
     bool addData(QString tableName,QHash<QString,QString> data);//增加
-    bool delData(QString tableName,QList<QHash<QString, QString>> sqlWhere);//删除
-    bool updateData(QString tableName,QHash<QString,QString> data,QList<QHash<QString, QString>> sqlWhere = QList<QHash<QString, QString>>());//修改
+    bool delData(QString tableName,QString sqlWhere);//删除
+    bool updateData(QString tableName,QHash<QString,QString> data,QString sqlWhere="");//修改
+
+    //有sql预编译
+    bool queryPrepare(QSqlQuery &query, QString sqlStr);//预编译sql
+    bool queryPrepare(QSqlQuery &query, QString sqlStr, QList<QString> values);//预编译sql，含参数绑定
+    bool queryExecPS(QSqlQuery &query, QString sqlStr);//执行sql语句，不获取结果
+    bool queryExecPS(QSqlQuery &query, QString sqlStr,QList<QHash<QString,QString>> &data);//执行sql语句，并获取结果
+    bool getDataPS(QString tableName,QHash<QString,QString> &data,SqlWhere sqlWhere = SqlWhere()); //获取数据
+    bool getDataPS(QString table,QList<QHash<QString,QString>> &data,SqlWhere  sqlWhere = SqlWhere()); //获取数据
+    bool getDataPS(QString tableName,QHash<QString,QString> columndata,QList<QHash<QString,QString>> &data,SqlWhere sqlWhere = SqlWhere()); //获取数据
+    bool addDataPS(QString tableName,QHash<QString,QString> data);//增加
+    bool delDataPS(QString tableName, SqlWhere sqlWhere = SqlWhere());//删除
+    bool updateDataPS(QString tableName,QHash<QString,QString> data, SqlWhere sqlWhere = SqlWhere());//修改
 
     bool transaction();
     bool commit();
