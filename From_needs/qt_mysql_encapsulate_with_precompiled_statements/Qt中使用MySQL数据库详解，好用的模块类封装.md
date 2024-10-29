@@ -914,11 +914,13 @@ void MainWindow::on_pb_test_clicked()
     }   
 }
 ```
-注意：`db->getData()`，`db->updateData()`，`db->delData()`返回的值仅能代表SQL语句是否执行出错，不能代表返回的值是否为空。
+注意：`db->getData()`，`db->addData()`，`db->updateData()`，`db->delData()`返回的值仅能代表SQL语句是否执行出错，不能代表返回的值是否为空。
 
 - 若要获取`db->getData()`的读取到的行数，请使用`data.isEmpty()`或使用`db->getNumRowsAffected()`，但不推荐在`db->getData()`时使用后者。
 
 - 若要获取`db->addData()`，`db->updateData()`，`db->delData()`的影响到的行数，请使用`db->getNumRowsAffected()`。
+
+- PS版(SQL预编译版)同上
 
 ## 附qsqlmysql库的构建
 
