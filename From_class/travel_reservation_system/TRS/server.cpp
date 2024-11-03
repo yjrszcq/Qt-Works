@@ -1,27 +1,31 @@
 #include "server.h"
+
 #include "setdbdialog.h"
+
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QTimer>
 #include <QRegularExpression>
+#include <QFile>
+#include <QSettings>
 
-Server::Server(QString host, int port, QString name, QString password, QString database) {
+Server::Server() {
     status = Server::UNAVAILABLE;
-    if(startServer(host, port, name, password, database)){
+    initConfig();
+    if(startServer()){
         status = Server::AVAILABLE;
     }
 }
 
-bool Server::startServer(QString host, int port, QString name, QString password, QString database){
-    connectToDatabase(host, port, name, password, database);
+bool Server::startServer(){
+    connectToDatabase();
     if(db == NULL){
         QMessageBox *msg = new QMessageBox(
             QMessageBox::Critical,
             "错误", "数据库连接出错，是否重新连接数据库？",
             QMessageBox::Yes | QMessageBox::No, NULL);
-        SetDbDialog *sdd = new SetDbDialog(host, port, name, password, database);
-        connect(sdd, SIGNAL(dbSetSent(QString, int, QString, QString, QString, bool)),
-                this, SLOT(dbSetReceive(QString, int, QString, QString, QString, bool)));
+        SetDbDialog *sdd = new SetDbDialog(config_file_path);
+        connect(sdd, SIGNAL(dbSetSent(bool)),  this, SLOT(dbSetReceive(bool)));
         while(db == NULL){
             switch(msg->exec()){
             case QMessageBox::Yes: {
@@ -39,19 +43,20 @@ bool Server::startServer(QString host, int port, QString name, QString password,
     return true;
 }
 
-void Server::dbSetReceive(QString host, int port, QString name, QString password, QString database, bool flag){
+void Server::dbSetReceive(bool flag){
     if(flag){
-        connectToDatabase(host, port, name, password, database);
+        connectToDatabase();
     }
 }
 
-bool Server::connectToDatabase(QString host, int port, QString name, QString password, QString database){
+bool Server::connectToDatabase(){
+    QSettings config = readConfig();
     db = new MysqlDb();
-    db->setMhost(host);
-    db->setMport(port);
-    db->setMuser(name);
-    db->setMpwd(password);
-    bool jud = db->connectSql(database);
+    db->setMhost(config.value("Database/host").toString());
+    db->setMport(config.value("Database/port").toInt());
+    db->setMuser(config.value("Database/user").toString());
+    db->setMpwd(config.value("Database/password").toString());
+    bool jud = db->connectSql(config.value("Database/database").toString());
     if (jud){
         qDebug() << "Succeed";
         return true;
@@ -62,6 +67,52 @@ bool Server::connectToDatabase(QString host, int port, QString name, QString pas
         db = NULL;
         return false;
     }
+}
+
+void Server::initConfig(){
+    QFile file(config_file_path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QSettings *config = new QSettings(config_file_path, QSettings::IniFormat);
+        config->setValue("Database/host", "localhost");
+        config->setValue("Database/port", 3306);
+        config->setValue("Database/user", "root");
+        config->setValue("Database/password", "1234");
+        config->setValue("Database/database", "travel_reservation");
+        config->setValue("Settings/root_password", "1234");
+        delete config;
+    }
+}
+
+bool Server::CheckConfig(){
+    QSettings config(config_file_path, QSettings::IniFormat);
+    if(config.value("Database/host").isNull()){
+        return false;
+    }
+    if(config.value("Database/port").isNull()){
+        return false;
+    }
+    if(config.value("Database/user").isNull()){
+        return false;
+    }
+    if(config.value("Database/password").isNull()){
+        return false;
+    }
+    if(config.value("Database/database").isNull()){
+        return false;
+    }
+    if(config.value("Settings/root_password").isNull()){
+        return false;
+    }
+    return true;
+}
+
+QSettings Server::readConfig(){
+    if(!CheckConfig()){
+        QFile file(config_file_path);
+        file.remove();
+        initConfig();
+    }
+    return QSettings(config_file_path, QSettings::IniFormat);
 }
 
 bool Server::login(User tempUser){
@@ -92,7 +143,9 @@ bool Server::login(User tempUser){
             return false;
         }
     } else if(tempUser.getPermission() == User::ROOT){
-        if(tempUser.getPassword() == "1234"){
+        QSettings config = readConfig();
+        QString root_password = config.value("Settings/root_password").toString();
+        if(tempUser.getPassword() == root_password){
             currentUser = new User(User::ROOT);
             emit userSent(currentUser);
             return true;

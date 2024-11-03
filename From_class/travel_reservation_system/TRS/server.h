@@ -12,6 +12,7 @@
 #include <bits/stdc++.h>
 #include <QString>
 #include <QList>
+#include <QSettings>
 
 class Server : public QObject
 {
@@ -19,8 +20,8 @@ class Server : public QObject
 
 public:
     enum Status{UNAVAILABLE, AVAILABLE};
-    Server(QString host = "localhost", int port = 3306, QString name = "root", QString password = "1234", QString database = "travel_reservation");
-    bool connectToDatabase(QString host, int port, QString name, QString password, QString database);
+    Server();
+    bool connectToDatabase();
     bool login(User user);
     void logout();
     void signup(User user);
@@ -46,11 +47,15 @@ public:
 private:
     MysqlDb *db = NULL;
     User *currentUser = NULL;
-    bool startServer(QString host, int port, QString name, QString password, QString database);
+    const QString config_file_path = "config.ini";
     Status status;
+    bool startServer();
+    void initConfig();
+    bool CheckConfig();
+    QSettings readConfig();
 
 public slots:
-    void dbSetReceive(QString host, int port, QString name, QString password, QString database, bool flag);
+    void dbSetReceive( bool flag);
 
 signals:
     void userSent(User* currentUser);

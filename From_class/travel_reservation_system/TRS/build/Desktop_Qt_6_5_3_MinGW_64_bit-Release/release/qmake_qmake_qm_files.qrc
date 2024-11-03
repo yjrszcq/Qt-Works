@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="i18n">
-<file alias="TRS_zh_CN.qm">E:/Qt/My_Projects/Works/From_class/travel_reservation_system/TRS/build/Desktop_Qt_6_5_3_MinGW_64_bit-Release/release/TRS_zh_CN.qm</file>
+<file alias="TRS_zh_CN.qm">E:/Codes/Cpp/Qt Creater/Works/From_class/travel_reservation_system/TRS/build/Desktop_Qt_6_5_3_MinGW_64_bit-Release/release/TRS_zh_CN.qm</file>
 </qresource>
 </RCC>

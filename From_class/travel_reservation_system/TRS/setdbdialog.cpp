@@ -3,9 +3,11 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QSettings>
 
-SetDbDialog::SetDbDialog(QString host, int port, QString user, QString password, QString database) {
+SetDbDialog::SetDbDialog(QString config_file_path) {
     this->setWindowTitle("设置数据库连接");
+    this->config_file_path = config_file_path;
 
     *l = new QLabel[5];
     l[0] = new QLabel("host");
@@ -14,13 +16,13 @@ SetDbDialog::SetDbDialog(QString host, int port, QString user, QString password,
     l[3] = new QLabel("password");
     l[4] = new QLabel("database");
 
+    QSettings config(config_file_path, QSettings::IniFormat);
     *le = new QLineEdit[5];
-    le[0] = new QLineEdit(host);
-    le[1] = new QLineEdit(QString::number(port));
-    le[2] = new QLineEdit(user);
-    le[3] = new QLineEdit(password);
-    le[4] = new QLineEdit(database);
-
+    le[0] = new QLineEdit(config.value("Database/host").toString());
+    le[1] = new QLineEdit(config.value("Database/port").toString());
+    le[2] = new QLineEdit(config.value("Database/user").toString());
+    le[3] = new QLineEdit(config.value("Database/password").toString());
+    le[4] = new QLineEdit(config.value("Database/database").toString());
 
     pb_yes = new QPushButton("确认");
     pb_no = new QPushButton("取消");
@@ -45,12 +47,20 @@ SetDbDialog::SetDbDialog(QString host, int port, QString user, QString password,
     connect(pb_no, SIGNAL(clicked(bool)), this, SLOT(pbNo()));
 }
 
+
 void SetDbDialog::pbYes(){
-    emit dbSetSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), true);
+    QSettings *config = new QSettings(config_file_path, QSettings::IniFormat);
+    config->setValue("Database/host", le[0]->text());
+    config->setValue("Database/port", le[1]->text().toInt());
+    config->setValue("Database/user", le[2]->text());
+    config->setValue("Database/password", le[3]->text());
+    config->setValue("Database/database", le[4]->text());
+    delete config;
+    emit dbSetSent(true);
     this->close();
 }
 
 void SetDbDialog::pbNo(){
-    emit dbSetSent(le[0]->text(), le[1]->text().toInt(), le[2]->text(), le[3]->text(), le[4]->text(), false);
+    emit dbSetSent(false);
     this->close();
 }

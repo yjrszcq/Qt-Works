@@ -10,15 +10,16 @@ class SetDbDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SetDbDialog(QString host, int port, QString user, QString password, QString database);
+    SetDbDialog(QString config_file_path);
 
 private:
     QLabel *l[5];
     QLineEdit *le[5];
     QPushButton *pb_yes, *pb_no;
+    QString config_file_path;
 
 signals:
-    void dbSetSent(QString host, int port, QString user, QString password, QString database, bool flag);
+    void dbSetSent(bool flag);
 
 public slots:
     void pbYes();
