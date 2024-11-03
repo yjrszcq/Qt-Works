@@ -24,12 +24,9 @@ bool Server::startServer(){
         connect(sdd, SIGNAL(dbSetSent(bool)),  this, SLOT(dbSetReceive(bool)));
         while(db == NULL){
             switch(msg->exec()){
-            case QMessageBox::Yes: {
-                sdd->exec();
-                break;
-            }
-            case QMessageBox::No: {delete msg; delete sdd; return false;}
-            default: {delete msg; delete sdd; return false;}
+            case QMessageBox::Yes: sdd->exec(); break;
+            case QMessageBox::No: delete msg; delete sdd; return false;
+            default: delete msg; delete sdd; return false;
             }
         }
         delete msg;
