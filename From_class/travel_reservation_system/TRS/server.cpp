@@ -21,7 +21,7 @@ bool Server::startServer(){
             "错误", "数据库连接出错，是否重新连接数据库？",
             QMessageBox::Yes | QMessageBox::No, NULL);
         SetDbDialog *sdd = new SetDbDialog(config_file_path);
-        connect(sdd, SIGNAL(dbSetSent(bool)),  this, SLOT(dbSetReceive(bool)));
+        connect(sdd, SIGNAL(dbSetSent(bool)), this, SLOT(dbSetReceive(bool)));
         while(db == NULL){
             switch(msg->exec()){
             case QMessageBox::Yes: sdd->exec(); break;
