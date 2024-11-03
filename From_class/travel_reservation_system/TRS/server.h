@@ -9,9 +9,6 @@
 #include "reservation.h"
 
 #include <QObject>
-#include <bits/stdc++.h>
-#include <QString>
-#include <QList>
 #include <QSettings>
 
 class Server : public QObject

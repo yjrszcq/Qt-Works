@@ -3,11 +3,7 @@
 #include "setdbdialog.h"
 
 #include <QMessageBox>
-#include <QCoreApplication>
-#include <QTimer>
-#include <QRegularExpression>
 #include <QFile>
-#include <QSettings>
 
 Server::Server() {
     status = Server::UNAVAILABLE;
