@@ -3,10 +3,12 @@
 
 #include <QMainWindow>
 #include "codeeditor.h"
+#include "scanner.h"
 
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QMessageBox>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,6 +32,8 @@ private slots:
 
     void on_font_triggered();
 
+    void on_compile_triggered();
+
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
@@ -37,9 +41,13 @@ private:
 public:
     QString readFile(QUrl file_path);
     void saveFile(QUrl file_path);
+    QVector<Tokens> callScanner();
+    void ts(const QString &type, const QString &lexeme, double value, const QString &func_ptr);
+    void tsOut(Tokens token);
 
 private:
     QUrl file_path;
     bool jud_status_change = false;
+    QTextEdit *te_result;
 };
 #endif // MAINWINDOW_H

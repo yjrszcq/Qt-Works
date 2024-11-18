@@ -11,12 +11,14 @@ CONFIG += c++17
 SOURCES += \
     codeeditor.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    scanner.cpp
 
 HEADERS += \
     codeeditor.h \
     linenumberarea.h \
-    mainwindow.h
+    mainwindow.h \
+    scanner.h
 
 FORMS += \
     mainwindow.ui

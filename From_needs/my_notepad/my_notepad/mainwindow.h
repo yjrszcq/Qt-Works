@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QColorDialog>
+#include "codeeditor.h"
+
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QMessageBox>
@@ -22,22 +23,23 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_action_color_triggered();
+    void on_new_file_triggered();
+    void on_open_file_triggered();
 
-    void on_action_font_triggered();
+    void on_save_flie_triggered();
 
-    void on_action_open_triggered();
-
-    void on_textEdit_text_textChanged();
+    void on_font_triggered();
 
 private:
     Ui::MainWindow *ui;
+    CodeEditor *ce;
+
+public:
+    QString readFile(QUrl file_path);
+    void saveFile(QUrl file_path);
 
 private:
-    QUrl file_url;
-    bool text_changed_flag;
-
-private:
-    bool open_file();
+    QUrl file_path;
+    bool jud_status_change = false;
 };
 #endif // MAINWINDOW_H

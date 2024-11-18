@@ -6,102 +6,76 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>441</height>
+    <width>654</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>My Notepad</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="vl_text">
       <item>
-       <widget class="QLabel" name="label_file_name">
-        <property name="text">
-         <string>未命名</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTextEdit" name="textEdit_text"/>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_below">
+       <layout class="QHBoxLayout" name="hl_text_up">
         <item>
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QLabel" name="l_text_current_file">
+          <property name="text">
+           <string>当前文件：</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_below">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_flie_state">
-            <item>
-             <widget class="QLabel" name="label_state">
-              <property name="text">
-               <string>文件状态</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_flie_state_display">
-              <property name="text">
-               <string>未保存</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_text_state">
-            <item>
-             <widget class="QLabel" name="label_count">
-              <property name="text">
-               <string>字数：0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_font">
-              <property name="text">
-               <string>字体：宋体</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_size">
-              <property name="text">
-               <string>字号：16</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_code">
-              <property name="text">
-               <string>编码：utf-8</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>288</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+         <widget class="QLabel" name="l_text_current_file_display">
+          <property name="text">
+           <string>未命名</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="hs_text_up">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="hl_text_down">
+        <item>
+         <widget class="QLabel" name="l_text_file_status">
+          <property name="text">
+           <string>状态：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_text_file_status_display">
+          <property name="text">
+           <string>未保存</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="hs_text_down">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -109,80 +83,63 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>696</width>
+     <width>654</width>
      <height>17</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_file">
+   <widget class="QMenu" name="file">
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="action_create"/>
-    <addaction name="action_open"/>
-    <addaction name="action_save"/>
-    <addaction name="action_close"/>
+    <addaction name="new_file"/>
+    <addaction name="open_file"/>
+    <addaction name="save_flie"/>
    </widget>
-   <widget class="QMenu" name="menu_set">
-    <property name="title">
-     <string>设置</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_edit">
+   <widget class="QMenu" name="edit">
     <property name="title">
      <string>编辑</string>
     </property>
-    <addaction name="action_font"/>
-    <addaction name="action_color"/>
+    <addaction name="font"/>
    </widget>
-   <widget class="QMenu" name="menu_view">
-    <property name="title">
-     <string>查看</string>
-    </property>
-   </widget>
-   <addaction name="menu_file"/>
-   <addaction name="menu_edit"/>
-   <addaction name="menu_view"/>
-   <addaction name="menu_set"/>
+   <addaction name="file"/>
+   <addaction name="edit"/>
   </widget>
-  <action name="action_create">
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="new_file">
    <property name="text">
-    <string>新建文件</string>
+    <string>新建</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="action_open">
+  <action name="open_file">
    <property name="text">
-    <string>打开文件</string>
+    <string>打开</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="action_save">
+  <action name="save_flie">
    <property name="text">
-    <string>保存文件</string>
+    <string>保存</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="action_close">
-   <property name="text">
-    <string>关闭文件</string>
-   </property>
-  </action>
-  <action name="action_GPT_KEY">
-   <property name="text">
-    <string>GPT-KEY</string>
-   </property>
-  </action>
-  <action name="action_font">
+  <action name="font">
    <property name="text">
     <string>字体</string>
    </property>
-  </action>
-  <action name="action_color">
-   <property name="text">
-    <string>颜色</string>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

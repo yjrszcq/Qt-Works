@@ -106,8 +106,16 @@
     </property>
     <addaction name="font"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>运行</string>
+    </property>
+    <addaction name="compile"/>
+    <addaction name="run"/>
+   </widget>
    <addaction name="file"/>
    <addaction name="edit"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="new_file">
@@ -140,6 +148,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="compile">
+   <property name="text">
+    <string>编译</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F9</string>
+   </property>
+  </action>
+  <action name="run">
+   <property name="text">
+    <string>运行</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F10</string>
    </property>
   </action>
  </widget>
