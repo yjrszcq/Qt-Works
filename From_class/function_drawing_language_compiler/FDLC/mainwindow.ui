@@ -105,6 +105,7 @@
      <string>编辑</string>
     </property>
     <addaction name="font"/>
+    <addaction name="color"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -164,6 +165,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F10</string>
+   </property>
+  </action>
+  <action name="color">
+   <property name="text">
+    <string>颜色</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
