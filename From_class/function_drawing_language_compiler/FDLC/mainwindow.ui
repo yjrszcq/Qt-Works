@@ -96,30 +96,32 @@
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="new_file"/>
-    <addaction name="open_file"/>
-    <addaction name="save_flie"/>
+    <addaction name="a_new_file"/>
+    <addaction name="a_open_file"/>
+    <addaction name="a_save_flie"/>
+    <addaction name="a_save_as"/>
    </widget>
    <widget class="QMenu" name="edit">
     <property name="title">
      <string>编辑</string>
     </property>
-    <addaction name="font"/>
-    <addaction name="color"/>
+    <addaction name="a_font"/>
+    <addaction name="a_color"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>运行</string>
     </property>
-    <addaction name="compile"/>
-    <addaction name="run"/>
+    <addaction name="a_compile"/>
+    <addaction name="a_run"/>
+    <addaction name="a_compile_and_run"/>
    </widget>
    <addaction name="file"/>
    <addaction name="edit"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="new_file">
+  <action name="a_new_file">
    <property name="text">
     <string>新建</string>
    </property>
@@ -127,7 +129,7 @@
     <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="open_file">
+  <action name="a_open_file">
    <property name="text">
     <string>打开</string>
    </property>
@@ -135,7 +137,7 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="save_flie">
+  <action name="a_save_flie">
    <property name="text">
     <string>保存</string>
    </property>
@@ -143,7 +145,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="font">
+  <action name="a_font">
    <property name="text">
     <string>字体</string>
    </property>
@@ -151,7 +153,7 @@
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="compile">
+  <action name="a_compile">
    <property name="text">
     <string>编译</string>
    </property>
@@ -159,7 +161,7 @@
     <string>Ctrl+F9</string>
    </property>
   </action>
-  <action name="run">
+  <action name="a_run">
    <property name="text">
     <string>运行</string>
    </property>
@@ -167,12 +169,28 @@
     <string>Ctrl+F10</string>
    </property>
   </action>
-  <action name="color">
+  <action name="a_color">
    <property name="text">
     <string>颜色</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="a_compile_and_run">
+   <property name="text">
+    <string>编译并运行</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F11</string>
+   </property>
+  </action>
+  <action name="a_save_as">
+   <property name="text">
+    <string>另存为...</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
    </property>
   </action>
  </widget>

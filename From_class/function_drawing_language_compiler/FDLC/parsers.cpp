@@ -1,12 +1,10 @@
 #include "parsers.h"
 
-int Parsers::cnt;
+int Parsers::cnt = 0;
 
-Parsers::Parsers(const QVector<Tokens> &token_stream, QObject *parent)
+Parsers::Parsers(QObject *parent)
     : QObject{parent}
-{
-    this->token_stream = token_stream;
-}
+{}
 
 void Parsers::outExprNode(struct ExprNode* tree) {
     switch (tree->op_code) {
@@ -51,6 +49,24 @@ void Parsers::outExprNode(struct ExprNode* tree) {
     }
 }
 
+struct ExprNode* Parsers::makeExprNode(TokenType op_code, ...) {
+    struct ExprNode *expr_ptr = new (struct ExprNode);
+    expr_ptr->op_code = op_code;
+    va_list arg_ptr;
+    va_start(arg_ptr, op_code);
+    switch (op_code) {
+    case CONST_ID: expr_ptr->content.case_const = (double)va_arg(arg_ptr, double); break;
+    case T: expr_ptr->content.case_parm_ptr = &parameter; break;
+    case FUNC:
+        expr_ptr->content.case_func.math_func_ptr = (FuncPtr)va_arg(arg_ptr, FuncPtr);
+        expr_ptr->content.case_func.child = (struct ExprNode*)va_arg(arg_ptr, struct ExprNode*); break;
+    default:
+        expr_ptr->content.case_operator.left = (struct ExprNode*)va_arg(arg_ptr, struct ExprNode*);
+        expr_ptr->content.case_operator.right = (struct ExprNode*)va_arg(arg_ptr, struct ExprNode*); break;
+    }
+    va_end(arg_ptr);
+    return expr_ptr;
+}
 void Parsers::fetchToken() {
     temp_token = token_stream[cnt];
     cnt++;
@@ -62,10 +78,12 @@ void Parsers::matchToken(TokenType t) {
 }
 void Parsers::syntaxError(int x) {
     if (x == 1) {
-        emit parsersOutputSent("line No:" + QString::number(temp_token.token_line) + " Has An Error Token: " + temp_token.lexeme, Qt::green);
+        emit parsersOutputSent("line No:" + QString::number(temp_token.token_line) + " Has An Error Token: " + temp_token.lexeme, Qt::red);
+        qDebug() << "line No:" << temp_token.token_line << " Has An Error Token: " << temp_token.lexeme;
         exit(0);
     } else if (x == 2) {
-        emit parsersOutputSent("line No:" + QString::number(temp_token.token_line) + " Has An Unexpected Token: " + temp_token.lexeme, Qt::green);
+        emit parsersOutputSent("line No:" + QString::number(temp_token.token_line) + " Has An Unexpected Token: " + temp_token.lexeme, Qt::red);
+        qDebug() << "line No:" << temp_token.token_line << " Has An Unexpected Token: " << temp_token.lexeme;
         exit(0);
     }
 }
@@ -93,12 +111,10 @@ double Parsers::getExpValue(struct ExprNode* tree) {
         return 0.0;
     }
 }
-
 void Parsers::parser() {
     fetchToken();
     program();
 }
-
 void Parsers::program() {
     emit parsersOutputSent("enter in Program", Qt::black);
     while (temp_token.type != NONTOKEN) {
@@ -109,68 +125,92 @@ void Parsers::program() {
     }
     emit parsersOutputSent("exit from Program", Qt::black);
 }
-
 void Parsers::statement() {
-    emit parsersOutputSent("enter in Statement", Qt::black); // Continue replacing qDebug() with signal
+    emit parsersOutputSent("enter in Statement", Qt::black);
     if (temp_token.type == ORIGIN) originStatement();
     else if (temp_token.type == SCALE) scaleStatement();
     else if (temp_token.type == ROT) rotStatement();
     else if (temp_token.type == FOR) forStatement();
     else if (temp_token.type == COLOR) colorStatement();
     else if (temp_token.type == NOTES) notesStatement();
-    else syntaxError(2);
+    else {syntaxError(2);}
     emit parsersOutputSent("exit from Statement", Qt::black);
 }
 
 void Parsers::notesStatement() {
-    QString temp_notes;
+    emit parsersOutputSent("enter in NotesStatement", Qt::black);
+    temp_notes = "";
     matchToken(NOTES);
+    emit parsersOutputSent("\tmatchtoken NOTES", Qt::darkGray);
     matchToken(COLON);
+    emit parsersOutputSent("\tmatchtoken :", Qt::darkGray);
     matchToken(L_BRACKET);
+    emit parsersOutputSent("\tmatchtoken (", Qt::darkGray);
     notes_x_ptr = expression();
+    outExprNode(notes_x_ptr);
     x_notes = getExpValue(notes_x_ptr);
     notes_x_values.push_back(x_notes);
     matchToken(COMMA);
+    emit parsersOutputSent("\tmatchtoken ,", Qt::darkGray);
     notes_y_ptr = expression();
+    outExprNode(notes_y_ptr);
     y_notes = getExpValue(notes_y_ptr);
     notes_y_values.push_back(y_notes);
     matchToken(COMMA);
+    emit parsersOutputSent("\tmatchtoken ,", Qt::darkGray);
     if (temp_token.type != QUOTES) syntaxError(2);
     else {
         temp_token = token_stream[cnt];
         cnt++;
     }
+    emit parsersOutputSent("\tmatchtoken \"", Qt::darkGray);
     while (temp_token.type != QUOTES) {
         temp_notes.append(temp_token.lexeme);
+        emit parsersOutputSent("\t\t" + temp_token.lexeme, Qt::darkGray);
         temp_notes.append(" ");
         temp_token = token_stream[cnt];
         cnt++;
     }
-    notes_string_values.push_back(temp_notes.trimmed());
+    notes_string_values.push_back(temp_notes);
     notes_r_values.push_back(r);
     notes_g_values.push_back(g);
     notes_b_values.push_back(b);
     matchToken(QUOTES);
+    emit parsersOutputSent("\tmatchtoken \"", Qt::darkGray);
     matchToken(R_BRACKET);
+    emit parsersOutputSent("\tmatchtoken )", Qt::darkGray);
+    emit parsersOutputSent("exit from NotesStatement", Qt::black);
 }
 
 void Parsers::colorStatement() {
+    emit parsersOutputSent("enter in ColorStatement", Qt::black);
     matchToken(COLOR);
+    emit parsersOutputSent("\tmatchtoken COLOR", Qt::darkGray);
     matchToken(IS);
+    emit parsersOutputSent("\tmatchtoken IS", Qt::darkGray);
     matchToken(L_BRACKET);
+    emit parsersOutputSent("\tmatchtoken (", Qt::darkGray);
     color_r_ptr = expression();
+    outExprNode(color_r_ptr);
     r = getExpValue(color_r_ptr);
     matchToken(COMMA);
+    emit parsersOutputSent("\tmatchtoken ,", Qt::darkGray);
     color_g_ptr = expression();
+    outExprNode(color_g_ptr);
     g = getExpValue(color_g_ptr);
     matchToken(COMMA);
+    emit parsersOutputSent("\tmatchtoken ,", Qt::darkGray);
     color_b_ptr = expression();
+    outExprNode(color_b_ptr);
     b = getExpValue(color_b_ptr);
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         emit parsersOutputSent("RGB Color Value Out Of Range(0~255)", Qt::red);
+        qDebug() << "RGB Color Value Out Of Range(0~255)";
         exit(0);
     }
     matchToken(R_BRACKET);
+    emit parsersOutputSent("\tmatchtoken )", Qt::darkGray);
+    emit parsersOutputSent("exit from ColorStatement", Qt::black);
 }
 
 void Parsers::originStatement() {
@@ -215,6 +255,7 @@ void Parsers::scaleStatement() {
     matchToken(L_BRACKET);
     emit parsersOutputSent("\tmatchtoken (", Qt::darkGray);
     scale_x_ptr = expression();
+    outExprNode(scale_x_ptr);
     scale_x = getExpValue(scale_x_ptr);
     matchToken(COMMA);
     emit parsersOutputSent("\tmatchtoken ,", Qt::darkGray);
@@ -270,4 +311,83 @@ void Parsers::forStatement() {
     matchToken(R_BRACKET);
     emit parsersOutputSent("\tmatchtoken )", Qt::darkGray);
     emit parsersOutputSent("exit from ForStatement", Qt::black);
+}
+
+struct ExprNode* Parsers::expression() {
+    struct ExprNode *left, *right;
+    TokenType token_tmp;
+    left = term();
+    while (temp_token.type == PLUS || temp_token.type == MINUS) {
+        token_tmp = temp_token.type;
+        matchToken(token_tmp);
+        right = term();
+        left = makeExprNode(token_tmp, left, right);
+    }
+    return left;
+}
+
+struct ExprNode* Parsers::term() {
+    struct ExprNode *left, *right;
+    TokenType token_tmp;
+    left = factor();
+    while (temp_token.type == MUL || temp_token.type == DIV) {
+        token_tmp = temp_token.type;
+        matchToken(token_tmp);
+        right = factor();
+        left = makeExprNode(token_tmp, left, right);
+    }
+    return left;
+}
+
+struct ExprNode* Parsers::factor() {
+    struct ExprNode *left, *right;
+    if (temp_token.type == PLUS) {
+        matchToken(PLUS);
+        right = factor();
+        left = nullptr;
+        right = makeExprNode(PLUS, left, right);
+    } else if (temp_token.type == MINUS) {
+        matchToken(MINUS);
+        right = factor();
+        left = makeExprNode(CONST_ID, 0.0);
+        right = makeExprNode(MINUS, left, right);
+    } else right = component();
+    return right;
+}
+
+struct ExprNode* Parsers::component() {
+    struct ExprNode *left, *right;
+    left = atom();
+    if (temp_token.type == POWER) {
+        matchToken(POWER);
+        right = component();
+        left = makeExprNode(POWER, left, right);
+    }
+    return left;
+}
+
+struct ExprNode* Parsers::atom() {
+    struct ExprNode *address, *tmp;
+    double const_value;
+    FuncPtr func_ptr_value;
+    if (temp_token.type == CONST_ID) {
+        const_value = temp_token.value;
+        matchToken(CONST_ID);
+        address = makeExprNode(CONST_ID, const_value);
+    } else if (temp_token.type == T) {
+        matchToken(T);
+        address = makeExprNode(T);
+    } else if (temp_token.type == FUNC) {
+        func_ptr_value = temp_token.FuncPtr;
+        matchToken(FUNC);
+        matchToken(L_BRACKET);
+        tmp = expression();
+        address = makeExprNode(FUNC, func_ptr_value, tmp);
+        matchToken(R_BRACKET);
+    } else if (temp_token.type == L_BRACKET) {
+        matchToken(L_BRACKET);
+        address = expression();
+        matchToken(R_BRACKET);
+    } else syntaxError(2);
+    return address;
 }

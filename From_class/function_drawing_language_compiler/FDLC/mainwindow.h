@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include "codeeditor.h"
-#include "token.h"
-#include "parsers.h"
+#include "drawdialog.h"
+#include "globaldefines.h"
 
 #include <QFileDialog>
 #include <QFontDialog>
@@ -12,7 +12,6 @@
 #include <QMessageBox>
 #include <QTextEdit>
 
-using namespace Token;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,37 +28,51 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_new_file_triggered();
-    void on_open_file_triggered();
+    void on_a_new_file_triggered();
 
-    void on_save_flie_triggered();
+    void on_a_open_file_triggered();
 
-    void on_font_triggered();
+    void on_a_save_flie_triggered();
 
-    void on_compile_triggered();
+    void on_a_font_triggered();
 
-    void on_color_triggered();
+    void on_a_color_triggered();
+
+    void on_a_compile_triggered();
+
+    void on_a_run_triggered();
+
+    void on_a_compile_and_run_triggered();
+
+    void on_a_save_as_triggered();
 
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
+    DrawDialog *dd = NULL;
 
 public:
-    enum SaveType {TEXT, CODE, OUTPUT};
+    enum FileType {TEXT, CODE, NODE, NODE_THIS, AS};
     QString readFile(QUrl file_path);
     void saveFile(QUrl file_path, QString data);
-    bool readyToSaveFile(QString data, SaveType type = TEXT);
-    QVector<Tokens> callScanner();
-    Parsers* callParsers(QVector<Tokens> token_stream);
+    bool readyToReadFile(FileType type = TEXT);
+    bool readyToSaveFile(QString data, FileType type = TEXT);
+    bool readNodes(QString data);
+    bool readTexts(QString data);
+    void setCREnabled(bool jud);
+    void setCREnabled(QString suffix);
+    void callScanner();
+    void callParsers();
+    void callDraw();
     void changeLastLineColor(Qt::GlobalColor color);
     void sts(const QString &type, const QString &lexeme, double value, const QString &func_ptr);
     void stsOut(Tokens token);
-    QString ptsD(QVector<double> values);
-    QString ptsS(QVector<QString> values);
-    QString ptsE(QVector<struct ExprNode*> values);
-    QString ptsOut(Parsers p);
-    void outputScannerResult(QVector<Tokens> token_stream);
-    void outputParsersResult(Parsers p);
+    void outputScannerResult();
+    void initParsers();
+    void nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y);
+    void nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b);
+    void outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b);
+    void outputParsersResult();
     void outputPainterResult();
 
 private:

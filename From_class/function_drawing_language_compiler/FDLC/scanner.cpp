@@ -1,27 +1,9 @@
 #include "scanner.h"
 
-Tokens Scanner::TOKEN_TABLE[] = {
-    {ORIGIN, "ORIGIN", 0.0, nullptr, 0},
-    {COLOR, "COLOR", 0.0, nullptr, 0},
-    {NOTES, "NOTES", 0.0, nullptr, 0},
-    {SCALE, "SCALE", 0.0, nullptr, 0},
-    {ROT, "ROT", 0.0, nullptr, 0},
-    {IS, "IS", 0.0, nullptr, 0},
-    {TO, "TO", 0.0, nullptr, 0},
-    {STEP, "STEP", 0.0, nullptr, 0},
-    {DRAW, "DRAW", 0.0, nullptr, 0},
-    {FOR, "FOR", 0.0, nullptr, 0},
-    {FROM, "FROM", 0.0, nullptr, 0},
-    {T, "T", 0.0, nullptr, 0},
-    {FUNC, "SIN", 0.0, sin, 0},
-    {FUNC, "COS", 0.0, cos, 0},
-    {FUNC, "TAN", 0.0, tan, 0},
-    {FUNC, "LN", 0.0, log, 0},
-    {FUNC, "EXP", 0.0, exp, 0},
-    {FUNC, "SQRT", 0.0, sqrt, 0},
-    {CONST_ID, "PI", PI, nullptr, 0},
-    {CONST_ID, "E", E, nullptr, 0}
-};
+Scanner::Scanner(const QString &codes){
+    this->codes = codes;
+    stream.setString(&this->codes);
+}
 
 void Scanner::emptyBuffer() {
     token_buffer.clear();

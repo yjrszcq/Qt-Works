@@ -10,7 +10,8 @@ CONFIG += c++17
 
 SOURCES += \
     codeeditor.cpp \
-    drawwidget.cpp \
+    drawdialog.cpp \
+    globaldefines.cpp \
     linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -19,13 +20,12 @@ SOURCES += \
 
 HEADERS += \
     codeeditor.h \
-    drawwidget.h \
-    expressionnode.h \
+    drawdialog.h \
+    globaldefines.h \
     linenumberarea.h \
     mainwindow.h \
     parsers.h \
-    scanner.h \
-    token.h
+    scanner.h
 
 FORMS += \
     mainwindow.ui
