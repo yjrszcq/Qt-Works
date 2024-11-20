@@ -289,11 +289,7 @@ void MainWindow::callScanner(){
 }
 
 void MainWindow::sts(const QString &type, const QString &lexeme, double value, const QString &func_ptr) {
-    QString output = QString("%1\t|\t%2\t|\t%3\t|\t%4\n")
-                         .arg(type, 10)
-                         .arg(lexeme, 12)
-                         .arg(value, 14, 'f', 6)
-                         .arg(func_ptr, 16);
+    QString output = QString("%1\t|\t%2\t|\t%3\t|\t%4\n").arg(type, 10).arg(lexeme, 12).arg(value, 14, 'f', 6).arg(func_ptr, 16);
     te_result->append(output);
 }
 
