@@ -3,7 +3,9 @@
 
 #include <QPainter>
 
-DrawDialog::DrawDialog() {}
+DrawDialog::DrawDialog() {
+    this->setWindowTitle("图像");
+}
 
 void DrawDialog::paintEvent(QPaintEvent *event){
     Q_UNUSED(event);

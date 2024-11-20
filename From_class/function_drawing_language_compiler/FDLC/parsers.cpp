@@ -8,8 +8,8 @@ Parsers::Parsers(QObject *parent)
 
 void Parsers::outExprNode(struct ExprNode* tree) {
     switch (tree->op_code) {
-    case CONST_ID: emit parsersOutputSent("\t\t" + QString::number(tree->content.case_const), Qt::gray); break;
-    case T: emit parsersOutputSent("\t\tT", Qt::gray); break;
+    case CONST_ID: emit parsersOutputSent("\t\t" + QString::number(tree->content.case_const), Qt::darkGray); break;
+    case T: emit parsersOutputSent("\t\tT", Qt::darkGray); break;
     case FUNC: {
         QString funcName;
         if (tree->content.case_func.math_func_ptr == sin) { funcName = "sin"; }
@@ -18,31 +18,31 @@ void Parsers::outExprNode(struct ExprNode* tree) {
         else if (tree->content.case_func.math_func_ptr == exp) { funcName = "exp"; }
         else if (tree->content.case_func.math_func_ptr == tan) { funcName = "tan"; }
         else if (tree->content.case_func.math_func_ptr == sqrt) { funcName = "sqrt"; }
-        emit parsersOutputSent("\t\t" + funcName, Qt::gray);
+        emit parsersOutputSent("\t\t" + funcName, Qt::darkGray);
         outExprNode(tree->content.case_func.child);
     } break;
     case PLUS: {
-        emit parsersOutputSent("\t\t+", Qt::gray);
+        emit parsersOutputSent("\t\t+", Qt::darkGray);
         outExprNode(tree->content.case_operator.left);
         outExprNode(tree->content.case_operator.right);
     } break;
     case MINUS: {
-        emit parsersOutputSent("\t\t-", Qt::gray);
+        emit parsersOutputSent("\t\t-", Qt::darkGray);
         outExprNode(tree->content.case_operator.left);
         outExprNode(tree->content.case_operator.right);
     } break;
     case MUL: {
-        emit parsersOutputSent("\t\t*", Qt::gray);
+        emit parsersOutputSent("\t\t*", Qt::darkGray);
         outExprNode(tree->content.case_operator.left);
         outExprNode(tree->content.case_operator.right);
     } break;
     case DIV: {
-        emit parsersOutputSent("\t\t/", Qt::gray);
+        emit parsersOutputSent("\t\t/", Qt::darkGray);
         outExprNode(tree->content.case_operator.left);
         outExprNode(tree->content.case_operator.right);
     } break;
     case POWER: {
-        emit parsersOutputSent("\t\t**", Qt::gray);
+        emit parsersOutputSent("\t\t**", Qt::darkGray);
         outExprNode(tree->content.case_operator.left);
         outExprNode(tree->content.case_operator.right);
     } break;
