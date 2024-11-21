@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include "codeeditor.h"
-#include "drawdialog.h"
-#include "globaldefines.h"
+#include "compiler.h"
+#include "drawwidget.h"
 
 #include <QFileDialog>
 #include <QFontDialog>
@@ -49,9 +49,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
-    DrawDialog *dd = NULL;
+    DrawWidget *dw = NULL;
 
 public:
+    enum Status{COMPILED, UNCOMPILED};
     enum FileType {TEXT, CODE, NODE, NODE_THIS, AS};
     QString readFile(QUrl file_path);
     void saveFile(QUrl file_path, QString data);
@@ -61,26 +62,20 @@ public:
     bool readTexts(QString data);
     void setCREnabled(bool jud);
     void setCREnabled(QString suffix);
-    void callScanner();
-    void callParsers();
+    void callCompiler();
     void callDraw();
     void changeLastLineColor(Qt::GlobalColor color);
-    void sts(const QString &type, const QString &lexeme, double value, const QString &func_ptr);
-    void stsOut(Tokens token);
-    void outputScannerResult();
-    void initParsers();
-    void nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y);
-    void nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b);
-    void outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b);
-    void outputParsersResult();
-    void outputPainterResult();
 
 private:
     QUrl file_path;
     bool jud_status_change = false;
     QTextEdit *te_result;
+    Status status;
 
 public slots:
-    void parsersOutputReceive(const QString &text, Qt::GlobalColor color);
+    void refreshReceive();
+    void resultReceive();
+    void processReceive(QString process, Qt::GlobalColor color);
+    void errorReceive(QString error, Compiler::Status status, Scanner::Status scanner_status, Parsers::Status parsers_status);
 };
 #endif // MAINWINDOW_H

@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QStandardPaths>
 #include <QSplitter>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     setCREnabled(false);
+    status = UNCOMPILED;
 
 }
 
@@ -47,9 +49,54 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::parsersOutputReceive(const QString &text, Qt::GlobalColor color){
-    te_result->append(text);
+void MainWindow::refreshReceive(){
+    te_result->clear();
+}
+
+void MainWindow::processReceive(QString process, Qt::GlobalColor color){
+    te_result->append(process);
     changeLastLineColor(color);
+}
+
+void MainWindow::resultReceive(){
+    status = COMPILED;
+}
+
+void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner::Status s_status, Parsers::Status p_status){
+    QString compiler_sataus;
+    QString scanner_status;
+    QString parsers_status;
+    switch(c_status){
+    case Compiler::PREPARING: compiler_sataus = "PREPARING"; break;
+    case Compiler::START: compiler_sataus = "START"; break;
+    case Compiler::SCANNING: compiler_sataus = "SCANNING"; break;
+    case Compiler::PARSERING: compiler_sataus = "PARSERING"; break;
+    case Compiler::SUCCEED: compiler_sataus = "SUCCEED"; break;
+    case Compiler::FAILED: compiler_sataus = "FAILED"; break;
+    }
+    switch(s_status){
+    case Scanner::S_PREPARING: scanner_status = "PREPARING"; break;
+    case Scanner::S_START: scanner_status = "START"; break;
+    case Scanner::S_SUCCEED:  scanner_status = "SUCCEED"; break;
+    }
+    switch(p_status){
+    case Parsers::P_PREPARING: parsers_status = "PREPARING"; break;
+    case Parsers::P_START: parsers_status = "START"; break;
+    case Parsers::P_NOTES: parsers_status = "NOTES"; break;
+    case Parsers::P_COLOR: parsers_status = "COLOR"; break;
+    case Parsers::P_ORIGIN: parsers_status = "ORIGIN"; break;
+    case Parsers::P_ROT: parsers_status = "ROT"; break;
+    case Parsers::P_SCALE: parsers_status = "SCALE"; break;
+    case Parsers::P_FOR: parsers_status = "FOR"; break;
+    case Parsers::P_SUCCEED: parsers_status = "SUCCEED"; break;
+    }
+    QString error_string = "ERROR: " + error;
+    QString status_string = "STATUS: <COMPILER-" + compiler_sataus + "> <SCANNER-" + scanner_status + "> <PARSERS-" + parsers_status + ">";
+    te_result->append(error_string);
+    changeLastLineColor(Qt::red);
+    te_result->append(status_string);
+    changeLastLineColor(Qt::red);
+    status = UNCOMPILED;
 }
 
 void MainWindow::setCREnabled(bool jud){
@@ -115,6 +162,7 @@ void MainWindow::saveFile(QUrl file_path, QString data){
 }
 
 bool MainWindow::readyToReadFile(FileType jud){
+    initAll();
     switch(jud){
     case TEXT:{
         QString default_file_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + QDir::separator();
@@ -168,11 +216,13 @@ bool MainWindow::readyToReadFile(FileType jud){
                 try{
                     qDebug() << QFileInfo(fp).suffix();
                     if(QFileInfo(fp).suffix() == "dn"){
-                        if(!readNodes(readFile(QUrl(fp)))){
+                        QString nodes = readFile(QUrl(fp));
+                        if(!readNodes(nodes)){
                             QMessageBox::warning(nullptr, "警告", "有文件读取失败", QMessageBox::Yes);
                         }
                     } else if(QFileInfo(fp).suffix() == "dt"){
-                        if(!readTexts(readFile(QUrl(fp)))){
+                        QString texts = readFile(QUrl(fp));
+                        if(!readTexts(texts)){
                             QMessageBox::warning(nullptr, "警告", "有文件读取失败", QMessageBox::Yes);
                         }
                     } else {
@@ -189,6 +239,7 @@ bool MainWindow::readyToReadFile(FileType jud){
         break;
     }
     }
+    return true;
 }
 
 bool MainWindow::readyToSaveFile(QString data, FileType jud){
@@ -229,6 +280,7 @@ bool MainWindow::readyToSaveFile(QString data, FileType jud){
         return false;
     }
     ui->l_text_file_status_display->setText("已保存");
+    ui->l_text_current_file_display->setText(file_path.fileName());
     jud_status_change = true;
     return true;
 }
@@ -275,162 +327,40 @@ bool MainWindow::readTexts(QString data){
     return true;
 }
 
-void MainWindow::callScanner(){
-    initAll();
-    Scanner scanner(ce->toPlainText());
-    Tokens token;
-    token = scanner.getToken();
-    token_stream.push_back(token);
-    while (token.type != NONTOKEN) {
-        token = scanner.getToken();
-        token_stream.push_back(token);
-    }
-    outputScannerResult();
-}
-
-void MainWindow::sts(const QString &type, const QString &lexeme, double value, const QString &func_ptr) {
-    QString output = QString("%1\t|\t%2\t|\t%3\t|\t%4\n").arg(type, 10).arg(lexeme, 12).arg(value, 14, 'f', 6).arg(func_ptr, 16);
-    te_result->append(output);
-}
-
-void MainWindow::stsOut(Tokens token) {
-    switch (token.type) {
-    case ORIGIN: sts("ORIGIN", token.lexeme, token.value, "NULL"); break;
-    case SCALE: sts("SCALE", token.lexeme, token.value, "NULL"); break;
-    case ROT: sts("ROT", token.lexeme, token.value, "NULL"); break;
-    case IS: sts("IS", token.lexeme, token.value, "NULL"); break;
-    case TO: sts("TO", token.lexeme, token.value, "NULL"); break;
-    case STEP: sts("STEP", token.lexeme, token.value, "NULL"); break;
-    case DRAW: sts("DRAW", token.lexeme, token.value, "NULL"); break;
-    case FOR: sts("FOR", token.lexeme, token.value, "NULL"); break;
-    case FROM: sts("FROM", token.lexeme, token.value, "NULL"); break;
-    case T: sts("T", token.lexeme, token.value, "NULL"); break;
-    case SEMICO: sts("SEMICO", token.lexeme, token.value, "NULL"); break;
-    case L_BRACKET: sts("L_BRACKET", token.lexeme, token.value, "NULL"); break;
-    case R_BRACKET: sts("R_BRACKET", token.lexeme, token.value, "NULL"); break;
-    case COMMA: sts("COMMA", token.lexeme, token.value, "NULL"); break;
-    case PLUS: sts("PLUS", token.lexeme, token.value, "NULL"); break;
-    case MINUS: sts("MINUS", token.lexeme, token.value, "NULL"); break;
-    case MUL: sts("MUL", token.lexeme, token.value, "NULL"); break;
-    case DIV: sts("DIV", token.lexeme, token.value, "NULL"); break;
-    case POWER: sts("POWER", token.lexeme, token.value, "NULL"); break;
-    case FUNC: sts("FUNC", token.lexeme, token.value, token.lexeme.toUpper()); break;
-    case CONST_ID: sts("CONST_ID", token.lexeme, token.value, "NULL"); break;
-    case NONTOKEN: sts("NONTOKEN", token.lexeme, token.value, "NULL"); break;
-    case ERRTOKEN: sts("ERRTOKEN", token.lexeme, token.value, "NULL"); break;
-    case COLOR: sts("COLOR", token.lexeme, token.value, "NULL"); break;
-    case NOTES: sts("NOTES", token.lexeme, token.value, "NULL"); break;
-    case COLON: sts("COLON", token.lexeme, token.value, "NULL"); break;
-    case QUOTES: sts("QUOTES", token.lexeme, token.value, "NULL"); break;
-    }
-}
-
-void MainWindow::outputScannerResult(){
-    te_result->show();
-    te_result->clear();
-    te_result->append("------------------------------");
-    te_result->append("Scanner Result");
-    changeLastLineColor(Qt::blue);
-    te_result->append("------------------------------");
-    for(auto tokens : token_stream){
-        stsOut(tokens);
-    }
-}
-
-void MainWindow::callParsers(){
-    Parsers::cnt = 0;
-    Parsers p;
-    connect(&p, SIGNAL(parsersOutputSent(const QString, Qt::GlobalColor)), this, SLOT(parsersOutputReceive(const QString, Qt::GlobalColor)));
-    te_result->append("------------------------------");
-    te_result->append("Parsers Result");
-    changeLastLineColor(Qt::blue);
-    te_result->append("------------------------------");
-    p.parser();
-    outputParsersResult();
-}
-
-void MainWindow::nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y){
-    double x, y;
-    parameter = start;
-    if (step > 0) {
-        while (parameter <= end) {
-            x = Parsers::getExpValue(for_x);
-            y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b);
-            parameter += step;
+void MainWindow::callCompiler(){
+    QString codes = ce->toPlainText();
+    if(codes != "" && file_path.isValid() && file_path.url() != ""){
+        QThread* thread = new QThread();
+        Compiler* compiler = new Compiler(codes, file_path);
+        compiler->moveToThread(thread);
+        connect(thread, &QThread::started, compiler, &Compiler::compile);
+        connect(compiler, &Compiler::refreshSent, this, &MainWindow::refreshReceive);
+        connect(compiler, &Compiler::processSent, this, &MainWindow::processReceive);
+        connect(compiler, &Compiler::resultSent, this, &MainWindow::resultReceive);
+        connect(compiler, &Compiler::errorSent, this, &MainWindow::errorReceive);
+        connect(compiler, &Compiler::resultSent, compiler, &Compiler::deleteLater);
+        connect(compiler, &Compiler::errorSent, compiler, &Compiler::deleteLater);
+        connect(compiler, &Compiler::resultSent, thread, &QThread::quit);
+        connect(compiler, &Compiler::errorSent, thread, &QThread::quit);
+        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+        thread->start();
+    } else{
+        if(codes == ""){
+            QMessageBox::critical(nullptr, "错误", "代码为空", QMessageBox::Yes);
+        } else{
+            QMessageBox::critical(nullptr, "错误", "代码文件地址获取失败", QMessageBox::Yes);
         }
-    } else if (step < 0) {
-        while (parameter >= end) {
-            x = Parsers::getExpValue(for_x);
-            y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b);
-            parameter += step;
-        }
-    }
-}
-
-void MainWindow::nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b){
-    double temp_x, temp_y;
-    x *= scale_x;
-    y *= scale_y;
-    temp_x = x;
-    temp_y = y;
-    x = temp_x * cos(rot_ang) + temp_y * sin(rot_ang);
-    y = temp_y * cos(rot_ang) - temp_x * sin(rot_ang);
-    x += origin_x;
-    y += origin_y;
-    out_total << QString::number(x) << " " << QString::number(y) << " " << QString::number(r) << " " << QString::number(g) << " " << QString::number(b) << "\n";
-    struct DrawNode dn = {x, y, r, g, b};
-    draw_node.append(dn);
-}
-
-void MainWindow::outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b) {
-    out_text << QString::number(notes_x) << " " << QString::number(notes_y) << " " << QString::number(notes_r) << " " << QString::number(notes_g) << " " << QString::number(notes_b) << "\n";
-    out_text << "`" << notes_string << "`\n";
-    struct DrawNode dn = {notes_x, notes_y, notes_r, notes_g, notes_b};
-    struct DrawText dt = {dn, notes_string};
-    draw_text.append(dt);
-}
-
-void MainWindow::outputParsersResult(){
-    QFileInfo fileInfo(file_path.url());
-    QString baseName = fileInfo.baseName();
-    if(start_values.size() > 0){
-        QUrl out_total_path(fileInfo.absolutePath() + "/" + baseName + ".dn");
-        QFile file_total(out_total_path.url());
-        if (!file_total.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QMessageBox::critical(nullptr, "错误", "无法导出分析文件" + baseName + ".dn", QMessageBox::Yes);
-            return;
-        }
-        QTextStream out_total(&file_total);
-        for (int i = 0; i < start_values.size(); ++i) {
-            nodeTotalXY(out_total, origin_x_values[i], origin_y_values[i], scale_x_values[i], scale_y_values[i], rot_ang_values[i], r_values[i], g_values[i], b_values[i], start_values[i], end_values[i], step_values[i], for_x_values[i], for_y_values[i]);
-        }
-        file_total.close();
-    }
-    if(notes_string_values.size() > 0){
-        QUrl out_text_path(fileInfo.absolutePath() + "/" + baseName + ".dt");
-        QFile file_text(out_text_path.url());
-        if (!file_text.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QMessageBox::critical(nullptr, "错误", "无法导出分析文件" + baseName + ".dt", QMessageBox::Yes);
-            return;
-        }
-        QTextStream out_text(&file_text);
-        for (int i = 0; i < notes_string_values.size(); ++i) {
-            outTextXY(out_text, notes_x_values[i], notes_y_values[i], notes_string_values[i], notes_r_values[i], notes_g_values[i], notes_b_values[i]);
-        }
-        file_text.close();
     }
 }
 
 void MainWindow::callDraw(){
-    if(dd != NULL){
-        delete dd;
-        dd = NULL;
-    }
-    dd = new DrawDialog();
-    dd->resize(1000, 700);
-    dd->exec();
+        if(dw != NULL){
+            delete dw;
+            dw = NULL;
+        }
+        dw = new DrawWidget();
+        dw->resize(1000, 700);
+        dw->show();
 }
 
 void MainWindow::changeLastLineColor(Qt::GlobalColor color) {
@@ -496,8 +426,7 @@ void MainWindow::on_a_compile_triggered()
 
     if(readyToSaveFile(ce->toPlainText(), CODE)){
         te_result->show();
-        callScanner();
-        callParsers();
+        callCompiler();
     }
 }
 
@@ -505,18 +434,17 @@ void MainWindow::on_a_compile_triggered()
 void MainWindow::on_a_run_triggered()
 {
     if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
-        initAll();
-        if(!readyToReadFile(NODE)){
-            return;
+        if(readyToReadFile(NODE)){
+            callDraw();
         }
     } else{
-        if(!(start_values.size() > 0 || notes_string_values.size() > 0)){
-            if(!readyToReadFile(NODE_THIS)){
-                return;
+        if(draw_node.size() > 0 || draw_text.size() > 0){
+            if(readyToReadFile(NODE_THIS)){
+                callDraw();
             }
         }
     }
-    callDraw();
+
 }
 
 
@@ -524,8 +452,7 @@ void MainWindow::on_a_compile_and_run_triggered()
 {
     if(readyToSaveFile(ce->toPlainText(), CODE)){
         te_result->show();
-        callScanner();
-        callParsers();
+        callCompiler();
         callDraw();
     }
 }
