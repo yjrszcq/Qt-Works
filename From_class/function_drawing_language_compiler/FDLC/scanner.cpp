@@ -29,7 +29,7 @@ Tokens Scanner::searchCharInDict(const QString &temp_s) {
             }
         }
         if(jud == false){
-            throw std::runtime_error("Unkonwn Token");
+            throw std::runtime_error(("Unkonwn Token: " + temp_s).toStdString());
         }
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
