@@ -65,6 +65,27 @@ void Compiler::parsersOutputReceive(const QString &text, Qt::GlobalColor color){
     emit processSent(text, color);
 }
 
+void Compiler::colorTranslate(Tokens color){
+    double r = 0, g = 0, b = 0;
+    switch(qRound(color.value)){
+    case 0: r = 0; g = 0; b = 0; break;
+    case 1: r = 0; g = 0; b = 255; break;
+    case 2: r = 0; g = 255; b = 0; break;
+    case 3: r = 0; g = 255; b = 255; break;
+    case 4: r = 255; g = 0; b = 0; break;
+    case 5: r = 255; g = 0; b = 255; break;
+    case 6: r = 255; g = 255; b = 0; break;
+    case 7: r = 255; g = 255; b = 255; break;
+    }
+    token_stream.push_back(Scanner::createToken(L_BRACKET, "(", 0.0, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(CONST_ID, QString::number(r), r, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(COMMA, ",", 0.0, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(CONST_ID, QString::number(g), g, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(COMMA, ",", 0.0, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(CONST_ID, QString::number(b), b, nullptr, 0));
+    token_stream.push_back(Scanner::createToken(R_BRACKET, ")", 0.0, nullptr, 0));
+}
+
 void Compiler::callScanner(){
     try{
         status = SCANNING;
@@ -80,7 +101,13 @@ void Compiler::callScanner(){
         token_stream.push_back(token);
         while (token.type != NONTOKEN) {
             token = scanner.getToken();
-            token_stream.push_back(token);
+            if(token.type != ERRTOKEN){
+                if(token.type == COLOR_ID){
+                    colorTranslate(token);
+                } else {
+                    token_stream.push_back(token);
+                }
+            }
         }
         outputScannerResult();
     } catch(const std::exception &e) {

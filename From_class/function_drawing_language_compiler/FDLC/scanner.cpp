@@ -19,13 +19,11 @@ void Scanner::addCharToBuffer(QChar temp_c) {
 Tokens Scanner::searchCharInDict(const QString &temp_s) {
     Tokens t = {ERRTOKEN, temp_s, 0.0, nullptr, 0};
     QString upper_temp_s = temp_s.toUpper();
-    bool jud = false;
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 28; ++i) {
         if (upper_temp_s == TOKEN_TABLE[i].lexeme) {
             t.type = TOKEN_TABLE[i].type;
             t.value = TOKEN_TABLE[i].value;
             t.FuncPtr = TOKEN_TABLE[i].FuncPtr;
-            jud = true;
         }
     }
     tokenOutputType(t);
@@ -188,6 +186,7 @@ void Scanner::tokenOutputType(Tokens token) {
     case NOTES: tokenOutput("NOTES", token.lexeme, token.value, "NULL"); break;
     case COLON: tokenOutput("COLON", token.lexeme, token.value, "NULL"); break;
     case QUOTES: tokenOutput("QUOTES", token.lexeme, token.value, "NULL"); break;
+    case COLOR_ID: tokenOutput("COLOR_ID", token.lexeme, token.value, "NULL"); break;
     }
 }
 

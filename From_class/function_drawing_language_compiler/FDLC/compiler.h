@@ -20,6 +20,7 @@ public:
 public:
     void callScanner();
     void callParsers();
+    void colorTranslate(Tokens color);
     void outputScannerResult();
     void nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y);
     void nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b);

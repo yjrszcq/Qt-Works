@@ -8,7 +8,7 @@
 #define E M_E
 
 enum TokenType {
-    ORIGIN, SCALE, ROT, IS, TO, STEP, DRAW, FOR, FROM, COLOR, NOTES, //保留字
+    ORIGIN, SCALE, ROT, IS, TO, STEP, DRAW, FOR, FROM, COLOR, COLOR_ID, NOTES, //保留字
     T, //参数
     SEMICO, L_BRACKET, R_BRACKET, COMMA, COLON, QUOTES, //; ( ) ,分隔符
     PLUS, MINUS, MUL, DIV, POWER,  //+ - * / **运算符
@@ -46,8 +46,17 @@ static Tokens TOKEN_TABLE[] = {
     {FUNC, "EXP", 0.0, exp, 0},
     {FUNC, "SQRT", 0.0, sqrt, 0},
     {CONST_ID, "PI", PI, nullptr, 0},
-    {CONST_ID, "E", E, nullptr, 0}
+    {CONST_ID, "E", E, nullptr, 0},
+    {COLOR_ID, "BLACK", 0.0, nullptr, 0},
+    {COLOR_ID, "BLUE", 1.0, nullptr, 0},
+    {COLOR_ID, "GREEN", 2.0, nullptr, 0},
+    {COLOR_ID, "CYAN", 3.0, nullptr, 0},
+    {COLOR_ID, "RED", 4.0, nullptr, 0},
+    {COLOR_ID, "MAGENTA", 5.0, nullptr, 0},
+    {COLOR_ID, "YELLOW", 6.0, nullptr, 0},
+    {COLOR_ID, "WHITE", 7.0, nullptr, 0},
 };
+
 
 extern QVector<Tokens> token_stream;
 extern void loadTokensFromString(const QString &input);

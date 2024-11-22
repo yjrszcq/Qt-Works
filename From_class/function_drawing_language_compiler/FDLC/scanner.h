@@ -14,7 +14,7 @@ public:
     void emptyBuffer();
     void addCharToBuffer(QChar temp_c);
     Tokens searchCharInDict(const QString &temp_s);
-    Tokens createToken(TokenType type, const QString &lexeme, double value, double (*FuncPtr)(double), int line);
+    static Tokens createToken(TokenType type, const QString &lexeme, double value, double (*FuncPtr)(double), int line);
     Tokens getToken();
     void tokenOutputType(Tokens token);
     void tokenOutput(const QString &type, const QString &lexeme, double value, const QString &func_ptr);
