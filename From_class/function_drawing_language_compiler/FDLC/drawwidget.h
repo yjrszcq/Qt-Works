@@ -2,6 +2,7 @@
 #define DRAWWIDGET_H
 
 #include <QWidget>
+#include <QUrl>
 
 class DrawWidget : public QWidget
 {
@@ -10,7 +11,7 @@ public:
     enum Mode{DIRECT, FILE};
     DrawWidget();
     void paintEvent(QPaintEvent *event) override;
-    int min_x = std::numeric_limits<int>::max(), min_y = std::numeric_limits<int>::max(), max_x = 0, max_y = 0;
+    static void outputPixmap(QUrl file_path, QString format);
 };
 
 #endif // DRAWWIDGET_H

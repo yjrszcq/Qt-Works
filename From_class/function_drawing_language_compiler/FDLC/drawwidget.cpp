@@ -1,6 +1,7 @@
 #include "drawwidget.h"
 
 #include <QPainter>
+#include <QFileInfo>
 #include "globaldefines.h"
 
 DrawWidget::DrawWidget() {
@@ -22,5 +23,79 @@ void DrawWidget::paintEvent(QPaintEvent *event){
         pen.setWidth(draw_text[i].set.pix);
         painter.setPen(pen);
         painter.drawText(draw_text[i].set.x, draw_text[i].set.y, draw_text[i].str);
+    }
+}
+
+void DrawWidget::outputPixmap(QUrl file_path, QString format){
+    try{
+        if(format.length() > 4){
+            QString error = "格式错误";
+            throw std::runtime_error((error).toStdString());
+        }
+        int min_x = draw_node[0].x, min_y = draw_node[0].y, max_x = 0, max_y = 0;
+        QImage image(10000, 10000, QImage::Format_ARGB32);
+        if(format == "PNG"){
+            image.fill(Qt::transparent);
+        } else{
+            image.fill(Qt::white);
+        }
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        for (int i = 0; i < draw_node.size(); ++i) {
+            QPen pen(QColor(draw_node[i].r, draw_node[i].g, draw_node[i].b));
+            pen.setWidth(draw_node[i].pix);
+            painter.setPen(pen);
+            painter.drawPoint(draw_node[i].x, draw_node[i].y);
+            if(draw_node[i].x < min_x) {min_x = draw_node[i].x;}
+            if(draw_node[i].x > max_x) {max_x = draw_node[i].x;}
+            if(draw_node[i].y < min_y) {min_y = draw_node[i].y;}
+            if(draw_node[i].y > max_y) {max_y = draw_node[i].y;}
+
+        }
+
+        for (int i = 0; i < draw_text.size(); ++i) {
+            QPen pen(QColor(round(draw_text[i].set.r), round(draw_text[i].set.g), round(draw_text[i].set.b)));
+            pen.setWidth(draw_text[i].set.pix);
+            painter.setPen(pen);
+            painter.drawText(draw_text[i].set.x, draw_text[i].set.y, draw_text[i].str);
+            if(draw_text[i].set.x < min_x) {min_x = draw_text[i].set.x;}
+            if(draw_text[i].set.x > max_x) {max_x = draw_text[i].set.x;}
+            if(draw_text[i].set.y < min_y) {min_y = draw_text[i].set.y;}
+            if(draw_text[i].set.y > max_y) {max_y = draw_text[i].set.y;}
+        }
+
+        painter.end();
+
+        QRect boundingRect(0, 0, max_x + min_x, max_y + min_y);
+
+        QPixmap pixmap(boundingRect.size());
+
+        if(format == "PNG"){
+            pixmap.fill(Qt::transparent);
+        } else{
+            pixmap.fill(Qt::white);
+        }
+
+        QPainter finalPainter(&pixmap);
+        finalPainter.drawImage(pixmap.rect(), image, boundingRect);
+        finalPainter.end();
+
+        QFileInfo fileInfo(file_path.url());
+        QString baseName = fileInfo.baseName();
+        QString path = fileInfo.absolutePath() + "/" + baseName + "." + format.toLower();
+
+        char ch[4];
+
+        for(int i = 0; i < format.length(); i ++){
+            ch[i] = format[i].toLatin1();
+        }
+
+        if(!pixmap.save(path, ch)){
+            QString error = "无法导出文件";
+            throw std::runtime_error((error).toStdString());
+        }
+    } catch(const std::exception &e){
+        throw std::runtime_error(std::string(e.what()));
     }
 }

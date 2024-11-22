@@ -39,7 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
         jud_status_change = true;
     });
 
-    setCREnabled(false);
+    setCRAvail(false);
+    setOutputAvail(false);
     status = UNCOMPILED;
 
 }
@@ -105,18 +106,24 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     status = UNCOMPILED;
 }
 
-void MainWindow::setCREnabled(bool jud){
+void MainWindow::setCRAvail(bool jud){
     ui->a_compile->setEnabled(jud);
     ui->a_compile_and_run->setEnabled(jud);
     ui->a_color->setEnabled(!jud);
 }
 
-void MainWindow::setCREnabled(QString suffix){
+void MainWindow::setCRAvail(QString suffix){
     if(suffix != "d"){
-        setCREnabled(false);
+        setCRAvail(false);
     } else{
-        setCREnabled(true);
+        setCRAvail(true);
     }
+}
+
+void MainWindow::setOutputAvail(bool jud){
+    ui->a_output_JPG->setEnabled(jud);
+    ui->a_output_PNG->setEnabled(jud);
+    ui->a_output_BMP->setEnabled(jud);
 }
 
 QString MainWindow::readFile(QUrl file_path){
@@ -187,7 +194,8 @@ bool MainWindow::readyToReadFile(FileType jud){
             ui->l_text_file_status_display->setText("已保存");
             jud_status_change = false;
             te_result->hide();
-            setCREnabled(QFileInfo(file_path.url()).suffix());
+            setCRAvail(QFileInfo(file_path.url()).suffix());
+            setOutputAvail(false);
             return true;
         } else{
             file_path.clear();
@@ -388,6 +396,20 @@ void MainWindow::changeLastLineColor(Qt::GlobalColor color) {
     cursor.mergeCharFormat(format);
 }
 
+void MainWindow::outputPicture(QString format){
+    try{
+        if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
+            DrawWidget::outputPixmap(file_path, format);
+        } else{
+            if(draw_node.size() > 0 || draw_text.size() > 0){
+                DrawWidget::outputPixmap(file_path, format);
+            }
+        }
+    } catch(const std::exception &e){
+        QMessageBox::critical(nullptr, "失败", QString::fromStdString(e.what()), QMessageBox::Yes);
+    }
+}
+
 void MainWindow::on_a_new_file_triggered()
 {
     MainWindow *newWindow = new MainWindow();
@@ -404,7 +426,7 @@ void MainWindow::on_a_open_file_triggered()
 void MainWindow::on_a_save_flie_triggered()
 {
     if(readyToSaveFile(ce->toPlainText(), TEXT)){
-        setCREnabled(QFileInfo(file_path.url()).suffix());
+        setCRAvail(QFileInfo(file_path.url()).suffix());
     }
 }
 
@@ -412,7 +434,7 @@ void MainWindow::on_a_save_flie_triggered()
 void MainWindow::on_a_save_as_triggered()
 {
     if(readyToSaveFile(ce->toPlainText(), AS)){
-        setCREnabled(QFileInfo(file_path.url()).suffix());
+        setCRAvail(QFileInfo(file_path.url()).suffix());
     }
 }
 
@@ -439,6 +461,7 @@ void MainWindow::on_a_compile_triggered()
     if(readyToSaveFile(ce->toPlainText(), CODE)){
         te_result->show();
         callCompiler();
+        setOutputAvail(true);
     }
 }
 
@@ -466,9 +489,25 @@ void MainWindow::on_a_compile_and_run_triggered()
         te_result->show();
         callCompiler();
         callDraw();
+        setOutputAvail(true);
     }
 }
 
 
+void MainWindow::on_a_output_JPG_triggered()
+{
+    outputPicture("JPG");
+}
 
+
+void MainWindow::on_a_output_PNG_triggered()
+{
+    outputPicture("PNG");
+}
+
+
+void MainWindow::on_a_output_BMP_triggered()
+{
+    outputPicture("BMP");
+}
 

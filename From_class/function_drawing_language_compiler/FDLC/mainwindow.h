@@ -46,6 +46,12 @@ private slots:
 
     void on_a_save_as_triggered();
 
+    void on_a_output_JPG_triggered();
+
+    void on_a_output_PNG_triggered();
+
+    void on_a_output_BMP_triggered();
+
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
@@ -60,10 +66,12 @@ public:
     bool readyToSaveFile(QString data, FileType type = TEXT);
     bool readNodes(QString data);
     bool readTexts(QString data);
-    void setCREnabled(bool jud);
-    void setCREnabled(QString suffix);
+    void setCRAvail(bool jud);
+    void setCRAvail(QString suffix);
+    void setOutputAvail(bool jud);
     void callCompiler();
     void callDraw();
+    void outputPicture(QString format);
     void changeLastLineColor(Qt::GlobalColor color);
 
 private:
