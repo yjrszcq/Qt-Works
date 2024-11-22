@@ -155,6 +155,7 @@ void Parsers::statement() {
     else if (temp_token.type == ROT) rotStatement();
     else if (temp_token.type == FOR) forStatement();
     else if (temp_token.type == COLOR) colorStatement();
+    else if (temp_token.type == PIXSIZE) pixsizeStatement();
     else if (temp_token.type == NOTES) notesStatement();
     else {syntaxError(2);}
     emit parsersOutputSent("exit from Statement", Qt::black);
@@ -200,6 +201,7 @@ void Parsers::notesStatement() {
         notes_r_values.push_back(r);
         notes_g_values.push_back(g);
         notes_b_values.push_back(b);
+        notes_pix_values.push_back(pix);
         matchToken(QUOTES);
         emit parsersOutputSent("\tmatchtoken \"", Qt::darkGray);
         matchToken(R_BRACKET);
@@ -243,6 +245,26 @@ void Parsers::colorStatement() {
         throw std::runtime_error(std::string(e.what()));
     }
 
+}
+
+void Parsers::pixsizeStatement(){
+    try{
+        emit parsersStatusSent(P_PIXSIZE);
+        emit parsersOutputSent("enter in PixsizeStatement", Qt::black);
+        matchToken(PIXSIZE);
+        emit parsersOutputSent("\tmatchtoken PIXSIZE", Qt::darkGray);
+        matchToken(IS);
+        emit parsersOutputSent("\tmatchtoken IS", Qt::darkGray);
+        pix_ptr = expression();
+        outExprNode(pix_ptr);
+        pix = getExpValue(pix_ptr);
+        if (pix <= 0) {
+            throw std::runtime_error("The Pix Size Must Be Greater Than 0");
+        }
+        emit parsersOutputSent("exit from PixsizeStatement", Qt::black);
+    } catch(const std::exception &e) {
+        throw std::runtime_error(std::string(e.what()));
+    }
 }
 
 void Parsers::originStatement() {
@@ -360,6 +382,7 @@ void Parsers::forStatement() {
         r_values.push_back(r);
         g_values.push_back(g);
         b_values.push_back(b);
+        pix_values.push_back(pix);
         matchToken(R_BRACKET);
         emit parsersOutputSent("\tmatchtoken )", Qt::darkGray);
         emit parsersOutputSent("exit from ForStatement", Qt::black);
@@ -440,7 +463,7 @@ struct ExprNode* Parsers::component() {
 }
 
 struct ExprNode* Parsers::atom() {
-    struct ExprNode *address, *tmp;
+    struct ExprNode *address = NULL, *tmp;
     double const_value;
     FuncPtr func_ptr_value;
     try{

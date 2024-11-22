@@ -19,14 +19,13 @@ void Scanner::addCharToBuffer(QChar temp_c) {
 Tokens Scanner::searchCharInDict(const QString &temp_s) {
     Tokens t = {ERRTOKEN, temp_s, 0.0, nullptr, 0};
     QString upper_temp_s = temp_s.toUpper();
-    for (int i = 0; i < 28; ++i) {
+    for (int i = 0; i < 29; ++i) {
         if (upper_temp_s == TOKEN_TABLE[i].lexeme) {
             t.type = TOKEN_TABLE[i].type;
             t.value = TOKEN_TABLE[i].value;
             t.FuncPtr = TOKEN_TABLE[i].FuncPtr;
         }
     }
-    tokenOutputType(t);
     return t;
 }
 
@@ -51,6 +50,7 @@ Tokens Scanner::getToken() {
             c = stream.read(1).at(0);
             if (c.isNull()) {
                 temp_t = createToken(NONTOKEN, "EOF", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c.isSpace()) continue;
             else if (c == '\n') { line++; continue; }
@@ -64,6 +64,7 @@ Tokens Scanner::getToken() {
                 stream.seek(stream.pos() - 1);
                 temp_t = searchCharInDict(token_buffer);
                 temp_t.token_line = line;
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c.isDigit()) {
                 addCharToBuffer(c);
@@ -82,27 +83,35 @@ Tokens Scanner::getToken() {
                 }
                 stream.seek(stream.pos() - 1);
                 temp_t = createToken(CONST_ID, token_buffer, token_buffer.toDouble(), nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == ';') {
                 temp_t = createToken(SEMICO, ";", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == '\"') {
                 temp_t = createToken(QUOTES, "\"", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == ':') {
                 temp_t = createToken(COLON, ":", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == '(') {
                 temp_t = createToken(L_BRACKET, "(", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == ')') {
                 temp_t = createToken(R_BRACKET, ")", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == ',') {
                 temp_t = createToken(COMMA, ",", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == '+') {
                 temp_t = createToken(PLUS, "+", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             } else if (c == '-') {
                 c = stream.read(1).at(0);
@@ -110,6 +119,7 @@ Tokens Scanner::getToken() {
                     while (c != '\n' && !stream.atEnd()) c = stream.read(1).at(0);
                     if (stream.atEnd()) {
                         temp_t = createToken(NONTOKEN, "EOF", 0.0, nullptr, line);
+                        tokenOutputType(temp_t);
                         return temp_t;
                     } else {
                         line++;
@@ -118,6 +128,7 @@ Tokens Scanner::getToken() {
                 } else {
                     stream.seek(stream.pos() - 1);
                     temp_t = createToken(MINUS, "-", 0.0, nullptr, line);
+                    tokenOutputType(temp_t);
                     return temp_t;
                 }
             } else if (c == '/') {
@@ -126,6 +137,7 @@ Tokens Scanner::getToken() {
                     while (c != '\n' && !stream.atEnd()) c = stream.read(1).at(0);
                     if (stream.atEnd()) {
                         temp_t = createToken(NONTOKEN, "EOF", 0.0, nullptr, line);
+                        tokenOutputType(temp_t);
                         return temp_t;
                     } else {
                         line++;
@@ -134,20 +146,24 @@ Tokens Scanner::getToken() {
                 } else {
                     stream.seek(stream.pos() - 1);
                     temp_t = createToken(DIV, "/", 0.0, nullptr, line);
+                    tokenOutputType(temp_t);
                     return temp_t;
                 }
             } else if (c == '*') {
                 c = stream.read(1).at(0);
                 if (c == '*') {
                     temp_t = createToken(POWER, "**", 0.0, nullptr, line);
+                    tokenOutputType(temp_t);
                     return temp_t;
                 } else {
                     stream.seek(stream.pos() - 1);
                     temp_t = createToken(MUL, "*", 0.0, nullptr, line);
+                    tokenOutputType(temp_t);
                     return temp_t;
                 }
             } else {
                 temp_t = createToken(ERRTOKEN, "EOF", 0.0, nullptr, line);
+                tokenOutputType(temp_t);
                 return temp_t;
             }
         }

@@ -105,7 +105,10 @@ void Compiler::callScanner(){
                 if(token.type == COLOR_ID){
                     colorTranslate(token);
                 } else {
-                    token_stream.push_back(token);
+                    if(!(token_stream.last().type == SEMICO && token.type == SEMICO)){
+                        token_stream.push_back(token);
+                    }
+
                 }
             }
         }
@@ -143,27 +146,27 @@ void Compiler::callParsers(){
     }
 }
 
-void Compiler::nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y){
+void Compiler::nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y){
     double x, y;
     parameter = start;
     if (step > 0) {
         while (parameter <= end) {
             x = Parsers::getExpValue(for_x);
             y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b);
+            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
             parameter += step;
         }
     } else if (step < 0) {
         while (parameter >= end) {
             x = Parsers::getExpValue(for_x);
             y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b);
+            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
             parameter += step;
         }
     }
 }
 
-void Compiler::nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b){
+void Compiler::nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix){
     double temp_x, temp_y;
     x *= scale_x;
     y *= scale_y;
@@ -173,15 +176,15 @@ void Compiler::nodeXY(QTextStream &out_total, double x, double y, double origin_
     y = temp_y * cos(rot_ang) - temp_x * sin(rot_ang);
     x += origin_x;
     y += origin_y;
-    out_total << QString::number(x) << " " << QString::number(y) << " " << QString::number(r) << " " << QString::number(g) << " " << QString::number(b) << "\n";
-    struct DrawNode dn = {x, y, r, g, b};
+    out_total << QString::number(x) << " " << QString::number(y) << " " << QString::number(r) << " " << QString::number(g) << " " << QString::number(b) << " " << QString::number(pix) << "\n";
+    struct DrawNode dn = {x, y, r, g, b, pix};
     draw_node.append(dn);
 }
 
-void Compiler::outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b) {
-    out_text << QString::number(notes_x) << " " << QString::number(notes_y) << " " << QString::number(notes_r) << " " << QString::number(notes_g) << " " << QString::number(notes_b) << "\n";
+void Compiler::outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b, double notes_pix) {
+    out_text << QString::number(notes_x) << " " << QString::number(notes_y) << " " << QString::number(notes_r) << " " << QString::number(notes_g) << " " << QString::number(notes_b) << " " << QString::number(notes_pix) << "\n";
     out_text << "`" << notes_string << "`\n";
-    struct DrawNode dn = {notes_x, notes_y, notes_r, notes_g, notes_b};
+    struct DrawNode dn = {notes_x, notes_y, notes_r, notes_g, notes_b, notes_pix};
     struct DrawText dt = {dn, notes_string};
     draw_text.append(dt);
 }
@@ -198,7 +201,7 @@ void Compiler::outputParsersResult(){
             }
             QTextStream out_total(&file_total);
             for (int i = 0; i < start_values.size(); ++i) {
-                nodeTotalXY(out_total, origin_x_values[i], origin_y_values[i], scale_x_values[i], scale_y_values[i], rot_ang_values[i], r_values[i], g_values[i], b_values[i], start_values[i], end_values[i], step_values[i], for_x_values[i], for_y_values[i]);
+                nodeTotalXY(out_total, origin_x_values[i], origin_y_values[i], scale_x_values[i], scale_y_values[i], rot_ang_values[i], r_values[i], g_values[i], b_values[i], pix_values[i], start_values[i], end_values[i], step_values[i], for_x_values[i], for_y_values[i]);
             }
             file_total.close();
         } catch(const std::exception &e){
@@ -215,7 +218,7 @@ void Compiler::outputParsersResult(){
             }
             QTextStream out_text(&file_text);
             for (int i = 0; i < notes_string_values.size(); ++i) {
-                outTextXY(out_text, notes_x_values[i], notes_y_values[i], notes_string_values[i], notes_r_values[i], notes_g_values[i], notes_b_values[i]);
+                outTextXY(out_text, notes_x_values[i], notes_y_values[i], notes_string_values[i], notes_r_values[i], notes_g_values[i], notes_b_values[i], notes_pix_values[i]);
             }
             file_text.close();
         } catch(const std::exception &e){

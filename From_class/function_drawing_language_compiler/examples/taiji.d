@@ -1,3 +1,5 @@
+pixsize is 10;
+
 ---- 左大圆
 color is (255,0,0); // red
 origin is (250,250);

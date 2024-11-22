@@ -84,6 +84,7 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     case Parsers::P_START: parsers_status = "START"; break;
     case Parsers::P_NOTES: parsers_status = "NOTES"; break;
     case Parsers::P_COLOR: parsers_status = "COLOR"; break;
+    case Parsers::P_PIXSIZE: parsers_status = "PIXSIZE"; break;
     case Parsers::P_ORIGIN: parsers_status = "ORIGIN"; break;
     case Parsers::P_ROT: parsers_status = "ROT"; break;
     case Parsers::P_SCALE: parsers_status = "SCALE"; break;
@@ -93,7 +94,7 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     QString error_string = "ERROR: " + error;
     QString status_string = "STATUS: <COMPILER-" + compiler_sataus + "> <SCANNER-" + scanner_status + "> <PARSERS-" + parsers_status + ">";
     QList<QString> err = error_string.split("\n");
-    for(auto e : err){
+    for(auto &e : err){
         if(e != ""){
             te_result->append(e);
             changeLastLineColor(Qt::red);
@@ -217,7 +218,7 @@ bool MainWindow::readyToReadFile(FileType jud){
             }
         }
         if(!file_paths.isEmpty()){
-            for(auto fp : file_paths){
+            for(auto &fp : file_paths){
                 try{
                     qDebug() << QFileInfo(fp).suffix();
                     if(QFileInfo(fp).suffix() == "dn"){
@@ -243,6 +244,7 @@ bool MainWindow::readyToReadFile(FileType jud){
         }
         break;
     }
+    case CODE: case AS: QMessageBox::warning(nullptr, "错误", "准备读取文件时错误", QMessageBox::Yes); return false;
     }
     return true;
 }
@@ -270,7 +272,9 @@ bool MainWindow::readyToSaveFile(QString data, FileType jud){
             } else{
                 default_file_path = file_path.url();
             }
+            break;
         }
+        case NODE: case NODE_THIS: QMessageBox::critical(nullptr, "错误", "准备保存文件时错误", QMessageBox::Yes); return false;
         }
         file_path = QFileDialog::getSaveFileName(nullptr, "保存", default_file_path, filter);
         if(file_path.url() == ""){
@@ -293,10 +297,10 @@ bool MainWindow::readyToSaveFile(QString data, FileType jud){
 bool MainWindow::readNodes(QString data){
     QStringList lines = data.split("\n");
     QVector<struct DrawNode> temp;
-    for(auto l : lines){
+    for(auto &l : lines){
         QStringList nodes = l.split(" ");
-        if(nodes.size() == 5){
-            struct DrawNode dw = {nodes[0].toDouble(), nodes[1].toDouble(), nodes[2].toDouble(), nodes[3].toDouble(), nodes[4].toDouble()};
+        if(nodes.size() == 6){
+            struct DrawNode dw = {nodes[0].toDouble(), nodes[1].toDouble(), nodes[2].toDouble(), nodes[3].toDouble(), nodes[4].toDouble(), nodes[5].toDouble()};
             temp.append(dw);
         } else{
             if(l != ""){
@@ -316,8 +320,8 @@ bool MainWindow::readTexts(QString data){
         if(i % 2 == 1){
             lines[i].remove('\n');
             QStringList set = lines[i].split(" ");
-            if(set.size() == 5){
-                temp_set = {set[0].toDouble(), set[1].toDouble(), set[2].toDouble(), set[3].toDouble(), set[4].toDouble()};
+            if(set.size() == 6){
+                temp_set = {set[0].toDouble(), set[1].toDouble(), set[2].toDouble(), set[3].toDouble(), set[4].toDouble(), set[5].toDouble()};
             } else {
                 if(lines[i] != ""){
                     return false;
@@ -333,7 +337,10 @@ bool MainWindow::readTexts(QString data){
 }
 
 void MainWindow::callCompiler(){
-    QString codes = ce->toPlainText() + ";";
+    QString codes = ce->toPlainText();
+    if(codes.right(1) != ";"){
+        codes += ";";
+    }
     if(codes != "" && file_path.isValid() && file_path.url() != ""){
         QThread* thread = new QThread();
         Compiler* compiler = new Compiler(codes, file_path);
@@ -364,7 +371,7 @@ void MainWindow::callDraw(){
             dw = NULL;
         }
         dw = new DrawWidget();
-        dw->resize(1000, 700);
+        dw->resize(this->size());
         dw->show();
 }
 

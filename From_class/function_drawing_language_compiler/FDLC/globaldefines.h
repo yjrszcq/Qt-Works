@@ -8,7 +8,7 @@
 #define E M_E
 
 enum TokenType {
-    ORIGIN, SCALE, ROT, IS, TO, STEP, DRAW, FOR, FROM, COLOR, COLOR_ID, NOTES, //保留字
+    ORIGIN, SCALE, ROT, IS, TO, STEP, DRAW, FOR, FROM, COLOR, COLOR_ID, NOTES, PIXSIZE, //保留字
     T, //参数
     SEMICO, L_BRACKET, R_BRACKET, COMMA, COLON, QUOTES, //; ( ) ,分隔符
     PLUS, MINUS, MUL, DIV, POWER,  //+ - * / **运算符
@@ -29,6 +29,7 @@ typedef struct Tokens {
 static Tokens TOKEN_TABLE[] = {
     {ORIGIN, "ORIGIN", 0.0, nullptr, 0},
     {COLOR, "COLOR", 0.0, nullptr, 0},
+    {PIXSIZE, "PIXSIZE", 0.0, nullptr, 0},
     {NOTES, "NOTES", 0.0, nullptr, 0},
     {SCALE, "SCALE", 0.0, nullptr, 0},
     {ROT, "ROT", 0.0, nullptr, 0},
@@ -83,6 +84,7 @@ struct DrawNode{
     double r;
     double g;
     double b;
+    double pix;
 };
 
 struct DrawText{
@@ -93,6 +95,7 @@ struct DrawText{
 extern QVector<double> r_values;
 extern QVector<double> g_values;
 extern QVector<double> b_values;
+extern QVector<double> pix_values;
 extern QVector<double> origin_x_values;
 extern QVector<double> origin_y_values;
 extern QVector<double> scale_x_values;
@@ -109,6 +112,7 @@ extern QVector<QString> notes_string_values;
 extern QVector<double> notes_r_values;
 extern QVector<double> notes_g_values;
 extern QVector<double> notes_b_values;
+extern QVector<double> notes_pix_values;
 
 extern double parameter;
 extern QString temp_notes;
