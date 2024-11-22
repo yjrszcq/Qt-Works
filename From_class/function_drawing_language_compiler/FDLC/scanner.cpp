@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include <QDebug>
 
 Scanner::Scanner(const QString &codes, QObject *parent)
     : QObject{parent}
@@ -17,23 +18,17 @@ void Scanner::addCharToBuffer(QChar temp_c) {
 
 Tokens Scanner::searchCharInDict(const QString &temp_s) {
     Tokens t = {ERRTOKEN, temp_s, 0.0, nullptr, 0};
-    try{
-        QString upper_temp_s = temp_s.toUpper();
-        bool jud = false;
-        for (int i = 0; i < 20; ++i) {
-            if (upper_temp_s == TOKEN_TABLE[i].lexeme) {
-                t.type = TOKEN_TABLE[i].type;
-                t.value = TOKEN_TABLE[i].value;
-                t.FuncPtr = TOKEN_TABLE[i].FuncPtr;
-                jud = true;
-            }
+    QString upper_temp_s = temp_s.toUpper();
+    bool jud = false;
+    for (int i = 0; i < 20; ++i) {
+        if (upper_temp_s == TOKEN_TABLE[i].lexeme) {
+            t.type = TOKEN_TABLE[i].type;
+            t.value = TOKEN_TABLE[i].value;
+            t.FuncPtr = TOKEN_TABLE[i].FuncPtr;
+            jud = true;
         }
-        if(jud == false){
-            throw std::runtime_error(("Unkonwn Token: " + temp_s).toStdString());
-        }
-    } catch(const std::exception &e) {
-        throw std::runtime_error(std::string(e.what()));
     }
+    tokenOutputType(t);
     return t;
 }
 
@@ -161,5 +156,46 @@ Tokens Scanner::getToken() {
         emit scannerStatusSent(S_SUCCEED);
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
+    }
+}
+
+void Scanner::tokenOutputType(Tokens token) {
+    switch (token.type) {
+    case ORIGIN: tokenOutput("ORIGIN", token.lexeme, token.value, "NULL"); break;
+    case SCALE: tokenOutput("SCALE", token.lexeme, token.value, "NULL"); break;
+    case ROT: tokenOutput("ROT", token.lexeme, token.value, "NULL"); break;
+    case IS: tokenOutput("IS", token.lexeme, token.value, "NULL"); break;
+    case TO: tokenOutput("TO", token.lexeme, token.value, "NULL"); break;
+    case STEP: tokenOutput("STEP", token.lexeme, token.value, "NULL"); break;
+    case DRAW: tokenOutput("DRAW", token.lexeme, token.value, "NULL"); break;
+    case FOR: tokenOutput("FOR", token.lexeme, token.value, "NULL"); break;
+    case FROM: tokenOutput("FROM", token.lexeme, token.value, "NULL"); break;
+    case T: tokenOutput("T", token.lexeme, token.value, "NULL"); break;
+    case SEMICO: tokenOutput("SEMICO", token.lexeme, token.value, "NULL"); break;
+    case L_BRACKET: tokenOutput("L_BRACKET", token.lexeme, token.value, "NULL"); break;
+    case R_BRACKET: tokenOutput("R_BRACKET", token.lexeme, token.value, "NULL"); break;
+    case COMMA: tokenOutput("COMMA", token.lexeme, token.value, "NULL"); break;
+    case PLUS: tokenOutput("PLUS", token.lexeme, token.value, "NULL"); break;
+    case MINUS: tokenOutput("MINUS", token.lexeme, token.value, "NULL"); break;
+    case MUL: tokenOutput("MUL", token.lexeme, token.value, "NULL"); break;
+    case DIV: tokenOutput("DIV", token.lexeme, token.value, "NULL"); break;
+    case POWER: tokenOutput("POWER", token.lexeme, token.value, "NULL"); break;
+    case FUNC: tokenOutput("FUNC", token.lexeme, token.value, token.lexeme.toUpper()); break;
+    case CONST_ID: tokenOutput("CONST_ID", token.lexeme, token.value, "NULL"); break;
+    case NONTOKEN: tokenOutput("NONTOKEN", token.lexeme, token.value, "NULL"); break;
+    case ERRTOKEN: tokenOutput("ERRTOKEN", token.lexeme, token.value, "NULL"); break;
+    case COLOR: tokenOutput("COLOR", token.lexeme, token.value, "NULL"); break;
+    case NOTES: tokenOutput("NOTES", token.lexeme, token.value, "NULL"); break;
+    case COLON: tokenOutput("COLON", token.lexeme, token.value, "NULL"); break;
+    case QUOTES: tokenOutput("QUOTES", token.lexeme, token.value, "NULL"); break;
+    }
+}
+
+void Scanner::tokenOutput(const QString &type, const QString &lexeme, double value, const QString &func_ptr) {
+    QString output = QString("%1\t|\t%2\t|\t%3\t|\t%4\n").arg(type, 10).arg(lexeme, 12).arg(value, 14, 'f', 6).arg(func_ptr, 16);
+    if(type != "ERRTOKEN"){
+        emit scannerOutputSent(output, Qt::black, lexeme);
+    } else{
+        emit scannerOutputSent(output, Qt::red, lexeme);
     }
 }

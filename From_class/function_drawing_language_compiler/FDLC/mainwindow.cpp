@@ -49,7 +49,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::refreshReceive(){
+void MainWindow::clearReceive(){
     te_result->clear();
 }
 
@@ -92,8 +92,13 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     }
     QString error_string = "ERROR: " + error;
     QString status_string = "STATUS: <COMPILER-" + compiler_sataus + "> <SCANNER-" + scanner_status + "> <PARSERS-" + parsers_status + ">";
-    te_result->append(error_string);
-    changeLastLineColor(Qt::red);
+    QList<QString> err = error_string.split("\n");
+    for(auto e : err){
+        if(e != ""){
+            te_result->append(e);
+            changeLastLineColor(Qt::red);
+        }
+    }
     te_result->append(status_string);
     changeLastLineColor(Qt::red);
     status = UNCOMPILED;
@@ -328,13 +333,13 @@ bool MainWindow::readTexts(QString data){
 }
 
 void MainWindow::callCompiler(){
-    QString codes = ce->toPlainText();
+    QString codes = ce->toPlainText() + ";";
     if(codes != "" && file_path.isValid() && file_path.url() != ""){
         QThread* thread = new QThread();
         Compiler* compiler = new Compiler(codes, file_path);
         compiler->moveToThread(thread);
         connect(thread, &QThread::started, compiler, &Compiler::compile);
-        connect(compiler, &Compiler::refreshSent, this, &MainWindow::refreshReceive);
+        connect(compiler, &Compiler::clearSent, this, &MainWindow::clearReceive);
         connect(compiler, &Compiler::processSent, this, &MainWindow::processReceive);
         connect(compiler, &Compiler::resultSent, this, &MainWindow::resultReceive);
         connect(compiler, &Compiler::errorSent, this, &MainWindow::errorReceive);

@@ -9,6 +9,7 @@ Compiler::Compiler(QString codes, QUrl file_path, QObject *parent)
 {
     this->codes = codes;
     this->file_path = file_path;
+    error_tokens_str ="";
     status = PREPARING;
     scanner_status = Scanner::S_PREPARING;
     parsers_status = Parsers::P_PREPARING;
@@ -28,6 +29,7 @@ bool Compiler::compile(){
     try{
         QMutexLocker locker(&mutex);
         status = START;
+        emit clearSent();
         callScanner();
         scanner_status = Scanner::S_SUCCEED;
         callParsers();
@@ -48,6 +50,13 @@ void Compiler::scannerStatusReceive(Scanner::Status scanner_status){
     this->scanner_status = scanner_status;
 }
 
+void Compiler::scannerOutputReceive(const QString &text, Qt::GlobalColor color, const QString error_token_lexeme){
+    if(color == Qt::red){
+        error_tokens_str.append("\nUnkonwn Token: " + error_token_lexeme);
+    }
+    emit processSent(text, color);
+}
+
 void Compiler::parsersStatusReceive(Parsers::Status parsers_status){
     this->parsers_status = parsers_status;
 }
@@ -61,7 +70,11 @@ void Compiler::callScanner(){
         status = SCANNING;
         initAll();
         Scanner scanner(codes);
+        emit processSent("------------------------------", Qt::black);
+        emit processSent("Scanner Result", Qt::blue);
+        emit processSent("------------------------------", Qt::black);
         connect(&scanner, SIGNAL(scannerStatusSent(Scanner::Status)), this, SLOT(scannerStatusReceive(Scanner::Status)));
+        connect(&scanner, SIGNAL(scannerOutputSent(const QString, Qt::GlobalColor, const QString)), this, SLOT(scannerOutputReceive(const QString, Qt::GlobalColor, const QString)));
         Tokens token;
         token = scanner.getToken();
         token_stream.push_back(token);
@@ -73,53 +86,16 @@ void Compiler::callScanner(){
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
     }
-
-}
-
-void Compiler::sts(const QString &type, const QString &lexeme, double value, const QString &func_ptr) {
-    QString output = QString("%1\t|\t%2\t|\t%3\t|\t%4\n").arg(type, 10).arg(lexeme, 12).arg(value, 14, 'f', 6).arg(func_ptr, 16);
-    emit processSent(output, Qt::black);
-}
-
-void Compiler::stsOut(Tokens token) {
-    switch (token.type) {
-    case ORIGIN: sts("ORIGIN", token.lexeme, token.value, "NULL"); break;
-    case SCALE: sts("SCALE", token.lexeme, token.value, "NULL"); break;
-    case ROT: sts("ROT", token.lexeme, token.value, "NULL"); break;
-    case IS: sts("IS", token.lexeme, token.value, "NULL"); break;
-    case TO: sts("TO", token.lexeme, token.value, "NULL"); break;
-    case STEP: sts("STEP", token.lexeme, token.value, "NULL"); break;
-    case DRAW: sts("DRAW", token.lexeme, token.value, "NULL"); break;
-    case FOR: sts("FOR", token.lexeme, token.value, "NULL"); break;
-    case FROM: sts("FROM", token.lexeme, token.value, "NULL"); break;
-    case T: sts("T", token.lexeme, token.value, "NULL"); break;
-    case SEMICO: sts("SEMICO", token.lexeme, token.value, "NULL"); break;
-    case L_BRACKET: sts("L_BRACKET", token.lexeme, token.value, "NULL"); break;
-    case R_BRACKET: sts("R_BRACKET", token.lexeme, token.value, "NULL"); break;
-    case COMMA: sts("COMMA", token.lexeme, token.value, "NULL"); break;
-    case PLUS: sts("PLUS", token.lexeme, token.value, "NULL"); break;
-    case MINUS: sts("MINUS", token.lexeme, token.value, "NULL"); break;
-    case MUL: sts("MUL", token.lexeme, token.value, "NULL"); break;
-    case DIV: sts("DIV", token.lexeme, token.value, "NULL"); break;
-    case POWER: sts("POWER", token.lexeme, token.value, "NULL"); break;
-    case FUNC: sts("FUNC", token.lexeme, token.value, token.lexeme.toUpper()); break;
-    case CONST_ID: sts("CONST_ID", token.lexeme, token.value, "NULL"); break;
-    case NONTOKEN: sts("NONTOKEN", token.lexeme, token.value, "NULL"); break;
-    case ERRTOKEN: sts("ERRTOKEN", token.lexeme, token.value, "NULL"); break;
-    case COLOR: sts("COLOR", token.lexeme, token.value, "NULL"); break;
-    case NOTES: sts("NOTES", token.lexeme, token.value, "NULL"); break;
-    case COLON: sts("COLON", token.lexeme, token.value, "NULL"); break;
-    case QUOTES: sts("QUOTES", token.lexeme, token.value, "NULL"); break;
-    }
 }
 
 void Compiler::outputScannerResult(){
-    emit refreshSent();
-    emit processSent("------------------------------", Qt::black);
-    emit processSent("Scanner Result", Qt::blue);
-    emit processSent("------------------------------", Qt::black);
-    for(auto tokens : token_stream){
-        stsOut(tokens);
+    try{
+        if(error_tokens_str != ""){
+            qDebug() << 1;
+            throw std::runtime_error(error_tokens_str.toStdString());
+        }
+    } catch(const std::exception &e){
+        throw std::runtime_error(std::string(e.what()));
     }
 }
 

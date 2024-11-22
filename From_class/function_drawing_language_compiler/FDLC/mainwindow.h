@@ -73,7 +73,7 @@ private:
     Status status;
 
 public slots:
-    void refreshReceive();
+    void clearReceive();
     void resultReceive();
     void processReceive(QString process, Qt::GlobalColor color);
     void errorReceive(QString error, Compiler::Status status, Scanner::Status scanner_status, Parsers::Status parsers_status);

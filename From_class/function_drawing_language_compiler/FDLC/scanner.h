@@ -16,6 +16,8 @@ public:
     Tokens searchCharInDict(const QString &temp_s);
     Tokens createToken(TokenType type, const QString &lexeme, double value, double (*FuncPtr)(double), int line);
     Tokens getToken();
+    void tokenOutputType(Tokens token);
+    void tokenOutput(const QString &type, const QString &lexeme, double value, const QString &func_ptr);
 
 private:
     QString token_buffer; //缓冲区
@@ -24,6 +26,7 @@ private:
 
 signals:
     void scannerStatusSent(Scanner::Status status);
+    void scannerOutputSent(const QString &text, Qt::GlobalColor color, const QString token_lexeme);
 };
 
 #endif // SCANNER_H
