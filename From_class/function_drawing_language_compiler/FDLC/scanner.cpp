@@ -203,6 +203,7 @@ void Scanner::tokenOutputType(Tokens token) {
     case COLON: tokenOutput("COLON", token.lexeme, token.value, "NULL"); break;
     case QUOTES: tokenOutput("QUOTES", token.lexeme, token.value, "NULL"); break;
     case COLOR_ID: tokenOutput("COLOR_ID", token.lexeme, token.value, "NULL"); break;
+    case PIXSIZE: tokenOutput("PIXSIZE", token.lexeme, token.value, "NULL"); break;
     }
 }
 
