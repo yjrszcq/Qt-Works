@@ -2,7 +2,6 @@
 #define COMPILER_H
 
 #include <QObject>
-#include "globaldefines.h"
 #include "scanner.h"
 #include "parsers.h"
 
@@ -13,22 +12,18 @@ class Compiler : public QObject
 {
     Q_OBJECT
 public:
-    enum Status{PREPARING, START, SCANNING, PARSERING, SUCCEED, FAILED};
-    explicit Compiler(QString codes, QUrl file_path, QObject *parent = nullptr);
-    static bool run(QString codes, QUrl file_path);
+    enum Status{C_PREPARING, C_START, C_SCANNING, C_PARSERING, C_SUCCEED, C_FAILED};
+    explicit Compiler(QString codes, QObject *parent = nullptr);
+    static bool run(QString codes);
 
 public:
     void callScanner();
     void callParsers();
-    void outputScannerResult();
-    void nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y);
-    void nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix);
-    void outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b, double notes_pix);
-    void outputParsersResult();
+    void outputScannerError();
+    static void outputNodeData(QUrl file_path);
 
 private:
     QString codes;
-    QUrl file_path;
     QMutex mutex;
     Status status;
     Scanner::Status scanner_status;

@@ -11,6 +11,7 @@ public:
     enum Mode{SINGLE, MULTIPLE};
     DrawWidget();
     void paintEvent(QPaintEvent *event) override;
+    static void countSize(int &x, int &y);
     static void outputPixmap(QList<QUrl> file_path, QString format, Mode mode);
 };
 

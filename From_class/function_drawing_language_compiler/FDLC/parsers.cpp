@@ -132,6 +132,7 @@ void Parsers::parser() {
         emit parsersStatusSent(P_START);
         fetchToken();
         program();
+        parserOutput();
         emit parsersStatusSent(P_SUCCEED);
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
@@ -490,4 +491,68 @@ struct ExprNode* Parsers::atom() {
         throw std::runtime_error(std::string(e.what()));
     }
     return address;
+}
+
+void Parsers::nodeTotalXY(double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y){
+    double x, y;
+    parameter = start;
+    if (step > 0) {
+        while (parameter <= end) {
+            x = Parsers::getExpValue(for_x);
+            y = Parsers::getExpValue(for_y);
+            nodeXY(x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
+            parameter += step;
+        }
+    } else if (step < 0) {
+        while (parameter >= end) {
+            x = Parsers::getExpValue(for_x);
+            y = Parsers::getExpValue(for_y);
+            nodeXY(x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
+            parameter += step;
+        }
+    }
+}
+
+void Parsers::nodeXY(double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix){
+    double temp_x, temp_y;
+    x *= scale_x;
+    y *= scale_y;
+    temp_x = x;
+    temp_y = y;
+    x = temp_x * cos(rot_ang) + temp_y * sin(rot_ang);
+    y = temp_y * cos(rot_ang) - temp_x * sin(rot_ang);
+    x += origin_x;
+    y += origin_y;
+    struct DrawNode dn = {x, y, r, g, b, pix};
+    draw_node.append(dn);
+}
+
+void Parsers::outTextXY(double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b, double notes_pix) {
+    struct DrawNode dn = {notes_x, notes_y, notes_r, notes_g, notes_b, notes_pix};
+    struct DrawText dt = {dn, notes_string};
+    draw_text.append(dt);
+}
+
+
+void Parsers::parserOutput(){
+    emit parsersStatusSent(P_OUTPUT);
+    if(start_values.size() > 0){
+        try{
+            for (int i = 0; i < start_values.size(); ++i) {
+                nodeTotalXY(origin_x_values.at(i), origin_y_values.at(i), scale_x_values.at(i), scale_y_values.at(i), rot_ang_values.at(i), r_values.at(i), g_values.at(i), b_values.at(i), pix_values.at(i), start_values.at(i), end_values.at(i), step_values.at(i), for_x_values.at(i), for_y_values.at(i));
+            }
+        } catch(const std::exception &e){
+            throw std::runtime_error(std::string(e.what()));
+        }
+
+    }
+    if(notes_string_values.size() > 0){
+        try{
+            for (int i = 0; i < notes_string_values.size(); ++i) {
+                outTextXY(notes_x_values.at(i), notes_y_values.at(i), notes_string_values.at(i), notes_r_values.at(i), notes_g_values.at(i), notes_b_values.at(i), notes_pix_values.at(i));
+            }
+        } catch(const std::exception &e){
+            throw std::runtime_error(std::string(e.what()));
+        }
+    }
 }

@@ -1,9 +1,11 @@
 #include "drawwidget.h"
+#include "globaldefines.h"
 
 #include <QPainter>
 #include <QFileInfo>
 #include <QFileDialog>
-#include "globaldefines.h"
+#include <QMessageBox>
+
 
 DrawWidget::DrawWidget() {
     this->setWindowTitle("图像");
@@ -26,6 +28,25 @@ void DrawWidget::paintEvent(QPaintEvent *event){
         painter.drawText(draw_text[i].set.x, draw_text[i].set.y, draw_text[i].str);
     }
 }
+
+void DrawWidget::countSize(int &x, int &y){
+    int min_x = x, min_y = y, max_x = 0, max_y = 0;
+    for(int i = 0; i < draw_node.size(); ++i){
+        if(draw_node[i].x < min_x) {min_x = draw_node[i].x;}
+        if(draw_node[i].x > max_x) {max_x = draw_node[i].x;}
+        if(draw_node[i].y < min_y) {min_y = draw_node[i].y;}
+        if(draw_node[i].y > max_y) {max_y = draw_node[i].y;}
+    }
+    for (int i = 0; i < draw_text.size(); ++i){
+        if(draw_text[i].set.x < min_x) {min_x = draw_text[i].set.x;}
+        if(draw_text[i].set.x > max_x) {max_x = draw_text[i].set.x;}
+        if(draw_text[i].set.y < min_y) {min_y = draw_text[i].set.y;}
+        if(draw_text[i].set.y > max_y) {max_y = draw_text[i].set.y;}
+    }
+    x = max_x + min_x;
+    y = max_y + min_y;
+}
+
 
 void DrawWidget::outputPixmap(QList<QUrl> file_path, QString format, Mode mode){
     try{
@@ -107,6 +128,7 @@ void DrawWidget::outputPixmap(QList<QUrl> file_path, QString format, Mode mode){
             break;
         }
         }
+        QMessageBox::information(nullptr, "成功", "图像导出成功", QMessageBox::Yes);
     } catch(const std::exception &e){
         throw std::runtime_error(std::string(e.what()));
     }

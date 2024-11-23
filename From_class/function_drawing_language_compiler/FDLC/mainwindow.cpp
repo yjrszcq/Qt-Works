@@ -3,6 +3,10 @@
 #include "scanner.h"
 #include "parsers.h"
 
+#include <QFileDialog>
+#include <QFontDialog>
+#include <QColorDialog>
+#include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
 #include <QStandardPaths>
@@ -22,6 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
     splitter->addWidget(ce);
     splitter->addWidget(te_result);
 
+    l_file_status = new QLabel("状态: 未保存");
+    cb_auto_output_nodes =new QCheckBox("自动导出点文件");
+
+    ui->statusbar->addWidget(l_file_status);
+    ui->statusbar->addPermanentWidget(cb_auto_output_nodes);
+
     ui->vl_text->insertWidget(1, splitter);
 
     QFont font("Consolas", 11);
@@ -34,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ce, &QPlainTextEdit::textChanged, this, [=](){
         if(jud_status_change == true){
-            ui->l_text_file_status_display->setText("未保存");
+            l_file_status->setText("状态: 未保存");
         }
         jud_status_change = true;
     });
@@ -42,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCRAvail(false);
     setOutputAvail(false);
     status = UNCOMPILED;
-
+    ui->a_output_nodes->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -61,6 +71,7 @@ void MainWindow::processReceive(QString process, Qt::GlobalColor color){
 
 void MainWindow::resultReceive(){
     status = COMPILED;
+    ui->a_output_nodes->setEnabled(true);
 }
 
 void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner::Status s_status, Parsers::Status p_status){
@@ -68,12 +79,12 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     QString scanner_status;
     QString parsers_status;
     switch(c_status){
-    case Compiler::PREPARING: compiler_sataus = "PREPARING"; break;
-    case Compiler::START: compiler_sataus = "START"; break;
-    case Compiler::SCANNING: compiler_sataus = "SCANNING"; break;
-    case Compiler::PARSERING: compiler_sataus = "PARSERING"; break;
-    case Compiler::SUCCEED: compiler_sataus = "SUCCEED"; break;
-    case Compiler::FAILED: compiler_sataus = "FAILED"; break;
+    case Compiler::C_PREPARING: compiler_sataus = "PREPARING"; break;
+    case Compiler::C_START: compiler_sataus = "START"; break;
+    case Compiler::C_SCANNING: compiler_sataus = "SCANNING"; break;
+    case Compiler::C_PARSERING: compiler_sataus = "PARSERING"; break;
+    case Compiler::C_SUCCEED: compiler_sataus = "SUCCEED"; break;
+    case Compiler::C_FAILED: compiler_sataus = "FAILED"; break;
     }
     switch(s_status){
     case Scanner::S_PREPARING: scanner_status = "PREPARING"; break;
@@ -90,6 +101,7 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     case Parsers::P_ROT: parsers_status = "ROT"; break;
     case Parsers::P_SCALE: parsers_status = "SCALE"; break;
     case Parsers::P_FOR: parsers_status = "FOR"; break;
+    case Parsers::P_OUTPUT: parsers_status = "OUTPUT"; break;
     case Parsers::P_SUCCEED: parsers_status = "SUCCEED"; break;
     }
     QString error_string = "ERROR: " + error;
@@ -104,6 +116,7 @@ void MainWindow::errorReceive(QString error, Compiler::Status c_status, Scanner:
     te_result->append(status_string);
     changeLastLineColor(Qt::red);
     status = UNCOMPILED;
+    ui->a_output_nodes->setEnabled(false);
 }
 
 void MainWindow::setCRAvail(bool jud){
@@ -121,9 +134,7 @@ void MainWindow::setCRAvail(QString suffix){
 }
 
 void MainWindow::setOutputAvail(bool jud){
-    ui->a_output_JPG->setEnabled(jud);
-    ui->a_output_PNG->setEnabled(jud);
-    ui->a_output_BMP->setEnabled(jud);
+    ui->m_output_picture->setEnabled(jud);
 }
 
 QString MainWindow::readFile(QUrl file_path){
@@ -191,11 +202,13 @@ bool MainWindow::readyToReadFile(FileType jud){
             }
             ce->setPlainText(text);
             ui->l_text_current_file_display->setText(file_path.fileName());
-            ui->l_text_file_status_display->setText("已保存");
+            l_file_status->setText("状态: 已保存");
             jud_status_change = false;
             te_result->hide();
             setCRAvail(QFileInfo(file_path.url()).suffix());
             setOutputAvail(false);
+            status = UNCOMPILED;
+            ui->a_output_nodes->setEnabled(false);
             return true;
         } else{
             file_path.clear();
@@ -300,7 +313,7 @@ bool MainWindow::readyToSaveFile(QString data, FileType jud){
         QMessageBox::critical(nullptr, "失败", QString::fromStdString(e.what()), QMessageBox::Yes);
         return false;
     }
-    ui->l_text_file_status_display->setText("已保存");
+    l_file_status->setText("状态: 已保存");
     ui->l_text_current_file_display->setText(file_path.fileName());
     jud_status_change = true;
     temp_path.clear();
@@ -355,27 +368,22 @@ bool MainWindow::readTexts(QString data){
 
 void MainWindow::callCompiler(){
     QString codes = ce->toPlainText();
-    if(codes.right(1) != ";"){
-        codes += ";";
-    }
-    if(codes != "" && file_path.isValid() && file_path.url() != ""){
-        QThread* thread = new QThread();
-        Compiler* compiler = new Compiler(codes, file_path);
-        compiler->moveToThread(thread);
-        connect(thread, &QThread::started, compiler, &Compiler::compile);
-        connect(compiler, &Compiler::clearSent, this, &MainWindow::clearReceive);
-        connect(compiler, &Compiler::processSent, this, &MainWindow::processReceive);
-        connect(compiler, &Compiler::resultSent, this, &MainWindow::resultReceive);
-        connect(compiler, &Compiler::errorSent, this, &MainWindow::errorReceive);
-        connect(compiler, &Compiler::resultSent, compiler, &Compiler::deleteLater);
-        connect(compiler, &Compiler::errorSent, compiler, &Compiler::deleteLater);
-        connect(compiler, &Compiler::resultSent, thread, &QThread::quit);
-        connect(compiler, &Compiler::errorSent, thread, &QThread::quit);
-        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-        thread->start();
+    if(codes != ""){
+        if(codes.right(1) != ";"){
+            codes += ";";
+        }
+        Compiler compiler(codes);
+        connect(&compiler, &Compiler::clearSent, this, &MainWindow::clearReceive);
+        connect(&compiler, &Compiler::processSent, this, &MainWindow::processReceive);
+        connect(&compiler, &Compiler::resultSent, this, &MainWindow::resultReceive);
+        connect(&compiler, &Compiler::errorSent, this, &MainWindow::errorReceive);
+        compiler.compile();
     } else{
-        if(codes == ""){
-            QMessageBox::critical(nullptr, "错误", "代码为空", QMessageBox::Yes);
+        QMessageBox::critical(nullptr, "错误", "代码为空", QMessageBox::Yes);
+    }
+    if(cb_auto_output_nodes->isChecked()){
+        if(file_path.isValid() && file_path.url() != ""){
+            Compiler::outputNodeData(file_path);
         } else{
             QMessageBox::critical(nullptr, "错误", "代码文件地址获取失败", QMessageBox::Yes);
         }
@@ -383,13 +391,16 @@ void MainWindow::callCompiler(){
 }
 
 void MainWindow::callDraw(){
-        if(dw != NULL){
-            delete dw;
-            dw = NULL;
-        }
-        dw = new DrawWidget();
-        dw->resize(this->size());
-        dw->show();
+    if(dw != NULL){
+        delete dw;
+        dw = NULL;
+    }
+    int x = draw_node.at(0).x;
+    int y = draw_node.at(0).y;
+    DrawWidget::countSize(x, y);
+    dw = new DrawWidget();
+    dw->resize(x, y);
+    dw->show();
 }
 
 void MainWindow::changeLastLineColor(Qt::GlobalColor color) {
@@ -475,8 +486,7 @@ void MainWindow::on_a_color_triggered()
 
 void MainWindow::on_a_compile_triggered()
 {
-
-    if(readyToSaveFile(ce->toPlainText(), CODE)){
+    if(!file_path.isValid() || file_path.url() == "" || readyToSaveFile(ce->toPlainText(), CODE)){
         te_result->show();
         callCompiler();
         setOutputAvail(true);
@@ -492,11 +502,9 @@ void MainWindow::on_a_run_triggered()
             setOutputAvail(true);
         }
     } else{
-        if(draw_node.size() > 0 || draw_text.size() > 0){
-            if(readyToReadFile(NODE_THIS)){
-                callDraw();
-                setOutputAvail(true);
-            }
+        if(draw_node.size() > 0 || draw_text.size() > 0 || readyToReadFile(NODE_THIS)){
+            callDraw();
+            setOutputAvail(true);
         }
     }
 
@@ -529,5 +537,22 @@ void MainWindow::on_a_output_PNG_triggered()
 void MainWindow::on_a_output_BMP_triggered()
 {
     outputPicture("BMP");
+}
+
+
+void MainWindow::on_a_output_nodes_triggered()
+{
+    try{
+        if((draw_node.size() > 0 || draw_text.size() > 0) && status == COMPILED){
+            if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
+                throw std::runtime_error("代码文件地址获取失败");
+            } else{
+                Compiler::outputNodeData(file_path);
+            }
+        }
+        QMessageBox::information(nullptr, "成功", "文件导出成功", QMessageBox::Yes);
+    } catch(const std::exception &e){
+        QMessageBox::critical(nullptr, "失败", QString::fromStdString(e.what()), QMessageBox::Yes);
+    }
 }
 

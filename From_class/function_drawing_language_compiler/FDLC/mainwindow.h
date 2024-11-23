@@ -6,12 +6,9 @@
 #include "compiler.h"
 #include "drawwidget.h"
 
-#include <QFileDialog>
-#include <QFontDialog>
-#include <QColorDialog>
-#include <QMessageBox>
 #include <QTextEdit>
-
+#include <QLabel>
+#include <QCheckBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -52,10 +49,14 @@ private slots:
 
     void on_a_output_BMP_triggered();
 
+    void on_a_output_nodes_triggered();
+
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
     DrawWidget *dw = NULL;
+    QLabel *l_file_status;
+    QCheckBox *cb_auto_output_nodes;
 
 public:
     enum Status{COMPILED, UNCOMPILED};

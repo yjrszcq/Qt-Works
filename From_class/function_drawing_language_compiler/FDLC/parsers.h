@@ -10,7 +10,7 @@ class Parsers : public QObject
 {
     Q_OBJECT
 public:
-    enum Status{P_PREPARING, P_START, P_NOTES, P_COLOR, P_PIXSIZE, P_ORIGIN, P_ROT, P_SCALE, P_FOR, P_SUCCEED};
+    enum Status{P_PREPARING, P_START, P_NOTES, P_COLOR, P_PIXSIZE, P_ORIGIN, P_ROT, P_SCALE, P_FOR, P_OUTPUT, P_SUCCEED};
     explicit Parsers(QObject *parent = nullptr);
     struct ExprNode* makeExprNode(TokenType op_code, ...);
     void fetchToken();
@@ -33,6 +33,10 @@ public:
     struct ExprNode* factor();
     struct ExprNode* component();
     struct ExprNode* atom();
+    void nodeTotalXY(double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y);
+    void nodeXY(double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix);
+    void outTextXY(double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b, double notes_pix);
+    void parserOutput();
 
 public:
     static int cnt;

@@ -22,7 +22,7 @@
         <item>
          <widget class="QLabel" name="l_text_current_file">
           <property name="text">
-           <string>当前文件：</string>
+           <string>当前文件: </string>
           </property>
          </widget>
         </item>
@@ -35,37 +35,6 @@
         </item>
         <item>
          <spacer name="hs_text_up">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="hl_text_down">
-        <item>
-         <widget class="QLabel" name="l_text_file_status">
-          <property name="text">
-           <string>状态：</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="l_text_file_status_display">
-          <property name="text">
-           <string>未保存</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="hs_text_down">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -96,19 +65,26 @@
     <property name="title">
      <string>文件</string>
     </property>
-    <widget class="QMenu" name="menu_2">
+    <widget class="QMenu" name="m_output">
      <property name="title">
-      <string>导出图像</string>
+      <string>导出为...</string>
      </property>
-     <addaction name="a_output_JPG"/>
-     <addaction name="a_output_PNG"/>
-     <addaction name="a_output_BMP"/>
+     <widget class="QMenu" name="m_output_picture">
+      <property name="title">
+       <string>导出为图像</string>
+      </property>
+      <addaction name="a_output_JPG"/>
+      <addaction name="a_output_PNG"/>
+      <addaction name="a_output_BMP"/>
+     </widget>
+     <addaction name="a_output_nodes"/>
+     <addaction name="m_output_picture"/>
     </widget>
     <addaction name="a_new_file"/>
     <addaction name="a_open_file"/>
     <addaction name="a_save_flie"/>
     <addaction name="a_save_as"/>
-    <addaction name="menu_2"/>
+    <addaction name="m_output"/>
    </widget>
    <widget class="QMenu" name="edit">
     <property name="title">
@@ -202,28 +178,24 @@
     <string>Alt+S</string>
    </property>
   </action>
+  <action name="a_output_nodes">
+   <property name="text">
+    <string>导出为点</string>
+   </property>
+  </action>
   <action name="a_output_JPG">
    <property name="text">
     <string>导出为JPG</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+J</string>
    </property>
   </action>
   <action name="a_output_PNG">
    <property name="text">
     <string>导出为PNG</string>
    </property>
-   <property name="shortcut">
-    <string>Alt+P</string>
-   </property>
   </action>
   <action name="a_output_BMP">
    <property name="text">
     <string>导出为BMP</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+B</string>
    </property>
   </action>
  </widget>

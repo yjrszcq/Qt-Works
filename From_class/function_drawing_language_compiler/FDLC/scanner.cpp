@@ -5,11 +5,12 @@ Scanner::Scanner(const QString &codes, QObject *parent)
     : QObject{parent}
 {
     this->codes = codes;
-    stream.setString(&this->codes);
 }
 
 void Scanner::scan(){
     try{
+        emit scannerStatusSent(S_START);
+        stream.setString(&codes);
         Tokens token;
         token = getToken();
         token_stream.push_back(token);
@@ -26,6 +27,7 @@ void Scanner::scan(){
                 }
             }
         }
+        emit scannerStatusSent(S_SUCCEED);
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
     }
@@ -63,7 +65,6 @@ Tokens Scanner::createToken(TokenType type, const QString &lexeme, double value,
 }
 
 Tokens Scanner::getToken() {
-    emit scannerStatusSent(S_START);
     QChar c;
     static int line = 1; //行数
     Tokens temp_t;

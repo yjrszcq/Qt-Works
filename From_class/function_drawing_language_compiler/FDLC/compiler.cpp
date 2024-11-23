@@ -1,45 +1,43 @@
 #include "compiler.h"
+#include "globaldefines.h"
 
 #include <QFile>
 #include <QFileInfo>
 #include <QMutexLocker>
 
-Compiler::Compiler(QString codes, QUrl file_path, QObject *parent)
+Compiler::Compiler(QString codes, QObject *parent)
     : QObject{parent}
 {
     this->codes = codes;
-    this->file_path = file_path;
-    error_tokens_str ="";
-    status = PREPARING;
+    error_tokens_str = "";
+    status = C_PREPARING;
     scanner_status = Scanner::S_PREPARING;
     parsers_status = Parsers::P_PREPARING;
 }
 
-bool Compiler::run(QString codes, QUrl file_path){
-    if(codes != "" && file_path.isValid() && file_path.url() != ""){
-        Compiler compiler(codes, file_path);
+bool Compiler::run(QString codes){
+        Compiler compiler(codes);
         if(compiler.compile()){
             return true;
         }
-    }
     return false;
 }
 
 bool Compiler::compile(){
     try{
         QMutexLocker locker(&mutex);
-        status = START;
+        status = C_START;
         emit clearSent();
         callScanner();
         scanner_status = Scanner::S_SUCCEED;
         callParsers();
         parsers_status = Parsers::P_SUCCEED;
-        locker.unlock();
         emit resultSent();
-        status = SUCCEED;
+        locker.unlock();
+        status = C_SUCCEED;
     } catch(const std::exception &e) {
         emit errorSent(QString::fromStdString(e.what()), status, scanner_status, parsers_status);
-        status = FAILED;
+        status = C_FAILED;
         initAll();
         return false;
     }
@@ -67,7 +65,7 @@ void Compiler::parsersOutputReceive(const QString &text, Qt::GlobalColor color){
 
 void Compiler::callScanner(){
     try{
-        status = SCANNING;
+        status = C_SCANNING;
         initAll();
         Scanner scanner(codes);
         emit processSent("------------------------------", Qt::black);
@@ -76,13 +74,13 @@ void Compiler::callScanner(){
         connect(&scanner, SIGNAL(scannerStatusSent(Scanner::Status)), this, SLOT(scannerStatusReceive(Scanner::Status)));
         connect(&scanner, SIGNAL(scannerOutputSent(const QString, Qt::GlobalColor, const QString)), this, SLOT(scannerOutputReceive(const QString, Qt::GlobalColor, const QString)));
         scanner.scan();
-        outputScannerResult();
+        outputScannerError();
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
     }
 }
 
-void Compiler::outputScannerResult(){
+void Compiler::outputScannerError(){
     try{
         if(error_tokens_str != ""){
             qDebug() << 1;
@@ -95,7 +93,7 @@ void Compiler::outputScannerResult(){
 
 void Compiler::callParsers(){
     try{
-        status = PARSERING;
+        status = C_PARSERING;
         Parsers::cnt = 0;
         Parsers p;
         connect(&p, SIGNAL(parsersStatusSent(Parsers::Status)), this, SLOT(parsersStatusReceive(Parsers::Status)));
@@ -104,56 +102,12 @@ void Compiler::callParsers(){
         emit processSent("Parsers Result", Qt::blue);
         emit processSent("------------------------------", Qt::black);
         p.parser();
-        outputParsersResult();
     } catch(const std::exception &e){
         throw std::runtime_error(std::string(e.what()));
     }
 }
 
-void Compiler::nodeTotalXY(QTextStream &out_total, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix, double start, double end, double step, struct ExprNode* for_x, struct ExprNode* for_y){
-    double x, y;
-    parameter = start;
-    if (step > 0) {
-        while (parameter <= end) {
-            x = Parsers::getExpValue(for_x);
-            y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
-            parameter += step;
-        }
-    } else if (step < 0) {
-        while (parameter >= end) {
-            x = Parsers::getExpValue(for_x);
-            y = Parsers::getExpValue(for_y);
-            nodeXY(out_total, x, y, origin_x, origin_y, scale_x, scale_y, rot_ang, r, g, b, pix);
-            parameter += step;
-        }
-    }
-}
-
-void Compiler::nodeXY(QTextStream &out_total, double x, double y, double origin_x, double origin_y, double scale_x, double scale_y, double rot_ang, double r, double g, double b, double pix){
-    double temp_x, temp_y;
-    x *= scale_x;
-    y *= scale_y;
-    temp_x = x;
-    temp_y = y;
-    x = temp_x * cos(rot_ang) + temp_y * sin(rot_ang);
-    y = temp_y * cos(rot_ang) - temp_x * sin(rot_ang);
-    x += origin_x;
-    y += origin_y;
-    out_total << QString::number(x) << " " << QString::number(y) << " " << QString::number(r) << " " << QString::number(g) << " " << QString::number(b) << " " << QString::number(pix) << "\n";
-    struct DrawNode dn = {x, y, r, g, b, pix};
-    draw_node.append(dn);
-}
-
-void Compiler::outTextXY(QTextStream &out_text, double notes_x, double notes_y, const QString &notes_string, double notes_r, double notes_g, double notes_b, double notes_pix) {
-    out_text << QString::number(notes_x) << " " << QString::number(notes_y) << " " << QString::number(notes_r) << " " << QString::number(notes_g) << " " << QString::number(notes_b) << " " << QString::number(notes_pix) << "\n";
-    out_text << "`" << notes_string << "`\n";
-    struct DrawNode dn = {notes_x, notes_y, notes_r, notes_g, notes_b, notes_pix};
-    struct DrawText dt = {dn, notes_string};
-    draw_text.append(dt);
-}
-
-void Compiler::outputParsersResult(){
+void Compiler::outputNodeData(QUrl file_path){
     QFileInfo fileInfo(file_path.url());
     QString baseName = fileInfo.baseName();
     if(start_values.size() > 0){
@@ -164,8 +118,9 @@ void Compiler::outputParsersResult(){
                 throw std::runtime_error(("无法导出分析文件" + baseName + ".dn").toStdString());
             }
             QTextStream out_total(&file_total);
-            for (int i = 0; i < start_values.size(); ++i) {
-                nodeTotalXY(out_total, origin_x_values[i], origin_y_values[i], scale_x_values[i], scale_y_values[i], rot_ang_values[i], r_values[i], g_values[i], b_values[i], pix_values[i], start_values[i], end_values[i], step_values[i], for_x_values[i], for_y_values[i]);
+            for (int i = 0; i < draw_node.size(); ++i) {
+                out_total << QString::number(draw_node.at(i).x) << " " << QString::number(draw_node.at(i).y) << " " << QString::number(draw_node.at(i).r) << " " << QString::number(draw_node.at(i).g) << " " << QString::number(draw_node.at(i).b) << " " << QString::number(draw_node.at(i).pix) << "\n";
+
             }
             file_total.close();
         } catch(const std::exception &e){
@@ -181,8 +136,9 @@ void Compiler::outputParsersResult(){
                 throw std::runtime_error(("无法导出分析文件" + baseName + ".dt").toStdString());
             }
             QTextStream out_text(&file_text);
-            for (int i = 0; i < notes_string_values.size(); ++i) {
-                outTextXY(out_text, notes_x_values[i], notes_y_values[i], notes_string_values[i], notes_r_values[i], notes_g_values[i], notes_b_values[i], notes_pix_values[i]);
+            for (int i = 0; i < draw_text.size(); ++i) {
+                out_text << QString::number(draw_text.at(i).set.x) << " " << QString::number(draw_text.at(i).set.y) << " " << QString::number(draw_text.at(i).set.r) << " " << QString::number(draw_text.at(i).set.g) << " " << QString::number(draw_text.at(i).set.b) << " " << QString::number(draw_text.at(i).set.pix) << "\n";
+                out_text << "`" << draw_text.at(i).str << "`\n";
             }
             file_text.close();
         } catch(const std::exception &e){
