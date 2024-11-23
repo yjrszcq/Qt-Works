@@ -8,6 +8,29 @@ Scanner::Scanner(const QString &codes, QObject *parent)
     stream.setString(&this->codes);
 }
 
+void Scanner::scan(){
+    try{
+        Tokens token;
+        token = getToken();
+        token_stream.push_back(token);
+        while (token.type != NONTOKEN) {
+            token = getToken();
+            if(token.type != ERRTOKEN){
+                if(token.type == COLOR_ID){
+                    colorTranslate(token);
+                } else {
+                    if(!(token_stream.last().type == SEMICO && token.type == SEMICO)){
+                        token_stream.push_back(token);
+                    }
+
+                }
+            }
+        }
+    } catch(const std::exception &e) {
+        throw std::runtime_error(std::string(e.what()));
+    }
+}
+
 void Scanner::emptyBuffer() {
     token_buffer.clear();
 }
@@ -171,6 +194,27 @@ Tokens Scanner::getToken() {
     } catch(const std::exception &e) {
         throw std::runtime_error(std::string(e.what()));
     }
+}
+
+void Scanner::colorTranslate(Tokens color){
+    double r = 0, g = 0, b = 0;
+    switch(qRound(color.value)){
+    case 0: r = 0; g = 0; b = 0; break;
+    case 1: r = 0; g = 0; b = 255; break;
+    case 2: r = 0; g = 255; b = 0; break;
+    case 3: r = 0; g = 255; b = 255; break;
+    case 4: r = 255; g = 0; b = 0; break;
+    case 5: r = 255; g = 0; b = 255; break;
+    case 6: r = 255; g = 255; b = 0; break;
+    case 7: r = 255; g = 255; b = 255; break;
+    }
+    token_stream.push_back(createToken(L_BRACKET, "(", 0.0, nullptr, 0));
+    token_stream.push_back(createToken(CONST_ID, QString::number(r), r, nullptr, 0));
+    token_stream.push_back(createToken(COMMA, ",", 0.0, nullptr, 0));
+    token_stream.push_back(createToken(CONST_ID, QString::number(g), g, nullptr, 0));
+    token_stream.push_back(createToken(COMMA, ",", 0.0, nullptr, 0));
+    token_stream.push_back(createToken(CONST_ID, QString::number(b), b, nullptr, 0));
+    token_stream.push_back(createToken(R_BRACKET, ")", 0.0, nullptr, 0));
 }
 
 void Scanner::tokenOutputType(Tokens token) {
