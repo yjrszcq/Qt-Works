@@ -207,10 +207,14 @@ bool MainWindow::readyToReadFile(FileType jud){
         QString default_file_path;
         QString filter;
         QStringList file_paths;
+        temp_path.clear();
         if(jud == NODE){
             default_file_path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + QDir::separator();
             filter =  "Draw Node Files (*.dn);;Draw Text Files (*.dt)";
             file_paths = QFileDialog::getOpenFileNames(nullptr, "打开多个文件", default_file_path, filter);
+            for(auto &fp : file_paths){
+                temp_path.append(QUrl(fp));
+            }
         } else {
             QFileInfo file_info(file_path.url());
             default_file_path = file_info.path() + "/" + file_info.baseName();
@@ -299,6 +303,7 @@ bool MainWindow::readyToSaveFile(QString data, FileType jud){
     ui->l_text_file_status_display->setText("已保存");
     ui->l_text_current_file_display->setText(file_path.fileName());
     jud_status_change = true;
+    temp_path.clear();
     return true;
 }
 
@@ -312,6 +317,8 @@ bool MainWindow::readNodes(QString data){
             temp.append(dw);
         } else{
             if(l != ""){
+                initAll();
+                temp_path.clear();
                 return false;
             }
         }
@@ -332,6 +339,8 @@ bool MainWindow::readTexts(QString data){
                 temp_set = {set[0].toDouble(), set[1].toDouble(), set[2].toDouble(), set[3].toDouble(), set[4].toDouble(), set[5].toDouble()};
             } else {
                 if(lines[i] != ""){
+                    initAll();
+                    temp_path.clear();
                     return false;
                 }
             }
@@ -398,13 +407,22 @@ void MainWindow::changeLastLineColor(Qt::GlobalColor color) {
 
 void MainWindow::outputPicture(QString format){
     try{
-        if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
-            DrawWidget::outputPixmap(file_path, format);
-        } else{
-            if(draw_node.size() > 0 || draw_text.size() > 0){
-                DrawWidget::outputPixmap(file_path, format);
+        if((draw_node.size() > 0 || draw_text.size() > 0)){
+            if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
+                if(temp_path.size() > 0){
+                    if(temp_path.size() == 1){
+                        DrawWidget::outputPixmap(temp_path, format, DrawWidget::SINGLE);
+                    } else{
+                        DrawWidget::outputPixmap(temp_path, format, DrawWidget::MULTIPLE);
+                    }
+                }
+            } else{
+                QList<QUrl> temp;
+                temp.append(file_path);
+                DrawWidget::outputPixmap(temp, format, DrawWidget::SINGLE);
             }
         }
+
     } catch(const std::exception &e){
         QMessageBox::critical(nullptr, "失败", QString::fromStdString(e.what()), QMessageBox::Yes);
     }
@@ -471,11 +489,13 @@ void MainWindow::on_a_run_triggered()
     if(!file_path.isValid() || file_path.url() == "" || QFileInfo(file_path.url()).suffix() != "d"){
         if(readyToReadFile(NODE)){
             callDraw();
+            setOutputAvail(true);
         }
     } else{
         if(draw_node.size() > 0 || draw_text.size() > 0){
             if(readyToReadFile(NODE_THIS)){
                 callDraw();
+                setOutputAvail(true);
             }
         }
     }

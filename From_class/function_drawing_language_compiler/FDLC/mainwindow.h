@@ -76,6 +76,7 @@ public:
 
 private:
     QUrl file_path;
+    QList<QUrl> temp_path;
     bool jud_status_change = false;
     QTextEdit *te_result;
     Status status;

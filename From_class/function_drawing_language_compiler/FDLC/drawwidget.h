@@ -8,10 +8,10 @@ class DrawWidget : public QWidget
 {
     Q_OBJECT
 public:
-    enum Mode{DIRECT, FILE};
+    enum Mode{SINGLE, MULTIPLE};
     DrawWidget();
     void paintEvent(QPaintEvent *event) override;
-    static void outputPixmap(QUrl file_path, QString format);
+    static void outputPixmap(QList<QUrl> file_path, QString format, Mode mode);
 };
 
 #endif // DRAWWIDGET_H

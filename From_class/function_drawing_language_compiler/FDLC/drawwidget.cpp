@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QFileInfo>
+#include <QFileDialog>
 #include "globaldefines.h"
 
 DrawWidget::DrawWidget() {
@@ -26,7 +27,7 @@ void DrawWidget::paintEvent(QPaintEvent *event){
     }
 }
 
-void DrawWidget::outputPixmap(QUrl file_path, QString format){
+void DrawWidget::outputPixmap(QList<QUrl> file_path, QString format, Mode mode){
     try{
         if(format.length() > 4){
             QString error = "格式错误";
@@ -81,19 +82,30 @@ void DrawWidget::outputPixmap(QUrl file_path, QString format){
         finalPainter.drawImage(pixmap.rect(), image, boundingRect);
         finalPainter.end();
 
-        QFileInfo fileInfo(file_path.url());
-        QString baseName = fileInfo.baseName();
-        QString path = fileInfo.absolutePath() + "/" + baseName + "." + format.toLower();
-
         char ch[4];
-
         for(int i = 0; i < format.length(); i ++){
             ch[i] = format[i].toLatin1();
         }
-
-        if(!pixmap.save(path, ch)){
-            QString error = "无法导出文件";
-            throw std::runtime_error((error).toStdString());
+        QFileInfo fileInfo(file_path[0].url());
+        QString baseName = fileInfo.baseName();
+        QString default_file_path = fileInfo.absolutePath() + "/" + baseName + "." + format.toLower();
+        switch(mode){
+        case SINGLE:{
+            if(!pixmap.save(default_file_path, ch)){
+                QString error = "无法导出文件";
+                throw std::runtime_error((error).toStdString());
+            }
+            break;
+        }
+        case MULTIPLE:{
+            QString filter =  format + " Files (*." + format.toLower() + ")";
+            QString path = QFileDialog::getSaveFileName(nullptr, "保存", default_file_path, filter);
+            if(!pixmap.save(path, ch)){
+                QString error = "无法导出文件";
+                throw std::runtime_error((error).toStdString());
+            }
+            break;
+        }
         }
     } catch(const std::exception &e){
         throw std::runtime_error(std::string(e.what()));
