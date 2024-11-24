@@ -54,6 +54,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     CodeEditor *ce;
+    QTextEdit *te_result;
     DrawWidget *dw = NULL;
     QLabel *l_file_status;
     QCheckBox *cb_auto_output_nodes;
@@ -70,7 +71,7 @@ public:
     void setCRAvail(bool jud);
     void setCRAvail(QString suffix);
     void setOutputAvail(bool jud);
-    void callCompiler();
+    bool callCompiler();
     void callDraw();
     void outputPicture(QString format);
     void changeLastLineColor(Qt::GlobalColor color);
@@ -79,13 +80,12 @@ private:
     QUrl file_path;
     QList<QUrl> temp_path;
     bool jud_status_change = false;
-    QTextEdit *te_result;
     Status status;
 
 public slots:
     void clearReceive();
     void resultReceive();
     void processReceive(QString process, Qt::GlobalColor color);
-    void errorReceive(QString error, Compiler::Status status, Scanner::Status scanner_status, Parsers::Status parsers_status);
+    void errorReceive(QString error, Compiler::Status compiler_status, Scanner::Status scanner_status, Parsers::Status parsers_status);
 };
 #endif // MAINWINDOW_H

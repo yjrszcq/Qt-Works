@@ -29,9 +29,7 @@ bool Compiler::compile(){
         status = C_START;
         emit clearSent();
         callScanner();
-        scanner_status = Scanner::S_SUCCEED;
         callParsers();
-        parsers_status = Parsers::P_SUCCEED;
         emit resultSent();
         locker.unlock();
         status = C_SUCCEED;

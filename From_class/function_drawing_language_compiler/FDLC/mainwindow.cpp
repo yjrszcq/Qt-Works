@@ -366,7 +366,7 @@ bool MainWindow::readTexts(QString data){
     return true;
 }
 
-void MainWindow::callCompiler(){
+bool MainWindow::callCompiler(){
     QString codes = ce->toPlainText();
     if(codes != ""){
         if(codes.right(1) != ";"){
@@ -377,17 +377,26 @@ void MainWindow::callCompiler(){
         connect(&compiler, &Compiler::processSent, this, &MainWindow::processReceive);
         connect(&compiler, &Compiler::resultSent, this, &MainWindow::resultReceive);
         connect(&compiler, &Compiler::errorSent, this, &MainWindow::errorReceive);
-        compiler.compile();
+        return compiler.compile();
     } else{
         QMessageBox::critical(nullptr, "错误", "代码为空", QMessageBox::Yes);
+        return false;
     }
     if(cb_auto_output_nodes->isChecked()){
         if(file_path.isValid() && file_path.url() != ""){
-            Compiler::outputNodeData(file_path);
+            try {
+                Compiler::outputNodeData(file_path);
+                return true;
+            } catch (const std::exception& e) {
+                QMessageBox::critical(nullptr, "失败", QString::fromStdString(e.what()), QMessageBox::Yes);
+                return false;
+            }
         } else{
             QMessageBox::critical(nullptr, "错误", "代码文件地址获取失败", QMessageBox::Yes);
+            return false;
         }
     }
+    return true;
 }
 
 void MainWindow::callDraw(){
@@ -515,8 +524,9 @@ void MainWindow::on_a_compile_and_run_triggered()
 {
     if(readyToSaveFile(ce->toPlainText(), CODE)){
         te_result->show();
-        callCompiler();
-        callDraw();
+        if(callCompiler()){
+            callDraw();
+        }
         setOutputAvail(true);
     }
 }
