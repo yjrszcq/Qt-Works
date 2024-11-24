@@ -93,7 +93,7 @@ void Parsers::matchToken(TokenType t) {
 void Parsers::syntaxError(int x) {
     try{
         if (x == 1) {
-            throw std::runtime_error(("line No:" + QString::number(temp_token.token_line) + " Has An Unexpected Token: " + temp_token.lexeme).toStdString());
+            throw std::runtime_error(("line No:" + QString::number(temp_token.token_line) + " Has An Error Token: " + temp_token.lexeme).toStdString());
         } else if (x == 2) {
             throw std::runtime_error(("line No:" + QString::number(temp_token.token_line) + " Has An Unexpected Token: " + temp_token.lexeme).toStdString());
         }
