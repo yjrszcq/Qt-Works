@@ -187,11 +187,29 @@ bool Server::reserve(Reservation tempResv){
         QHash<QString, QString> resv;
         resv.insert("custName", tempResv.getUserName());
         resv.insert("resvType", QString::number(tempResv.getResvType()));
-        resv.insert("resvContent", tempResv.getResvContent());
         resv.insert("resvAvail", QString::number(tempResv.getResvAvail()));
         resv.insert("resvKey", tempResv.getResvKey());
         resv.insert("resvNote", tempResv.getResvNote());
         db->addDataPS("reservations", resv);
+        QHash<QString, QString> resvContent;
+        resvContent.insert("resvKey", tempResv.getResvKey());
+        switch(tempResv.getResvType()){
+        case Reservation::FLIGHT: {
+            resvContent.insert("flightNum", tempResv.getResvContent());
+            db->addDataPS("flight_reservations", resvContent);
+            break;
+        }
+        case Reservation::HOTEL: {
+            resvContent.insert("location", tempResv.getResvContent());
+            db->addDataPS("hotel_reservations", resvContent);
+            break;
+        }
+        case Reservation::BUS: {
+            resvContent.insert("location", tempResv.getResvContent());
+            db->addDataPS("bus_reservations", resvContent);
+            break;
+        }
+        }
         if(db->getNumRowsAffected() == 0){
             QMessageBox::information(NULL, "失败", "预订失败-1", QMessageBox::Yes);
             return false;
@@ -211,6 +229,7 @@ bool Server::reserve(Reservation tempResv){
             if(flight.size() == 0){
                 QMessageBox::critical(NULL, "critical", "该航班不存在, 预订失败-2", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("flight_reservations", sql_where_delete);
                 return false;
             }
             // 剩余座位 -1
@@ -219,6 +238,7 @@ bool Server::reserve(Reservation tempResv){
             if(avail < 0){
                 QMessageBox::critical(NULL, "critical", "该航班已满座, 预订失败-3", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("flight_reservations", sql_where_delete);
                 return false;
             }
             // 更新航班信息
@@ -227,6 +247,7 @@ bool Server::reserve(Reservation tempResv){
             if(db->getNumRowsAffected() == 0){
                 QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("flight_reservations", sql_where_delete);
                 return false;
             }
             break;
@@ -241,6 +262,7 @@ bool Server::reserve(Reservation tempResv){
             if(hotel.size() == 0){
                 QMessageBox::critical(NULL, "critical", "该宾馆不存在, 预订失败-2", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("hotel_reservations", sql_where_delete);
                 return false;
             }
             // 剩余房间 -1
@@ -249,6 +271,7 @@ bool Server::reserve(Reservation tempResv){
             if(avail < 0){
                 QMessageBox::critical(NULL, "critical", "该宾馆已住满, 预订失败-3", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("hotel_reservations", sql_where_delete);
                 return false;
             }
             // 更新宾馆信息
@@ -257,6 +280,7 @@ bool Server::reserve(Reservation tempResv){
             if(db->getNumRowsAffected() == 0){
                 QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("hotel_reservations", sql_where_delete);
                 return false;
             }
             break;
@@ -271,6 +295,7 @@ bool Server::reserve(Reservation tempResv){
             if(bus.size() == 0){
                 QMessageBox::critical(NULL, "critical", "该客车不存在, 预订失败-2", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("bus_reservations", sql_where_delete);
                 return false;
             }
             // 剩余座位 -1
@@ -279,6 +304,7 @@ bool Server::reserve(Reservation tempResv){
             if(avail < 0){
                 QMessageBox::critical(NULL, "critical", "该客车已满座, 预订失败-3", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("bus_reservations", sql_where_delete);
                 return false;
             }
             // 更新客车信息
@@ -287,6 +313,7 @@ bool Server::reserve(Reservation tempResv){
             if(db->getNumRowsAffected() == 0){
                 QMessageBox::information(NULL, "失败", "预订失败-4", QMessageBox::Yes);
                 db->delDataPS("reservations", sql_where_delete);
+                db->delDataPS("bus_reservations", sql_where_delete);
                 return false;
             }
             break;
@@ -581,7 +608,7 @@ void Server::updateItem(Reservation tempResv){
 
 void Server::deleteItem(int flag, QString content){
     if(content != ""){
-        int jud = 3;
+        int jud = 4;
         switch(flag){
         case 0: {
             MysqlDb::SqlWhere sql_where;
@@ -594,15 +621,20 @@ void Server::deleteItem(int flag, QString content){
                     QMessageBox::Warning, "警告",
                     "删除会将相关预订变为不可用预订，是否继续？",
                     QMessageBox::Yes | QMessageBox::No, NULL);
-                if(msg->exec()){// 询问是否删除（若删除则相关预订不可用）
+                if(msg->exec() == QMessageBox::Yes){// 询问是否删除（若删除则相关预订不可用）
+                    QHash<QString, QString> resv_f;
+                    MysqlDb::SqlWhere sql_where_resv_f;
+                    sql_where_resv_f.str = "where flightNum = ?";
+                    sql_where_resv_f.values.append(content);
+                    db->getDataPS("flight_reservations", resv_f, sql_where_resv_f);
                     QHash<QString, QString> update;
                     MysqlDb::SqlWhere sql_where_resv;
-                    sql_where_resv.str = "where resvType = ? and resvContent = ?";
-                    sql_where_resv.values.append(QString::number(flag));
-                    sql_where_resv.values.append(content);
+                    sql_where_resv.str = "where resvKey = ?";
+                    sql_where_resv.values.append(resv_f["resvKey"]);
                     update.insert("resvAvail", "0");
                     db->updateDataPS("reservations", update, sql_where_resv);
                     if(db->getNumRowsAffected() != 0){
+                        db->delDataPS("flight_reservations", sql_where_resv_f);
                         db->delDataPS("flights", sql_where);
                         if(db->getNumRowsAffected() != 0){
                             update.clear();
@@ -645,15 +677,20 @@ void Server::deleteItem(int flag, QString content){
                     QMessageBox::Warning, "警告",
                     "删除会将相关预订变为不可用预订，是否继续？",
                     QMessageBox::Yes | QMessageBox::No, NULL);
-                if(msg->exec()){
-                    MysqlDb::SqlWhere sql_where_resv;
-                    sql_where_resv.str = "where resvType = ? and resvContent = ?";
-                    sql_where_resv.values.append(QString::number(flag));
-                    sql_where_resv.values.append(content);
+                if(msg->exec() == QMessageBox::Yes){
+                    QHash<QString, QString> resv_h;
+                    MysqlDb::SqlWhere sql_where_resv_h;
+                    sql_where_resv_h.str = "where location = ?";
+                    sql_where_resv_h.values.append(content);
+                    db->getDataPS("hotel_reservations", resv_h, sql_where_resv_h);
                     QHash<QString, QString> update;
+                    MysqlDb::SqlWhere sql_where_resv;
+                    sql_where_resv.str = "where resvKey = ?";
+                    sql_where_resv.values.append(resv_h["resvKey"]);
                     update.insert("resvAvail", "0");
                     db->updateDataPS("reservations", update, sql_where_resv);
                     if(db->getNumRowsAffected() != 0){
+                        db->delDataPS("hotel_reservations", sql_where_resv_h);
                         db->delDataPS("hotels", sql_where);
                         if(db->getNumRowsAffected() != 0){
                             update.clear();
@@ -693,15 +730,20 @@ void Server::deleteItem(int flag, QString content){
                     QMessageBox::Warning, "警告",
                     "删除会将相关预订变为不可用预订，是否继续？",
                     QMessageBox::Yes | QMessageBox::No, NULL);
-                if(msg->exec()){
-                    MysqlDb::SqlWhere sql_where_resv;
-                    sql_where_resv.str = "where resvType = ? and resvContent = ?";
-                    sql_where_resv.values.append(QString::number(flag));
-                    sql_where_resv.values.append(content);
+                if(msg->exec() == QMessageBox::Yes){
+                    QHash<QString, QString> resv_b;
+                    MysqlDb::SqlWhere sql_where_resv_b;
+                    sql_where_resv_b.str = "where location = ?";
+                    sql_where_resv_b.values.append(content);
+                    db->getDataPS("bus_reservations", resv_b, sql_where_resv_b);
                     QHash<QString, QString> update;
+                    MysqlDb::SqlWhere sql_where_resv;
+                    sql_where_resv.str = "where resvKey = ?";
+                    sql_where_resv.values.append(resv_b["resvKey"]);
                     update.insert("resvAvail", "0");
                     db->updateDataPS("reservations", update, sql_where_resv);
                     if(db->getNumRowsAffected() != 0){
+                        db->delDataPS("bus_reservations", sql_where_resv_b);
                         db->delDataPS("bus", sql_where);
                         if(db->getNumRowsAffected() != 0){
                             update.clear();
@@ -748,7 +790,7 @@ void Server::deleteItem(int flag, QString content){
                     QMessageBox::Warning, "警告",
                     "删除会将相关预订变为不可用预订，是否继续？",
                     QMessageBox::Yes | QMessageBox::No, NULL);
-                if(msg->exec()){
+                if(msg->exec() == QMessageBox::Yes){
                     QHash<QString, QString> update;
                     update.insert("resvAvail", "0");
                     db->updateDataPS("reservations", update, sql_where_resv);
@@ -812,6 +854,11 @@ void Server::deleteItem(int flag, QString content){
                         db->updateDataPS(table, item, sql_where);
                         if(db->getNumRowsAffected() != 0 && ok){
                             db->delDataPS("reservations", sql_where_resv);
+                            switch(content[0].unicode()){
+                            case 'F': db->delDataPS("flight_reservations", sql_where_resv); break;
+                            case 'H': db->delDataPS("hotel_reservations", sql_where_resv); break;
+                            case 'B': db->delDataPS("bus_reservations", sql_where_resv); break;
+                            }
                             if(db->getNumRowsAffected() != 0){
                                 emit refreshSent(4);
                                 jud = 0;
@@ -832,6 +879,11 @@ void Server::deleteItem(int flag, QString content){
                     sql_where.str = "where resvKey = ?";
                     sql_where.values.append(content);
                     db->delDataPS("reservations", sql_where);
+                    switch(content[0].unicode()){
+                    case 'F': db->delDataPS("flight_reservations", sql_where_resv); break;
+                    case 'H': db->delDataPS("hotel_reservations", sql_where_resv); break;
+                    case 'B': db->delDataPS("bus_reservations", sql_where_resv); break;
+                    }
                     if(db->getNumRowsAffected() != 0){
                         emit refreshSent(4);
                         jud = 0;
@@ -879,6 +931,42 @@ QList<QHash<QString,QString>> Server::getData(int flag){
     case 4:{
         QList<QHash<QString,QString>> data;
         db->getDataPS("reservations", data);
+        bool ok;
+        for(auto &d :data){
+            QHash<QString,QString> dataContent;
+            MysqlDb::SqlWhere sql_where_resv;
+            sql_where_resv.str = "where resvKey = ?";
+            sql_where_resv.values.append(d["resvKey"]);
+            switch(d["resvType"].toInt(&ok, 10)){
+            case 0: {
+                db->getDataPS("flight_reservations", dataContent, sql_where_resv);
+                if(dataContent["flightNum"] != ""){
+                    d.insert("resvContent", dataContent["flightNum"]);
+                } else {
+                    d.insert("resvContent", "不存在");
+                }
+                break;
+            }
+            case 1: {
+                db->getDataPS("hotel_reservations", dataContent, sql_where_resv);
+                if(dataContent["location"] != ""){
+                    d.insert("resvContent", dataContent["location"]);
+                } else {
+                    d.insert("resvContent", "不存在");
+                }
+                break;
+            }
+            case 2: {
+                db->getDataPS("bus_reservations", dataContent, sql_where_resv);
+                if(dataContent["location"] != ""){
+                    d.insert("resvContent", dataContent["location"]);
+                } else {
+                    d.insert("resvContent", "不存在");
+                }
+                break;
+            }
+            }
+        }
         return data;
     }
     default: {
@@ -895,13 +983,48 @@ QList<QHash<QString,QString>> Server::getData(User user){
     sql_where.str = "where custName = ?";
     sql_where.values.append(user.getName());
     db->getDataPS("reservations", data, sql_where);
+    bool ok;
+    for(auto &d :data){
+        QHash<QString,QString> dataContent;
+        MysqlDb::SqlWhere sql_where_resv;
+        sql_where_resv.str = "where resvKey = ?";
+        sql_where_resv.values.append(d["resvKey"]);
+        switch(d["resvType"].toInt(&ok, 10)){
+        case 0: {
+            db->getDataPS("flight_reservations", dataContent, sql_where_resv);
+            if(dataContent["flightNum"] != ""){
+                d.insert("resvContent", dataContent["flightNum"]);
+            } else {
+                d.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        case 1: {
+            db->getDataPS("hotel_reservations", dataContent, sql_where_resv);
+            if(dataContent["location"] != ""){
+                d.insert("resvContent", dataContent["location"]);
+            } else {
+                d.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        case 2: {
+            db->getDataPS("bus_reservations", dataContent, sql_where_resv);
+            if(dataContent["location"] != ""){
+                d.insert("resvContent", dataContent["location"]);
+            } else {
+                d.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        }
+    }
     return data;
 }
 
 QList<QHash<QString,QString>> Server::getData(int table_flag, int attribute_flag, QString search_content){
     QString table;
     QString attribute;
-    QString resv_type;
     MysqlDb::SqlWhere sql_where;
     switch(table_flag){
     case 0: {
@@ -947,23 +1070,77 @@ QList<QHash<QString,QString>> Server::getData(int table_flag, int attribute_flag
         switch(attribute_flag){
         case 0: attribute = "resvKey"; break;
         case 1: attribute = "custName"; break;
-        case 2: attribute = "resvContent"; resv_type = "0"; break;
-        case 3: attribute = "resvContent"; resv_type = "1"; break;
-        case 4: attribute = "resvContent"; resv_type = "2"; break;
+        case 2: attribute = "flightNum"; break;
+        case 3: attribute = "location"; break;
+        case 4: attribute = "location"; break;
         }
-        if(attribute_flag < 2){
-            sql_where.str = "where " + attribute + " LIKE ?";
-            sql_where.values.append("%" + search_content + "%");
-        } else{
-            sql_where.str = "where resvType = ? and " + attribute + " LIKE ?";
-            sql_where.values.append(resv_type);
-            sql_where.values.append("%" + search_content + "%");
-        }
+        sql_where.str = "where " + attribute + " LIKE ?";
+        sql_where.values.append("%" + search_content + "%");
         break;
     }
     }
     QList<QHash<QString,QString>> data;
-    db->getDataPS(table, data, sql_where);
+    if(table_flag  < 4){
+        db->getDataPS(table, data, sql_where);
+    } else {
+        if(attribute_flag < 2){
+            db->getDataPS(table, data, sql_where);
+            bool ok;
+            for(auto &d :data){
+                QHash<QString,QString> dataContent;
+                MysqlDb::SqlWhere sql_where_resv;
+                sql_where_resv.str = "where resvKey = ?";
+                sql_where_resv.values.append(d["resvKey"]);
+                switch(d["resvType"].toInt(&ok, 10)){
+                case 0: {
+                    db->getDataPS("flight_reservations", dataContent, sql_where_resv);
+                    if(dataContent["flightNum"] != ""){
+                        d.insert("resvContent", dataContent["flightNum"]);
+                    } else {
+                        d.insert("resvContent", "不存在");
+                    }
+                    break;
+                }
+                case 1: {
+                    db->getDataPS("hotel_reservations", dataContent, sql_where_resv);
+                    if(dataContent["location"] != ""){
+                        d.insert("resvContent", dataContent["location"]);
+                    } else {
+                        d.insert("resvContent", "不存在");
+                    }
+                    break;
+                }
+                case 2: {
+                    db->getDataPS("bus_reservations", dataContent, sql_where_resv);}
+                    if(dataContent["location"] != ""){
+                        d.insert("resvContent", dataContent["location"]);
+                    } else {
+                        d.insert("resvContent", "不存在");
+                    }
+                    break;
+                }
+            }
+        } else {
+            switch(attribute_flag){
+            case 2: db->getDataPS("flight_reservations", data, sql_where); break;
+            case 3: db->getDataPS("hotel_reservations", data, sql_where); break;
+            case 4: db->getDataPS("bus_reservations", data, sql_where); break;
+            }
+            for(auto &d : data){
+                QHash<QString,QString> data_all;
+                MysqlDb::SqlWhere sql_where_resv;
+                sql_where_resv.str = "where resvKey = ?";
+                sql_where_resv.values.append(d["resvKey"]);
+                db->getDataPS("reservations", data_all, sql_where_resv);
+                d.insert(data_all);
+                switch(attribute_flag){
+                case 2: d.insert("resvContent", d["flightNum"]); break;
+                case 3: d.insert("resvContent", d["location"]); break;
+                case 4: d.insert("resvContent", d["location"]); break;
+                }
+            }
+        }
+    }
     return data;
 }
 
@@ -980,6 +1157,42 @@ QHash<QString,QString> Server::getData(int flag, QString key){
     sql_where.values.append(key);
     QHash<QString,QString> data;
     db->getDataPS(table, data, sql_where);
+    if(flag == 4){
+        bool ok;
+        QHash<QString,QString> dataContent;
+        MysqlDb::SqlWhere sql_where_resv;
+        sql_where_resv.str = "where resvKey = ?";
+        sql_where_resv.values.append(data["resvKey"]);
+        switch(data["resvType"].toInt(&ok, 10)){
+        case 0: {
+            db->getDataPS("flight_reservations", dataContent, sql_where_resv);
+            if(dataContent["flightNum"] != ""){
+                data.insert("resvContent", dataContent["flightNum"]);
+            } else {
+                data.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        case 1: {
+            db->getDataPS("hotel_reservations", dataContent, sql_where_resv);
+            if(dataContent["location"] != ""){
+                data.insert("resvContent", dataContent["location"]);
+            } else {
+                data.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        case 2: {
+            db->getDataPS("bus_reservations", dataContent, sql_where_resv);
+            if(dataContent["location"] != ""){
+                data.insert("resvContent", dataContent["location"]);
+            } else {
+                data.insert("resvContent", "不存在");
+            }
+            break;
+        }
+        }
+    }
     return data;
 }
 

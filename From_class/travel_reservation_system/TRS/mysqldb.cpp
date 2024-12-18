@@ -24,7 +24,7 @@ bool MysqlDb::connectSql(const QString &dbName) {
         db.setDatabaseName(dbName);
         db.setUserName(muser_); //根据实际情况设置用户名
         db.setPassword(mpwd_); //根据实际情况设置密码
-        db.setConnectOptions("MYSQL_OPT_RECONNECT=1"); // 支持断线重连
+        // db.setConnectOptions("MYSQL_OPT_RECONNECT=1"); // 支持断线重连
         if (!db.open()) {
             qWarning("Failed to open database: %s", qPrintable(db.lastError().text()));
             return false;
