@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS travel_reservation_test;
-USE travel_reservation_test;
+CREATE DATABASE IF NOT EXISTS travel_reservation;
+USE travel_reservation;
 
 CREATE TABLE IF NOT EXISTS customers (
   custName varchar(30) NOT NULL COMMENT '客户姓名',
