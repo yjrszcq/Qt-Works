@@ -778,7 +778,7 @@ private:
 void MainWindow::on_btn_test_clicked()
 {
     MysqlDb* db = new mysqlDb();
-    db->setMhost("111.178.126.10");
+    db->setMhost("127.0.0.1");
     db->setMuser("xxxxxx");
     db->setMpwd("xxxxxx");
     bool ret = db->connectSql("test");
@@ -837,7 +837,7 @@ void MainWindow::on_btn_test_clicked()
 void MainWindow::on_pb_test_clicked()
 {
     MysqlDb* db = new MysqlDb();
-    db->setMhost("111.178.126.10");
+    db->setMhost("127.0.0.1");
     db->setMuser("xxxxxx");
     db->setMpwd("xxxxxx");
     bool ret = db->connectSql("test");
@@ -916,6 +916,41 @@ void MainWindow::on_pb_test_clicked()
     }   
 }
 ```
+
+### 自动建表功能
+
+```cpp
+void MainWindow::on_pb_test_clicked()
+{
+    MysqlDb* db = new MysqlDb();
+    db->setMhost("127.0.0.1");
+    db->setMuser("xxxxxx");
+    db->setMpwd("xxxxxx");
+    bool ret = db->connectSql("test");
+    if(ret){
+        qDebug("connect ok");
+    }
+    // 自动建表
+    QList<MysqlDb::SqlTable> tables;
+    MysqlDb::SqlTable table;
+    table.table_name = "customers";
+    table.table_sql = R"(
+          CREATE TABLE IF NOT EXISTS customers (
+          custID varchar(30) DEFAULT NULL COMMENT '客户ID',
+          custName varchar(30) NOT NULL COMMENT '客户姓名',
+          custPW varchar(20) DEFAULT NULL COMMENT '密码',
+          PRIMARY KEY (custID)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户信息';
+    )";
+    tables.append(table);
+    QString err = db->autoCreateTable(tables);
+    if(err != ""){
+        qDebug() << "自动建表出错: " + err;
+        return;
+    }
+}
+```
+
 注意：`db->getData()`，`db->addData()`，`db->updateData()`，`db->delData()`返回的值仅能代表SQL语句是否执行出错，不能代表返回的值是否为空。
 
 - 若要获取`db->getData()`的读取到的行数，请使用`data.isEmpty()`或使用`db->getNumRowsAffected()`，但不推荐在`db->getData()`时使用后者。
@@ -923,6 +958,8 @@ void MainWindow::on_pb_test_clicked()
 - 若要获取`db->addData()`，`db->addData()`，`db->updateData()`，`db->delData()`的影响到的行数，请使用`db->getNumRowsAffected()`。
 
 - PS版(SQL预编译版)同上。
+
+- 自动建表功能兼具检查数据库完整性的功能(仅检查每个表是否存在，并自动将缺失的表补全)
 
 ## 附qsqlmysql库的构建
 

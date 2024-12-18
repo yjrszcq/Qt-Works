@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     codeeditor.cpp \
+    linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp
 

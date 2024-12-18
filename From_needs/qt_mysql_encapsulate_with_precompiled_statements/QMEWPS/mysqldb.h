@@ -25,9 +25,18 @@ public:
         SqlWhere() = default;
     }SqlWhere;
 
+    typedef struct SqlTable{
+        QString table_name;
+        QString table_sql;
+    }SqlTable;
+
     bool connectSql(const QString &dbName);//打开连接
     bool connectSql(const QString &host, int port, const QString &dbName, const QString &userName, const QString &password);//打开连接
     bool disConnectSql();//关闭连接
+
+    QString autoCreateTable(const QList<SqlTable> &tables);//自动建表
+    QString createTables(const QList<SqlTable> &tables);//创建所需的表
+    QList<SqlTable> checkDatabaseIntegrity(const QList<SqlTable> &requiredTables);//检查数据库的完整性，返回缺失的表列表
 
     //无sql预编译
     bool queryExec(QString sqlStr);//执行sql语句，不获取结果

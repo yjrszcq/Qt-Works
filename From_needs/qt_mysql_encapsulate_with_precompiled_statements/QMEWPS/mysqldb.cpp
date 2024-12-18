@@ -24,7 +24,7 @@ bool MysqlDb::connectSql(const QString &dbName) {
         db.setDatabaseName(dbName);
         db.setUserName(muser_); //根据实际情况设置用户名
         db.setPassword(mpwd_); //根据实际情况设置密码
-        db.setConnectOptions("MYSQL_OPT_RECONNECT=1"); // 支持断线重连
+        // db.setConnectOptions("MYSQL_OPT_RECONNECT=1"); // 支持断线重连
         if (!db.open()) {
             qWarning("Failed to open database: %s", qPrintable(db.lastError().text()));
             return false;
@@ -69,6 +69,62 @@ bool MysqlDb::disConnectSql() {
     QSqlDatabase::removeDatabase(connectionName);
     connectionName = "";
     return true;
+}
+
+//自动建表
+QString MysqlDb::autoCreateTable(const QList<SqlTable> &tables){
+    if (!db.isOpen()) {
+        QString err = "The database is not open";
+        qDebug() << err;
+        return err;
+    }
+    QStringList tables_all = db.tables();
+    if (tables_all.isEmpty()) {
+        qDebug() << "The database is empty, start creating the table...";
+        QString err = createTables(tables);
+        if( err != "") {
+            return err;
+        }
+        qDebug() << "Succeed";
+    } else {
+        qDebug() << "The database is not empty, check the integrity of the database...";
+        QList<SqlTable> missing_tables = checkDatabaseIntegrity(tables);
+        if(missing_tables.size() != 0){
+            qDebug() << "The database is incomplete, starting to create missing tables...";
+            QString err = createTables(missing_tables);
+            if( err != "") {
+                return err;
+            }
+            qDebug() << "Succeed";
+        } else{
+            qDebug() << "The database is complete.";
+        }
+    }
+    return "";
+}
+
+// 创建所需的表
+QString MysqlDb::createTables(const QList<SqlTable> &tables){
+    for(auto &t : tables){
+        QSqlQuery query(QSqlDatabase::database(connectionName, true));
+        if (!query.exec(t.table_sql)) {
+            qDebug() << "Failed to create table '" + t.table_name + "'：" << query.lastError().text();
+            return query.lastError().text();
+        }
+        qDebug() << "Succeed to create table '" + t.table_name + "'";
+    }
+    return "";
+}
+
+// 检查数据库的完整性，返回缺失的表列表
+QList<MysqlDb::SqlTable> MysqlDb::checkDatabaseIntegrity(const QList<SqlTable> &requiredTables){
+    QList<SqlTable> missingTables;
+    for (auto &table : requiredTables) {
+        if (!db.tables().contains(table.table_name)) {
+            missingTables.append(table);
+        }
+    }
+    return missingTables;
 }
 
 //错误打印
