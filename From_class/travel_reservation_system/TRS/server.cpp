@@ -32,8 +32,114 @@ bool Server::startServer(){
         delete msg;
         delete sdd;
     }
+    QSettings config = readConfig();
+    if(config.value("Database/init").toBool()){
+        QString err = db->autoCreateTable(dbTables());
+        if(err != ""){
+            QMessageBox::critical(nullptr, "错误", "自动建表出错: " + err, QMessageBox::Yes);
+            return false;
+        }
+    }
     currentUser = new User(User::VISITOR);
     return true;
+}
+
+QList<MysqlDb::SqlTable> Server::dbTables(){
+    QList<MysqlDb::SqlTable> tables;
+    MysqlDb::SqlTable table;
+    table.table_name = "customers";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS customers (
+          custName varchar(30) NOT NULL COMMENT '客户姓名',
+          custID varchar(30) DEFAULT NULL COMMENT '客户ID',
+          custPW varchar(20) DEFAULT NULL COMMENT '密码',
+          PRIMARY KEY (custName)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户信息';
+    )";
+    tables.append(table);
+    table.table_name = "flights";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS flights (
+          flightNum char(6) NOT NULL COMMENT '航班号',
+          price int DEFAULT NULL COMMENT '机票价格',
+          numSeats int DEFAULT NULL COMMENT '座位总数',
+          numAvail int DEFAULT NULL COMMENT '剩余可订座位数',
+          FromCity varchar(100) DEFAULT NULL COMMENT '出发地',
+          ArivCity varchar(100) DEFAULT NULL COMMENT '到达地',
+          PRIMARY KEY (flightNum)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='航班信息';
+    )";
+    tables.append(table);
+    table.table_name = "hotels";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS hotels (
+          location varchar(100) NOT NULL COMMENT '宾馆地址',
+          price int DEFAULT NULL COMMENT '入住价格',
+          numRooms int DEFAULT NULL COMMENT '房间总数',
+          numAvail int DEFAULT NULL COMMENT '剩余可订房间数',
+          PRIMARY KEY (location)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='宾馆信息';
+    )";
+    tables.append(table);
+    table.table_name = "bus";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS bus (
+          location varchar(100) NOT NULL COMMENT '客车所属地',
+          price int DEFAULT NULL COMMENT '客车价格',
+          numBus int DEFAULT NULL COMMENT '客车总数',
+          numAvail int DEFAULT NULL COMMENT '剩余可订客车数',
+          PRIMARY KEY (location)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客车信息';
+    )";
+    tables.append(table);
+    table.table_name = "reservations";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS reservations (
+          resvKey CHAR(30) NOT NULL COMMENT '预订号',
+          custName VARCHAR(30) DEFAULT NULL COMMENT '客户姓名',
+          resvType INT DEFAULT NULL COMMENT '预订类型 (1: 航班, 2: 宾馆, 3: 客车)',
+          resvAvail TINYINT(1) DEFAULT NULL COMMENT '预订可用性',
+          resvNote VARCHAR(100) DEFAULT NULL COMMENT '订单备注',
+          PRIMARY KEY (resvKey),
+          KEY custName (custName),
+          CONSTRAINT reservations_ibfk_1 FOREIGN KEY (custName) REFERENCES customers (custName)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='预订信息';
+    )";
+    tables.append(table);
+    table.table_name = "flight_reservations";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS flight_reservations (
+          resvKey CHAR(30) NOT NULL,
+          flightNum CHAR(6) NOT NULL,
+          PRIMARY KEY (resvKey),
+          FOREIGN KEY (resvKey) REFERENCES reservations (resvKey),
+          FOREIGN KEY (flightNum) REFERENCES flights (flightNum)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='航班预订信息';
+    )";
+    tables.append(table);
+    table.table_name = "hotel_reservations";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS hotel_reservations (
+          resvKey CHAR(30) NOT NULL,
+          location VARCHAR(100) NOT NULL,
+          PRIMARY KEY (resvKey),
+          FOREIGN KEY (resvKey) REFERENCES reservations (resvKey),
+          FOREIGN KEY (location) REFERENCES hotels (location)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='宾馆预订信息';
+    )";
+    tables.append(table);
+    table.table_name = "bus_reservations";
+    table.table_sql = R"(
+        CREATE TABLE IF NOT EXISTS bus_reservations (
+          resvKey CHAR(30) NOT NULL,
+          location VARCHAR(100) NOT NULL,
+          PRIMARY KEY (resvKey),
+          FOREIGN KEY (resvKey) REFERENCES reservations (resvKey),
+          FOREIGN KEY (location) REFERENCES bus (location)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客车预订信息';
+    )";
+    tables.append(table);
+    return tables;
 }
 
 void Server::dbSetReceive(bool flag){
@@ -71,6 +177,7 @@ void Server::initConfig(){
         config->setValue("Database/user", "root");
         config->setValue("Database/password", "1234");
         config->setValue("Database/database", "travel_reservation");
+        config->setValue("Database/init", true);
         config->setValue("Settings/root_password", "1234");
         delete config;
     }
@@ -91,6 +198,9 @@ bool Server::CheckConfig(){
         return false;
     }
     if(config.value("Database/database").isNull()){
+        return false;
+    }
+    if(config.value("Database/init").isNull()){
         return false;
     }
     if(config.value("Settings/root_password").isNull()){

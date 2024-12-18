@@ -18,6 +18,7 @@ class Server : public QObject
 public:
     enum Status{UNAVAILABLE, AVAILABLE};
     Server();
+    QList<MysqlDb::SqlTable> dbTables();
     bool connectToDatabase();
     bool login(User user);
     void logout();

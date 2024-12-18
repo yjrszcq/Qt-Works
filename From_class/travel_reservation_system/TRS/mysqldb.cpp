@@ -71,6 +71,62 @@ bool MysqlDb::disConnectSql() {
     return true;
 }
 
+//自动建表
+QString MysqlDb::autoCreateTable(const QList<SqlTable> &tables){
+    if (!db.isOpen()) {
+        QString err = "The database is not open";
+        qDebug() << err;
+        return err;
+    }
+    QStringList tables_all = db.tables();
+    if (tables_all.isEmpty()) {
+        qDebug() << "The database is empty, start creating the table...";
+        QString err = createTables(tables);
+        if( err != "") {
+            return err;
+        }
+        qDebug() << "Succeed";
+    } else {
+        qDebug() << "The database is not empty, check the integrity of the database...";
+        QList<SqlTable> missing_tables = checkDatabaseIntegrity(tables);
+        if(missing_tables.size() != 0){
+            qDebug() << "The database is incomplete, starting to create missing tables...";
+            QString err = createTables(missing_tables);
+            if( err != "") {
+                return err;
+            }
+            qDebug() << "Succeed";
+        } else{
+            qDebug() << "The database is complete.";
+        }
+    }
+    return "";
+}
+
+// 创建所需的表
+QString MysqlDb::createTables(const QList<SqlTable> &tables){
+    for(auto &t : tables){
+        QSqlQuery query(QSqlDatabase::database(connectionName, true));
+        if (!query.exec(t.table_sql)) {
+            qDebug() << "Failed to create table '" + t.table_name + "'：" << query.lastError().text();
+            return query.lastError().text();
+        }
+        qDebug() << "Succeed to create table '" + t.table_name + "'";
+    }
+    return "";
+}
+
+// 检查数据库的完整性，返回缺失的表列表
+QList<MysqlDb::SqlTable> MysqlDb::checkDatabaseIntegrity(const QList<SqlTable> &requiredTables){
+    QList<SqlTable> missingTables;
+    for (auto &table : requiredTables) {
+        if (!db.tables().contains(table.table_name)) {
+            missingTables.append(table);
+        }
+    }
+    return missingTables;
+}
+
 //错误打印
 void MysqlDb::errorSql(QString sql) {
     errorSqlText = sql;
@@ -361,7 +417,7 @@ bool MysqlDb::queryExecPS(QSqlQuery &query, QString queryStr,QList<QHash<QString
 }
 
 //获取数据
-bool MysqlDb::getDataPS(QString tableName,QHash<QString,QString> &data,SqlShere sqlWhere){
+bool MysqlDb::getDataPS(QString tableName,QHash<QString,QString> &data,SqlWhere sqlWhere){
     data.clear();
     QList<QHash<QString, QString>> dataList;
     if(!getDataPS(tableName, dataList, sqlWhere)) {
@@ -374,7 +430,7 @@ bool MysqlDb::getDataPS(QString tableName,QHash<QString,QString> &data,SqlShere 
 }
 
 //获取数据
-bool MysqlDb::getDataPS(QString tableName,QList<QHash<QString,QString>> &data, SqlShere sqlWhere){
+bool MysqlDb::getDataPS(QString tableName,QList<QHash<QString,QString>> &data, SqlWhere sqlWhere){
     QString queryStr = "select * from " + tableName;
     QSqlQuery query(QSqlDatabase::database(connectionName, true));
     if(!sqlWhere.str.isEmpty()) {
@@ -391,7 +447,7 @@ bool MysqlDb::getDataPS(QString tableName,QList<QHash<QString,QString>> &data, S
 }
 
 //获取数据
-bool MysqlDb::getDataPS(QString tableName,QHash<QString,QString> columndata,QList<QHash<QString,QString>> &data,SqlShere sqlWhere){
+bool MysqlDb::getDataPS(QString tableName,QHash<QString,QString> columndata,QList<QHash<QString,QString>> &data,SqlWhere sqlWhere){
     QString colunmStr;
     if(columndata.count() == 0) {
         colunmStr = "*";
@@ -440,7 +496,7 @@ bool MysqlDb::addDataPS(QString tableName,QHash<QString,QString> data){
 }
 
 //删除
-bool MysqlDb::delDataPS(QString tableName, SqlShere sqlWhere){
+bool MysqlDb::delDataPS(QString tableName, SqlWhere sqlWhere){
     QString queryStr = "DELETE FROM " + tableName;
     QSqlQuery query(QSqlDatabase::database(connectionName, true));
     if(!sqlWhere.str.isEmpty()) {
@@ -457,7 +513,7 @@ bool MysqlDb::delDataPS(QString tableName, SqlShere sqlWhere){
 }
 
 //修改
-bool MysqlDb::updateDataPS(QString tableName,QHash<QString,QString> data, SqlShere sqlWhere){
+bool MysqlDb::updateDataPS(QString tableName,QHash<QString,QString> data, SqlWhere sqlWhere){
     QString queryStr = "UPDATE " + tableName + " ";
     QHash<QString, QString>::iterator it;
     QString setStr = "SET ";
